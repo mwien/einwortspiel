@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix=" · Under Development">
+      <%= assigns[:page_title] || "Lost in Words" %>
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1 class="text-4xl font-bebas-neue font-bold text-center m-5"> Lost in Words </h1>
+    </header>
+    <%= @inner_content %>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+Cat cat.svg
+Crow crow.svg
+Dove dove.svg
+Dragon dragon.svg
+Hippo hippo.svg
+Otter otter.svg
