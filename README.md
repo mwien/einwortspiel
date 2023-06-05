@@ -4,7 +4,7 @@ Multiplayer Word Game using Elixir, Phoenix and Liveview. Currently only a proto
 
 The idea of the game is that one player summarizes three given words in one clue word. The other players see the same three words and an extra one. Their goal is to find out which of the four words was not described by the clue. 
 
-![Alt text](/priv/static/images/README_before.png?raw=true "Views of the two players (before and after resolution)")      
+![Alt text](/priv/static/images/README.png?raw=true "Views of the two players (before and after resolution)")      
 
 To start your Phoenix server:
 
