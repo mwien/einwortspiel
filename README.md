@@ -1,8 +1,8 @@
 # Lost In Words
 
-Multiplayer Word Game using Elixir, Phoenix and Liveview. Currently only a prototype, so there are some bugs and rough edges (e.g., all players need to join before starting the first round for it to work etc)...
+Multiplayer word game using Elixir, Phoenix and Liveview. Currently only a prototype, so there are some bugs and rough edges (e.g., all players need to join before starting the first round for it to work etc)...
 
-The idea of the game is that one player summarizes three given words in one clue word. The other players see the same three words and an extra one. Their goal is to find out which of the four words was not described by the clue. 
+The idea of the game is that one player summarizes three given words in one clue word. The other players see the same three words and an extra one (and of course the clue). Their goal is to find out which of the four words was not described by the clue. 
 
 ![Alt text](/priv/static/images/README.png?raw=true "Views of the two players (before and after resolution)")      
 
