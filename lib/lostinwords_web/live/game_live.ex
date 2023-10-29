@@ -1,17 +1,17 @@
 defmodule LostinwordsWeb.GameLive do
   use LostinwordsWeb, :live_view
 
-  #alias LostinwordsWeb.GameLive.Words
-  #alias LostinwordsWeb.GameLive.Clues
-  #alias LostinwordsWeb.GameLive.Standings
-  #alias LostinwordsWeb.GameLive.NextRound
+  # alias LostinwordsWeb.GameLive.Words
+  # alias LostinwordsWeb.GameLive.Clues
+  # alias LostinwordsWeb.GameLive.Standings
+  # alias LostinwordsWeb.GameLive.NextRound
 
-# have list of assigns
-# just like struct in module
+  # have list of assigns
+  # just like struct in module
 
   def render(assigns) do
     ~H"""
-    <span> <%= @table.table_id %> </span>
+    <span><%= @table.table_id %></span>
     """
   end
 
@@ -66,7 +66,12 @@ defmodule LostinwordsWeb.GameLive do
   end
 
   def handle_event("submit_guess", %{"value" => guess}, socket) do
-    Lostinwords.Game.move(socket.assigns.table_id, socket.assigns.player_id, {:submit_guess, guess})
+    Lostinwords.Game.move(
+      socket.assigns.table_id,
+      socket.assigns.player_id,
+      {:submit_guess, guess}
+    )
+
     {:noreply, socket}
   end
 
@@ -84,7 +89,12 @@ defmodule LostinwordsWeb.GameLive do
   end
 
   def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do
-    {:noreply, assign(socket, :table, Lostinwords.Game.Table.update_active_players(socket.assigns.table, joins, leaves))}
+    {:noreply,
+     assign(
+       socket,
+       :table,
+       Lostinwords.Game.Table.update_active_players(socket.assigns.table, joins, leaves)
+     )}
   end
 
   def mount(%{"table_id" => table_id}, %{"user_id" => player_id}, socket) do

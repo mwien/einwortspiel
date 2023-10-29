@@ -10,7 +10,7 @@ defmodule LostinwordsWeb.GameLive.Words do
   attr :guessed_by, :map, required: true
   attr :clickable, :boolean, default: true
   # this might make lostwords handling easier
-  attr :highlighted, :list, default: [] 
+  attr :highlighted, :list, default: []
 
   def cards(assigns) do
     ~H"""
@@ -54,7 +54,7 @@ defmodule LostinwordsWeb.GameLive.Words do
   attr :item, :string, required: true
   attr :guessers, :list, required: true
   # , include: ~w(disabled) 
-  attr :rest, :global, default: %{ class: ""}
+  attr :rest, :global, default: %{class: ""}
   # TODO: render guesser list by having some list thingy
   # TODO: maybe add attribute just for extra class attr
   def card(assigns) do
@@ -69,22 +69,22 @@ defmodule LostinwordsWeb.GameLive.Words do
       <header class="text-xs flex-none self-start invisible bg-orange-300">
         <%= if @guessers != nil do %>
           <%= for g <- @guessers do %>
-      <img class="w-5 h-5 inline" src={"/images/" <> g}/>
+            <img class="w-5 h-5 inline" src={"/images/" <> g} />
           <% end %>
         <% else %>
-          <div class = "invisible"> "t" </div>
+          <div class="invisible">"t"</div>
         <% end %>
       </header>
-      
+
       <div class="flex-auto self-center"><%= @item %></div>
 
       <footer class="text-xs flex-none self-start">
         <%= if @guessers != nil do %>
           <%= for g <- @guessers do %>
-      <img class="w-5 h-5 inline" src={"/images/" <> g}/>
+            <img class="w-5 h-5 inline" src={"/images/" <> g} />
           <% end %>
         <% else %>
-          <div class = "invisible"> "t" </div>
+          <div class="invisible">"t"</div>
         <% end %>
       </footer>
     </button>

@@ -3,26 +3,35 @@ defmodule LostinwordsWeb.GameLive.Standings do
 
   alias LostinwordsWeb.Helpers
 
- #   <%= if @animals[player_id] != nil do %>
- #     <img class="h-5 w-5 inline" src={"/images/" <> @animals[player_id]}/>
- #     <% else %>
- #      <span> </span>
- #   <% end %>
-      #<img class="block w-max" src={"/images/" <> @animals[player_id]}/>
+  #   <%= if @animals[player_id] != nil do %>
+  #     <img class="h-5 w-5 inline" src={"/images/" <> @animals[player_id]}/>
+  #     <% else %>
+  #      <span> </span>
+  #   <% end %>
+  # <img class="block w-max" src={"/images/" <> @animals[player_id]}/>
   def render(assigns) do
     IO.inspect(assigns.animals)
     IO.inspect(assigns.animals[assigns.player_id])
     IO.inspect(assigns.player_id)
     IO.inspect("HI")
+
     ~H"""
     <LostinwordsWeb.CoreComponents.table id="standings" rows={Map.keys(@scores)}>
-    <:col :let={player_id} label="">
-    <div class="w-6 h-full">
-      <img class="w-6 h-6" src={"/images/" <> @animals[player_id]} :if={@animals[player_id] != nil}/>
-      </div>
+      <:col :let={player_id} label="">
+        <div class="w-6 h-full">
+          <img
+            :if={@animals[player_id] != nil}
+            class="w-6 h-6"
+            src={"/images/" <> @animals[player_id]}
+          />
+        </div>
       </:col>
       <:col :let={player_id} label="Player">
-        <.name_entry this_player={player_id == @player_id} name={@names[player_id]} inactive={!Enum.member?(@active_players, player_id)} />
+        <.name_entry
+          this_player={player_id == @player_id}
+          name={@names[player_id]}
+          inactive={!Enum.member?(@active_players, player_id)}
+        />
       </:col>
       <:col :let={player_id} label="Score"><%= @scores[player_id] %></:col>
     </LostinwordsWeb.CoreComponents.table>
