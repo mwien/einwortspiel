@@ -3,14 +3,14 @@ defmodule Lostinwords.Game.Table do
   alias Lostinwords.Game.Player
   alias Lostinwords.Game.Round
   alias Lostinwords.Game.Settings
+  alias Lostinwords.Game.TableState
 
   defstruct [
     :table_id,
     :round,
     :players,
     :settings,
-    :state,
-    :info
+    :state
   ]
 
   def open_table() do
@@ -19,8 +19,7 @@ defmodule Lostinwords.Game.Table do
       round: nil,
       players: %{}, 
       settings: Settings.default_settings(),
-      state: :init,
-      info: []
+      state: TableState.create_state()
     }
   end
 
@@ -39,13 +38,13 @@ defmodule Lostinwords.Game.Table do
 
   def manage_round(table, :start) do
     cond do
-      table.state == :in_round -> 
+      table.state.phase == :in_round -> 
         {:error, :ongoing_round}
       length(Map.keys(table.players)) < 2 -> 
         {:error, :too_few_players}
       true -> 
         newround = Round.start(Map.keys(table.players), table.settings)
-        {:ok, %Table{table | round: newround, state: :in_round}}
+        {:ok, %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
     end
   end
 
@@ -61,6 +60,7 @@ defmodule Lostinwords.Game.Table do
     end
   end
 
+  # TODO: check inround!!!
   def move(table, player_id, move) do
     if Map.has_key?(table.players, player_id) do
       case Round.move(table.round, player_id, move) do
@@ -85,12 +85,12 @@ defmodule Lostinwords.Game.Table do
     Enum.reduce(Enum.reverse(info), new_table, &handle_instruction(&2, &1))
   end
 
-  defp handle_instruction(table, {:plus_score, player, plus_score}) do
-    %Table{table | players: Map.put(table.players, player, Player.update_score(table.players[player], plus_score))}
-  end
-  
-  defp handle_instruction(table, {:end_of_round}) do
-    %Table{table | state: :end_of_round}
+  defp handle_instruction(table, {:result, result}) do
+    %Table{table | state: 
+      table.state
+      |> TableState.update_phase(:end_of_round)
+      |> TableState.update_stats(result)
+    }
   end
 
   defp generate_table_id() do

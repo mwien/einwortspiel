@@ -6,43 +6,37 @@ defmodule Lostinwords.Game.Round do
 
   # add typespecs later if ever
   defstruct [
-    :leftwords,
-    :fullwords,
+    :commonwords,
+    :extrawords,
+    :shuffle,
+    :players, 
     :phase,
-    :cluers,
-    :guessers,
     :waiting_for,
-    :info,
     :clues,
     :guesses,
-    :unguessed_words
+    :info,
   ]
 
-  # make cluer not random, but shuffle through
   def start(players, settings) do
-    words = Generator.gen_words(settings.nr_leftwords + settings.nr_lostwords)
-    players = Enum.shuffle(players)
-
+    words = Generator.gen_words(settings.nr_commonwords + length(players))
     create_round(
-      Enum.take(words, settings.nr_leftwords),
-      Enum.take(words, -settings.nr_lostwords),
-      Enum.take(players, settings.nr_cluers),
-      Enum.take(players, settings.nr_cluers - length(players))
+      Enum.take(words, settings.nr_commonwords),
+      Enum.take(words, -length(players)),
+      players
     )
   end
 
-  def create_round(leftwords, lostwords, cluers, guessers) do
+  def create_round(commonwords, extrawords, players) do
     %Round{
-      leftwords: Enum.shuffle(leftwords),
-      fullwords: Enum.shuffle(leftwords ++ lostwords),
+      commonwords: commonwords,
+      extrawords: Map.new(Enum.zip(players, extrawords)),
+      shuffle: Map.new(players, fn x -> {x, Enum.shuffle([0, 1, 2])} end),
+      players: players,
       phase: "clues",
-      cluers: cluers,
-      guessers: guessers,
-      waiting_for: cluers,
-      info: [],
+      waiting_for: players,
       clues: %{},
       guesses: %{},
-      unguessed_words: Map.new(guessers, fn g -> {g, lostwords} end)
+      info: [],
     }
   end
 
@@ -59,7 +53,7 @@ defmodule Lostinwords.Game.Round do
   end
 
   def handle_move(round, player, {:submit_clue, clue}) do
-    if Enum.member?(round.cluers, player) and round.phase == "clues" do
+    if Enum.member?(round.waiting_for, player) and round.phase == "clues" do
       {:ok,
        %Round{
          round
@@ -72,16 +66,14 @@ defmodule Lostinwords.Game.Round do
   end
 
   def handle_move(round, player, {:submit_guess, guess}) do
-    if Enum.member?(round.guessers, player) and round.phase == "guesses" do
-      success = Enum.member?(round.unguessed_words[player], guess)
+    if Enum.member?(round.waiting_for, player) and round.phase == "guesses" do
       {:ok,
        %Round{
          round
-         | guesses: Map.update(round.guesses, player, [guess], &List.insert_at(&1, 0, guess)),
-           unguessed_words: Map.update!(round.unguessed_words, player, &List.delete(&1, guess))
+         | guesses: Map.put(round.guesses, player, guess),
+          waiting_for: List.delete(round.waiting_for, player)
        }
-       |> check_finished(player, success)
-       |> update_score(player, success)}
+      }
     else
       {:error, :unauthorized_move}
     end
@@ -89,34 +81,6 @@ defmodule Lostinwords.Game.Round do
 
   def handle_move(_round, _player, _) do
     {:error, :unknown_move}
-  end
-
-  def check_finished(round, player, success) do
-    if !success or Enum.empty?(round.unguessed_words[player]) do
-      %Round{round | waiting_for: List.delete(round.waiting_for, player)}
-    else
-      round
-    end
-  end
-
-  def update_score(round, player, success) do
-    if success do
-      Enum.reduce(
-        round.cluers,
-        add_info(round, {:plus_score, player, score("guesser")}),
-        &add_info(&2, {:plus_score, &1, score("cluer")})
-      )
-    else
-      round
-    end
-  end
-
-  # can be extended later
-  def score(role) do
-    case role do
-      "guesser" -> 1
-      "cluer" -> 1
-    end
   end
 
   # TODO: implement skip with proper state machine!
@@ -127,12 +91,12 @@ defmodule Lostinwords.Game.Round do
       case round.phase do
         "clues" ->
           %{round | phase: "guesses"}
-          |> Map.put(:waiting_for, round.guessers)
+          |> Map.put(:waiting_for, Map.keys(round.extrawords))
 
         "guesses" ->
           %{round | phase: "final"}
           |> Map.put(:waiting_for, [])
-          |> add_info({:end_of_round})
+          |> add_info({:result, round.guesses == round.extrawords})
 
         "final" ->
           round
