@@ -1,17 +1,34 @@
 defmodule LostinwordsWeb.GameLive do
   use LostinwordsWeb, :live_view
 
-  # alias LostinwordsWeb.GameLive.Words
-  # alias LostinwordsWeb.GameLive.Clues
+  alias LostinwordsWeb.GameLive.Words
+  alias LostinwordsWeb.GameLive.Clues
   # alias LostinwordsWeb.GameLive.Standings
-  # alias LostinwordsWeb.GameLive.NextRound
+  alias LostinwordsWeb.GameLive.NextRound
 
   # have list of assigns
   # just like struct in module
 
+  # TODO: guessed by
+  # TODO: highlighted
   def render(assigns) do
     ~H"""
     <span><%= @table.table_id %></span>
+    <Words.cards
+      id="words"
+      items={@table.round.fullwords}
+      guessed_by = {%{}}
+      clickable={
+        Enum.member?(@table.round.guessers, @player_id) and @table.round.phase == "guesses"
+      }
+    />
+    <Clues.render
+      phase={@table.round.phase}
+      cluers={@table.round.cluers}
+      clues={@table.round.clues}
+      player_id={@player_id}
+    />
+    <NextRound.render state={@table.state} num_players={length(Map.keys(@table.players))} />
     """
   end
 
@@ -56,7 +73,7 @@ defmodule LostinwordsWeb.GameLive do
   #  end
 
   def handle_event("start_round", _value, socket) do
-    Lostinwords.Game.manage_round(socket.assigns.table_id, ":start", socket.assigns.player_id)
+    Lostinwords.Game.manage_round(socket.assigns.table_id, :start, socket.assigns.player_id)
     {:noreply, socket}
   end
 

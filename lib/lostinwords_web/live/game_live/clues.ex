@@ -6,37 +6,35 @@ defmodule LostinwordsWeb.GameLive.Clues do
   def render(assigns) do
     ~H"""
     <div class="text-center text-xl font-oswald m-4">
-      <%= for {player_id, role} <- @roles do %>
-        <%= if role == "cluer" do %>
-          <span>
-            <%= @names[player_id] %>:
-            <%= if player_id == @player_id and @phase == "clues" do %>
-              <Helpers.render_textform
-                id="clueform"
-                submit_handler="submit_clue"
-                value={
-                  if Map.has_key?(@clues, @player_id) do
-                    @clues[@player_id]
-                  else
-                    ""
-                  end
-                }
-              />
-            <% else %>
-              <%= if @phase == "clues" do %>
-                <%= if Enum.member?(@received_clues_from, player_id) do %>
-                  <%= "clue submitted" %>
-                <% else %>
-                  <Heroicons.ellipsis_horizontal class="ml-1 w-6 h-6 inline
-                  duration-2000
-                  animate-bounce" />
-                <% end %>
+      <%= for player_id <- @cluers do %>
+        <span>
+          <%= player_id %>:
+          <%= if player_id == @player_id and @phase == "clues" do %>
+            <Helpers.render_textform
+              id="clueform"
+              submit_handler="submit_clue"
+              value={
+                if Map.has_key?(@clues, @player_id) do
+                  @clues[@player_id]
+                else
+                  ""
+                end
+              }
+            />
+          <% else %>
+            <%= if @phase == "clues" do %>
+              <%= if Map.has_key?(@clues, player_id) do %>
+                <%= "clue submitted" %>
               <% else %>
-                <%= @clues[player_id] %>
+                <Heroicons.ellipsis_horizontal class="ml-1 w-6 h-6 inline
+                duration-2000
+                animate-bounce" />
               <% end %>
+            <% else %>
+              <%= @clues[player_id] %>
             <% end %>
-          </span>
-        <% end %>
+          <% end %>
+        </span>
       <% end %>
     </div>
     """

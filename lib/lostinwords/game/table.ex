@@ -73,10 +73,10 @@ defmodule Lostinwords.Game.Table do
   end
 
   def update_active_players(table, joins, leaves) do
-    %Table{ table | 
+    %Table{table |
       players: table.players
-    |> Enum.each(&Player.update_active(&1, true, joins))
-    |> Enum.each(&Player.update_active(&1, false, leaves))
+      |> Map.new(fn {k, v} -> {k, Player.update_active(v, true, joins)} end)
+      |> Map.new(fn {k, v} -> {k, Player.update_active(v, false, leaves)} end)
     }
   end
 
