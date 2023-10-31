@@ -11,7 +11,7 @@ defmodule LostinwordsWeb.GameLive.Header do
   def header(assigns) do
     ~H"""
     <header class= "flex items-center justify-between" >
-      <h2 class="text-4xl font-bebasneue font-bold m-5"> Lost in Words </h2>
+      <h2 class="text-3xl font-bebasneue font-bold m-5"> Lost in Words </h2>
       <div>
         <NextRound.render state={@phase} num_players={@num_players}/>
         <div> 

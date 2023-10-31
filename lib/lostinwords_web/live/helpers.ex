@@ -2,6 +2,9 @@ defmodule LostinwordsWeb.Helpers do
   use Phoenix.Component
   import Phoenix.HTML.Form
 
+  # redo form -> maybe actually do change tracking with liveview at some point
+  # have tick when submitted, else and when modifying thing below!
+  # idk idk
   def render_textform(assigns) do
     ~H"""
     <.form

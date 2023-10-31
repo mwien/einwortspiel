@@ -5,9 +5,10 @@ defmodule LostinwordsWeb.GameLive.Words do
   attr :active, :boolean
   # attr :guessed_by, :map 
   # attr :highlighted, :map
+  # do grid -> for mobile one col -> else two or three
   def render(assigns) do
     ~H"""
-      <div> 
+      <div class="flex flex-col items-center"> 
         <.word
           :for={word <- @words}
           value = {word}
@@ -25,7 +26,7 @@ defmodule LostinwordsWeb.GameLive.Words do
     <button
       phx-click="submit_guess"
       value={@value}
-      class={"rounded-lg h-16 w-36 border-gray-200
+      class={"rounded-lg h-16 w-48 border-gray-200
       shadow-md text-xl flex flex-col justify-center font-oswald "}
       {@rest}
     >
