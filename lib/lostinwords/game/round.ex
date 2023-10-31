@@ -5,11 +5,11 @@ defmodule Lostinwords.Game.Round do
   # TODO: maybe use state machine
 
   # add typespecs later if ever
+  # TODO: maybe shuffle should not be here?
   defstruct [
     :commonwords,
     :extrawords,
     :shuffle,
-    :players, 
     :phase,
     :waiting_for,
     :clues,
@@ -30,8 +30,7 @@ defmodule Lostinwords.Game.Round do
     %Round{
       commonwords: commonwords,
       extrawords: Map.new(Enum.zip(players, extrawords)),
-      shuffle: Map.new(players, fn x -> {x, Enum.shuffle([0, 1, 2])} end),
-      players: players,
+      shuffle: Map.new(players, fn x -> {x, Enum.shuffle(0..length(commonwords))} end),
       phase: "clues",
       waiting_for: players,
       clues: %{},

@@ -1,10 +1,7 @@
 defmodule LostinwordsWeb.GameLive do
   use LostinwordsWeb, :live_view
 
-  alias LostinwordsWeb.GameLive.Words
-  alias LostinwordsWeb.GameLive.Clues
-  # alias LostinwordsWeb.GameLive.Standings
-  alias LostinwordsWeb.GameLive.NextRound
+  alias LostinwordsWeb.GameLive.Header
 
   # have list of assigns
   # just like struct in module
@@ -13,22 +10,10 @@ defmodule LostinwordsWeb.GameLive do
   # TODO: highlighted
   def render(assigns) do
     ~H"""
-    <span><%= @table.table_id %></span>
-    <Words.cards
-      id="words"
-      items={@table.round.fullwords}
-      guessed_by = {%{}}
-      clickable={
-        Enum.member?(@table.round.guessers, @player_id) and @table.round.phase == "guesses"
-      }
-    />
-    <Clues.render
-      phase={@table.round.phase}
-      cluers={@table.round.cluers}
-      clues={@table.round.clues}
-      player_id={@player_id}
-    />
-    <NextRound.render state={@table.state} num_players={length(Map.keys(@table.players))} />
+    <Header.header name={@table.players[@player_id].name} wins = {1} losses = {2}/>
+    <main> 
+      Hi
+    </main>
     """
   end
 
