@@ -1,9 +1,49 @@
 defmodule LostinwordsWeb.GameLive.Words do
   use Phoenix.Component
 
-  @doc ~S"""
-  Renders a set of cards. # choices TODO
-  """
+  attr :words, :list
+  attr :active, :boolean
+  # attr :guessed_by, :map 
+  # attr :highlighted, :map
+  def render(assigns) do
+    ~H"""
+      <div> 
+        <.word
+          :for={word <- @words}
+          value = {word}
+          {getextra(%{}, @active)}
+        />
+      </div>
+    """
+  end
+
+  attr :value, :string
+  attr :rest, :global
+  # TODO: maybe rename card?
+  def word(assigns) do
+    ~H""" 
+    <button
+      phx-click="submit_guess"
+      value={@value}
+      class={"rounded-lg h-16 w-36 border-gray-200
+      shadow-md text-xl flex flex-col justify-center font-oswald "}
+      {@rest}
+    >
+      <%= @value %>
+    </button>
+    """
+  end
+
+  # do nicer!
+  def getextra(rest, flag) do
+    if flag do
+      rest
+    else
+      Map.put(rest, :disabled, "true")
+    end
+  end
+
+
   attr :id, :string, required: true
   attr :items, :list, required: true
   # maybe change this later
@@ -30,14 +70,6 @@ defmodule LostinwordsWeb.GameLive.Words do
     """
   end
 
-  # do nicer!
-  def getextra(rest, flag) do
-    if flag do
-      rest
-    else
-      Map.put(rest, :disabled, "true")
-    end
-  end
 
   def ishighlighted(rest, item, highlighted) do
     if Enum.member?(highlighted, item) do
@@ -91,40 +123,40 @@ defmodule LostinwordsWeb.GameLive.Words do
     """
   end
 
-  def render(assigns) do
-    ~H"""
-    <div class="grid grid-cols-1 gap-4">
-      <%= for word <- @words do %>
-        <%= if @phase != "final" do %>
-          <!-- put active stuff in function -->
-          <.render_word
-            word={word}
-            guessers={[]}
-            active={
-              if @phase == "guesses" and @role == "guesser" do
-                []
-              else
-                [{"disabled", "true"}]
-              end
-            }
-          />
-        <% else %>
-          <.render_word
-            word={word}
-            guessers={
-              Enum.into(
-                Map.keys(Map.filter(@guesses, &Enum.member?(elem(&1, 1), word))),
-                [],
-                &@names[&1]
-              )
-            }
-            active={[{"disabled", "true"}]}
-          />
-        <% end %>
-      <% end %>
-    </div>
-    """
-  end
+#  def render(assigns) do
+  #    ~H"""
+  #    <div class="grid grid-cols-1 gap-4">
+  #      <%= for word <- @words do %>
+  #        <%= if @phase != "final" do %>
+  #          <!-- put active stuff in function -->
+  #          <.render_word
+  #            word={word}
+  #            guessers={[]}
+  #            active={
+  #              if @phase == "guesses" and @role == "guesser" do
+  #                []
+  #              else
+  #                [{"disabled", "true"}]
+  #              end
+  #            }
+  #          />
+  #        <% else %>
+  #          <.render_word
+  #            word={word}
+  #            guessers={
+  #              Enum.into(
+  #                Map.keys(Map.filter(@guesses, &Enum.member?(elem(&1, 1), word))),
+  #                [],
+  #                &@names[&1]
+  #              )
+  #            }
+  #            active={[{"disabled", "true"}]}
+  #          />
+  #        <% end %>
+  #      <% end %>
+  #    </div>
+  #    """
+  #  end
 
   # TODO: do this better as well
   defp render_word(assigns) do

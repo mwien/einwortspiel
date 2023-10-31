@@ -2,6 +2,7 @@ defmodule LostinwordsWeb.GameLive do
   use LostinwordsWeb, :live_view
 
   alias LostinwordsWeb.GameLive.Header
+  alias LostinwordsWeb.GameLive.Main
 
   # have list of assigns
   # just like struct in module
@@ -10,10 +11,8 @@ defmodule LostinwordsWeb.GameLive do
   # TODO: highlighted
   def render(assigns) do
     ~H"""
-    <Header.header name={@table.players[@player_id].name} wins = {1} losses = {2}/>
-    <main> 
-      Hi
-    </main>
+    <Header.header name={@table.players[@player_id].name} wins = {1} losses = {2} phase={@table.state.phase} num_players={length(Map.keys(@table.players))} />
+    <Main.main round={@table.round} players={@table.players} state={@table.state} player_id={@player_id} />
     """
   end
 
@@ -83,6 +82,7 @@ defmodule LostinwordsWeb.GameLive do
   end
 
   def handle_info({:update, table}, socket) do
+    IO.inspect(table)
     {:noreply, assign(socket, :table, table)}
   end
 

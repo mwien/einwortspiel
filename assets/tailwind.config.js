@@ -10,7 +10,12 @@ module.exports = {
     "../lib/*_web/**/*.*ex"
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        bebasneue: ['Bebas Neue'],
+        oswald: ['Oswald'],
+      },
+    },
   },
   plugins: [],
 }

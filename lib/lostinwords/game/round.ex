@@ -31,7 +31,7 @@ defmodule Lostinwords.Game.Round do
       commonwords: commonwords,
       extrawords: Map.new(Enum.zip(players, extrawords)),
       shuffle: Map.new(players, fn x -> {x, Enum.shuffle(0..length(commonwords))} end),
-      phase: "clues",
+      phase: :clues,
       waiting_for: players,
       clues: %{},
       guesses: %{},
@@ -52,7 +52,7 @@ defmodule Lostinwords.Game.Round do
   end
 
   def handle_move(round, player, {:submit_clue, clue}) do
-    if Enum.member?(round.waiting_for, player) and round.phase == "clues" do
+    if Enum.member?(round.waiting_for, player) and round.phase == :clues do
       {:ok,
        %Round{
          round
@@ -65,7 +65,7 @@ defmodule Lostinwords.Game.Round do
   end
 
   def handle_move(round, player, {:submit_guess, guess}) do
-    if Enum.member?(round.waiting_for, player) and round.phase == "guesses" do
+    if Enum.member?(round.waiting_for, player) and round.phase == :guesses do
       {:ok,
        %Round{
          round
@@ -88,16 +88,16 @@ defmodule Lostinwords.Game.Round do
       round
     else
       case round.phase do
-        "clues" ->
-          %{round | phase: "guesses"}
+        :clues ->
+          %{round | phase: :guesses}
           |> Map.put(:waiting_for, Map.keys(round.extrawords))
 
-        "guesses" ->
-          %{round | phase: "final"}
+        :guesses ->
+          %{round | phase: :final}
           |> Map.put(:waiting_for, [])
           |> add_info({:result, round.guesses == round.extrawords})
 
-        "final" ->
+        :final ->
           round
       end
     end
