@@ -13,9 +13,9 @@ defmodule LostinwordsWeb.GameLive.Main do
   def main(assigns) do
     ~H"""
     <div id="game" :if={@state.phase != :init}> 
-      <Words.render words={get_words_for_player(@round.commonwords, @round.extrawords, @player_id)} active={@round.phase == :guesses} />
+      <Words.render words={get_words_for_player(@round.commonwords, @round.extrawords, @round.shuffle, @player_id)} active={@round.phase == :guesses} show={true} />
       <Clue.render clue={get_clue_for_player(@round.clues, @player_id)} active={@round.phase == :clues} />
-      <Others.render player_id={@player_id} players={@players} words={@round.extrawords} clues = {@round.clues} phase = {@round.phase} />
+      <Others.render player_id={@player_id} players={@players} words={get_words_for_player(@round.commonwords, @round.extrawords, @round.shuffle, @player_id)} clues = {@round.clues} phase = {@round.phase} />
     </div>
     """
   end
@@ -28,8 +28,14 @@ defmodule LostinwordsWeb.GameLive.Main do
     end
   end
 
-  # TODO: do shuffle later
-  def get_words_for_player(commonwords, extrawords, player_id) do
+  def get_words_for_player(commonwords, extrawords, shuffle, player_id) do
     [extrawords[player_id] | commonwords] 
+    |> permute_by(shuffle[player_id])
+  end
+
+  def permute_by(list, order) do
+    Enum.zip(order, list)
+    |> List.keysort(0)
+    |> Enum.reduce([], fn {_, l}, acc -> [l | acc] end)
   end
 end

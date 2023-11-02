@@ -2,15 +2,18 @@ defmodule LostinwordsWeb.GameLive.Others do
   use Phoenix.Component
 
   alias LostinwordsWeb.GameLive.Main
+  alias LostinwordsWeb.GameLive.Words
 
   attr :player_id, :string
   attr :players, :map
-  attr :words, :map
+  attr :words, :list
   attr :clues, :map
   attr :phase, :atom
   def render(assigns) do
     ~H"""
-      <.miniview player={@players[player]} word={@words[player]} clue={Main.get_clue_for_player(@clues, player)} phase={@phase} :for={player <- Map.keys(@players)} :if={player != @player_id}/>
+      <div class="flex justify-center mt-20">
+      <.miniview player={@players[player]} words={@words} clue={Main.get_clue_for_player(@clues, player)} phase={@phase} :for={player <- Map.keys(@players)} :if={player != @player_id}/>
+      </div>
     """
   end
 
@@ -19,18 +22,15 @@ defmodule LostinwordsWeb.GameLive.Others do
   # TODO: show clue only after first phase!
   def miniview(assigns) do
     ~H"""
-    <div
-      class={"rounded-lg h-16 w-48 border-gray-200
-      shadow-md text-xl flex flex-col justify-center font-oswald "}
-    >
-      <%= @word %>
-    </div>
+      <div>
      <Heroicons.ellipsis_horizontal class="ml-1 w-6 h-6 inline
                   duration-2000
                   animate-bounce" :if={@phase == :clues and @clue == ""} />  
      <Heroicons.check_circle class="ml-1 w-6 h-6 inline" :if={@phase == :clues and @clue != ""} />
-    <%= @player.name %>  
-    <span :if={@phase != :clues}> : <%= @clue %> </span> 
+      <%= @player.name %>  
+      <span :if={@phase != :clues}> : <%= @clue %> </span> 
+     <Words.render words={@words} active={false} show={false}/>
+      </div>
     """
   end
 
