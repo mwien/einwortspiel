@@ -11,8 +11,8 @@ defmodule LostinwordsWeb.GameLive do
   # TODO: highlighted
   def render(assigns) do
     ~H"""
-    <Header.header name={@table.players[@player_id].name} wins = {1} losses = {2} phase={@table.state.phase} num_players={length(Map.keys(@table.players))} />
-    <Main.main round={@table.round} players={@table.players} state={@table.state} player_id={@player_id} />
+    <Header.header name={@table.players[@player_id].name} wins = {@table.state.wins} losses = {@table.state.losses} phase={@table.state.phase} num_players={length(Map.keys(@table.players))} />
+    <Main.main round={@table.round} state={@table.state} player_id={@player_id} players = {@table.players} />
     """
   end
 

@@ -6,13 +6,17 @@ defmodule LostinwordsWeb.GameLive.Others do
 
   attr :player_id, :string
   attr :players, :map
-  attr :words, :list
+  attr :commonwords, :list 
+  attr :extrawords, :map 
+  attr :shuffle, :map
   attr :clues, :map
+  attr :guesses, :map
   attr :phase, :atom
   def render(assigns) do
     ~H"""
-      <div class="flex justify-center mt-20">
-      <.miniview player={@players[player]} words={@words} clue={Main.get_clue_for_player(@clues, player)} phase={@phase} :for={player <- Map.keys(@players)} :if={player != @player_id}/>
+      <div class="flex flex-col items-center mt-20">
+        <h3 class="text-xl font-oswald font-bold m-5" > Other Players: </h3>
+        <.miniview this_player={@players[player]} words={Main.get_words_for_player(@commonwords, @extrawords, @shuffle, player)} correctword={@extrawords[player]} clue={Main.get_clue_for_player(@clues, player)} guess ={@guesses[player]} phase={@phase} :for={player <- Map.keys(@players)} :if={player != @player_id}/>
       </div>
     """
   end
@@ -22,14 +26,15 @@ defmodule LostinwordsWeb.GameLive.Others do
   # TODO: show clue only after first phase!
   def miniview(assigns) do
     ~H"""
-      <div>
-     <Heroicons.ellipsis_horizontal class="ml-1 w-6 h-6 inline
+      <div class="text-xl font-oswald w-full" >
+      <div class="my-2 ml-4"> 
+     <Heroicons.ellipsis_horizontal class="mr-1 w-6 h-6 inline
                   duration-2000
-                  animate-bounce" :if={@phase == :clues and @clue == ""} />  
-     <Heroicons.check_circle class="ml-1 w-6 h-6 inline" :if={@phase == :clues and @clue != ""} />
-      <%= @player.name %>  
-      <span :if={@phase != :clues}> : <%= @clue %> </span> 
-     <Words.render words={@words} active={false} show={false}/>
+                  animate-bounce" :if={(@phase == :clues and @clue == "") or (@phase == :guesses and @guess == nil)} />  
+     <Heroicons.check_circle class="mr-1 w-6 h-6 inline" :if={(@phase == :clues and @clue != "") or (@phase == :guesses and @guess != nil)} />
+          <%= @this_player.name %> : <%= if @phase != :clues do @clue else "" end %> 
+        </div> 
+      <Words.render words={@words} active={false} correctword={@correctword} guess={@guess} show={@phase == :final} :if={@phase == :final}/> 
       </div>
     """
   end

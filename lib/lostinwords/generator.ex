@@ -1,4 +1,6 @@
 defmodule Lostinwords.Generator do
+
+  # this is not best solution -> recompile force necessary
   @nouns File.read!("lib/lostinwords/generator/nouns_de.txt")
          |> String.split()
   @catchy_adjectives File.read!("lib/lostinwords/generator/catchy_adjectives_en.txt")

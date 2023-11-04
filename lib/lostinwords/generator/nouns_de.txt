@@ -23,7 +23,6 @@ Film
 Frankreich
 Flügel
 Fuß
-Gas
 Gipfel
 Gold
 Gorgonzola
@@ -69,7 +68,6 @@ Regen
 Reise
 Riegel
 Roman
-Russland
 Sack
 Säbel
 Salat

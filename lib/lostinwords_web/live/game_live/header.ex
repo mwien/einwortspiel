@@ -1,6 +1,8 @@
 defmodule LostinwordsWeb.GameLive.Header do
-  alias LostinwordsWeb.GameLive.NextRound
   use Phoenix.Component 
+  
+  alias LostinwordsWeb.GameLive.NextRound
+  alias LostinwordsWeb.Helpers
 
   attr :name, :string
   attr :wins, :integer
@@ -10,16 +12,19 @@ defmodule LostinwordsWeb.GameLive.Header do
 
   def header(assigns) do
     ~H"""
-    <header class= "flex items-center justify-between" >
-      <h2 class="text-3xl font-bebasneue font-bold m-5"> Lost in Words </h2>
-      <div>
+    <header class = "mx-2 mb-4">
+      <!--<h2 class="text-2xl font-bebasneue font-bold m-5"> Lost in Words </h2>-->
+      <div class= "flex items-center justify-between">
+          <Helpers.render_textform
+            id="nameform"
+            submit_handler="set_name"
+            value={@name}
+          />
+        <div> 
+          <span class="m-1"> + <%= @wins %> </span> 
+          <span class="m-1"> - <%= @losses %> </span>
+        </div>
         <NextRound.render state={@phase} num_players={@num_players}/>
-        <div> 
-          Wins: <%= @wins %> Losses: <%= @losses %>
-        </div>
-        <div> 
-          <%= @name %> 
-        </div>
       </div>
     </header> 
     """

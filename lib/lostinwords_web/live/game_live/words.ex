@@ -3,6 +3,8 @@ defmodule LostinwordsWeb.GameLive.Words do
 
   attr :words, :list
   attr :active, :boolean
+  attr :correctword, :string 
+  attr :guess, :string 
   attr :show, :boolean
   # attr :guessed_by, :map 
   # attr :highlighted, :map
@@ -12,14 +14,17 @@ defmodule LostinwordsWeb.GameLive.Words do
       <div class="flex justify-center"> 
         <.word
           :for={word <- @words}
-          value = {if @show do word else "" end}
-          {getextra(%{}, @active)}
+          value = {word}
+          classstr = {highlight(word == @guess, word == @correctword, @show)}
+          {getextra(%{}, @active)
+          }
         />
       </div>
     """
   end
 
   attr :value, :string
+  attr :classstr, :string
   attr :rest, :global
   # TODO: maybe rename card?
   def word(assigns) do
@@ -28,7 +33,7 @@ defmodule LostinwordsWeb.GameLive.Words do
       phx-click="submit_guess"
       value={@value}
       class={"rounded-lg h-24 w-48 border-gray-200
-      shadow-md text-xl flex flex-col justify-center font-oswald "}
+      shadow-md text-xl flex flex-col justify-center items-center font-oswald " <> @classstr }
       {@rest}
     >
       <%= @value %>
@@ -44,6 +49,32 @@ defmodule LostinwordsWeb.GameLive.Words do
       Map.put(rest, :disabled, "true")
     end
   end
+
+  def highlight(chosen, correct, show) do
+    if show do
+      put_chosen("", chosen)
+      |> put_correct(correct, chosen)
+    else 
+      "" 
+    end
+
+  end
+
+  def put_chosen(str, chosen) do
+    case chosen do
+      true -> str <> "border-8 "
+        _ -> str
+    end
+  end
+  
+  def put_correct(str, correct, chosen) do
+    cond do
+      correct -> str <> "bg-green-300 "
+      chosen and not correct -> str <> "bg-red-400 "
+      true -> ""
+    end
+  end
+
 
 
   attr :id, :string, required: true
