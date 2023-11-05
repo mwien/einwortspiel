@@ -40,10 +40,10 @@ defmodule Lostinwords.Game.Table do
     cond do
       table.state.phase == :in_round -> 
         {:error, :ongoing_round}
-      length(Map.keys(table.players)) < 2 -> 
+      length(Map.keys(Map.filter(table.players, fn {_, value} -> !value.spectator end))) < 2 -> 
         {:error, :too_few_players}
       true -> 
-        newround = Round.start(Map.keys(table.players), table.settings)
+        newround = Round.start(Map.keys(Map.filter(table.players, fn {_, value} -> !value.spectator end)), table.settings)
         {:ok, %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
     end
   end

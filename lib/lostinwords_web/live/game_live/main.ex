@@ -12,10 +12,26 @@ defmodule LostinwordsWeb.GameLive.Main do
 
   def main(assigns) do
     ~H"""
+    <div class="flex justify-center font-oswald text-xl" :if={@state.phase == :init}> 
+      Not started yet. 
+    </div>
+
     <div id="game" :if={@state.phase != :init}> 
+      <div class="flex justify-center mt-2 mb-6 font-oswald"> 
+        <Heroicons.ellipsis_horizontal class="mr-1 w-6 h-6 inline
+                  duration-2000
+                  animate-bounce" :if={(@round.phase == :clues and get_clue_for_player(@round.clues, @player_id) == "") or (@round.phase == :guesses and @round.guesses[@player_id] == nil)} />  
+        <Heroicons.check_circle class="mr-1 w-6 h-6 inline" :if={(@round.phase == :clues and get_clue_for_player(@round.clues, @player_id) != "") or (@round.phase == :guesses and @round.guesses[@player_id] != nil)} />
+        <%= case @round.phase do 
+          :clues -> "Describe your words with one clue."
+          :guesses -> "Guess the word not described by the other clues."
+          _ -> "You " <> if @round.guesses == @round.extrawords do "win" else "lose" end  <> " the round."
+        end
+        %>
+      </div>
       <Words.render words={get_words_for_player(@round.commonwords, @round.extrawords, @round.shuffle, @player_id)} active={@round.phase == :guesses and @round.guesses[@player_id] == nil} correctword={@round.extrawords[@player_id]} guess={@round.guesses[@player_id]} show = {@round.guesses[@player_id] != nil} :if={Map.has_key?(@round.extrawords, @player_id)} />
-      <Clue.render clue={get_clue_for_player(@round.clues, @player_id)} active={@round.phase == :clues} :if={Map.has_key?(@round.extrawords, @player_id)} />
-      <Others.render player_id={@player_id} players={Map.filter(@players, fn{key, _} -> Map.has_key?(@round.extrawords, key) end) |> IO.inspect()} commonwords = {@round.commonwords} extrawords = {@round.extrawords} shuffle={@round.shuffle} clues = {@round.clues} guesses = {@round.guesses} phase = {@round.phase} />
+      <Clue.render clue={get_clue_for_player(@round.clues, @player_id)} active={@round.phase == :clues} guess={@round.guesses[@player_id]} phase={@round.phase} :if={Map.has_key?(@round.extrawords, @player_id)} />
+      <Others.render player_id={@player_id} players={Map.filter(@players, fn{key, value} -> Map.has_key?(@round.extrawords, key) and value.spectator == false end)} commonwords = {@round.commonwords} extrawords = {@round.extrawords} shuffle={@round.shuffle} clues = {@round.clues} guesses = {@round.guesses} phase = {@round.phase} />
     </div>
     """
   end
@@ -29,17 +45,11 @@ defmodule LostinwordsWeb.GameLive.Main do
   end
 
   def get_words_for_player(commonwords, extrawords, shuffle, player_id) do
-    IO.inspect(commonwords)
-    IO.inspect(extrawords)
-    IO.inspect(shuffle)
-    IO.inspect(player_id)
     [extrawords[player_id] | commonwords] 
     |> permute_by(shuffle[player_id])
   end
 
   def permute_by(list, order) do
-    IO.inspect(list)
-    IO.inspect(order)
     Enum.zip(order, list)
     |> List.keysort(0)
     |> Enum.reduce([], fn {_, l}, acc -> [l | acc] end)

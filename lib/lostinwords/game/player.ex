@@ -10,6 +10,7 @@ defmodule Lostinwords.Game.Player do
     :id,
     :name, 
     :score,
+    :spectator
   ]
 
   def create_player(id) do
@@ -19,7 +20,8 @@ defmodule Lostinwords.Game.Player do
       animal: animal,
       id: id,
       name: name,
-      score: 0
+      score: 0,
+      spectator: true
     }
   end
 

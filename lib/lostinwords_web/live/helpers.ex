@@ -5,6 +5,9 @@ defmodule LostinwordsWeb.Helpers do
   # redo form -> maybe actually do change tracking with liveview at some point
   # have tick when submitted, else and when modifying thing below!
   # idk idk
+  # there are issues here :/
+  # redo this as you should!!!!!
+  # with the correct form stuff
   def render_textform(assigns) do
     ~H"""
     <.form

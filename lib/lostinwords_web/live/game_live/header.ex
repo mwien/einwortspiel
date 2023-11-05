@@ -21,8 +21,8 @@ defmodule LostinwordsWeb.GameLive.Header do
             value={@name}
           />
         <div> 
-          <span class="m-1"> + <%= @wins %> </span> 
-          <span class="m-1"> - <%= @losses %> </span>
+          <span class="m-1"> <Heroicons.plus_circle class="w-5 h-5 mb-1 inline"/> <%= @wins %> </span> 
+          <span class="m-1"> <Heroicons.minus_circle class="w-5 h-5 mb-1 inline"/> <%= @losses %> </span>
         </div>
         <NextRound.render state={@phase} num_players={@num_players}/>
       </div>
