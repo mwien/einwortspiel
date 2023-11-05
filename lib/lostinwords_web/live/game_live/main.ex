@@ -30,7 +30,7 @@ defmodule LostinwordsWeb.GameLive.Main do
         %>
       </div>
       <Words.render words={get_words_for_player(@round.commonwords, @round.extrawords, @round.shuffle, @player_id)} active={@round.phase == :guesses and @round.guesses[@player_id] == nil} correctword={@round.extrawords[@player_id]} guess={@round.guesses[@player_id]} show = {@round.guesses[@player_id] != nil} :if={Map.has_key?(@round.extrawords, @player_id)} />
-      <Clue.render clue={get_clue_for_player(@round.clues, @player_id)} active={@round.phase == :clues} guess={@round.guesses[@player_id]} phase={@round.phase} :if={Map.has_key?(@round.extrawords, @player_id)} />
+      <Clue.render clue={get_clue_for_player(@round.clues, @player_id)} active={@round.phase == :clues} :if={Map.has_key?(@round.extrawords, @player_id)} />
       <Others.render player_id={@player_id} players={Map.filter(@players, fn{key, value} -> Map.has_key?(@round.extrawords, key) and value.spectator == false end)} commonwords = {@round.commonwords} extrawords = {@round.extrawords} shuffle={@round.shuffle} clues = {@round.clues} guesses = {@round.guesses} phase = {@round.phase} />
     </div>
     """
