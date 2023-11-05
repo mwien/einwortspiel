@@ -17,6 +17,7 @@ defmodule LostinwordsWeb.Helpers do
       style="display:inline"
       phx-submit={@submit_handler}
       phx-hook="Diff"
+      phx-update="ignore"
     >
       <%= text_input(form, :text,
         value: @value,
