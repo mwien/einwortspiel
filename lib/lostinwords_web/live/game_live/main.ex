@@ -12,8 +12,19 @@ defmodule LostinwordsWeb.GameLive.Main do
 
   def main(assigns) do
     ~H"""
-    <div class="flex justify-center my-6" :if={@state.phase == :init}> 
-      Not started yet. 
+    <div class="flex flex-col items-center my-6" :if={@state.phase == :init}> 
+      <%= if length(Map.keys(Map.filter(@players, fn {_, value} -> !value.spectator end))) < 2 do %>
+        <div class="m-1">
+        <%= "Waiting for second player to join." %> 
+        </div>
+        <div class="m-1">
+        <%= "(You can invite them by sharing the url.)" %>
+        </div>
+      <% else %> 
+        <div class="m-1">
+        <%= "Ready to start." %>
+        </div>
+      <% end %>
     </div>
 
     <div id="game" :if={@state.phase != :init}> 
