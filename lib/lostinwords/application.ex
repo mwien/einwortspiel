@@ -37,4 +37,8 @@ defmodule Lostinwords.Application do
     LostinwordsWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
+  def via_tuple(name) do
+    {:via, Registry, {Lostinwords.Game.Registry, name}}
+  end
 end

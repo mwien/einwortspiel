@@ -1,206 +1,126 @@
 defmodule LostinwordsWeb.GameLive do
   use LostinwordsWeb, :live_view
 
-  alias LostinwordsWeb.GameLive.Words
-  alias LostinwordsWeb.GameLive.Clues
-  alias LostinwordsWeb.GameLive.Standings
-  alias LostinwordsWeb.GameLive.NextRound
-  alias Lostinwords.Presence
+  alias LostinwordsWeb.GameLive.Header
+  alias LostinwordsWeb.GameLive.Main
+  alias LostinwordsWeb.GameLive.Spectator
 
-# have list of assigns
-# just like struct in module
+  # have list of assigns
+  # just like struct in module
 
+  # TODO: guessed by
+  # TODO: highlighted
+  # put min-h-screen stuff in body class
   def render(assigns) do
     ~H"""
-    <div id="game" class="grid grid-cols-1 justify-items-center">
-      <Words.cards
-        id="words"
-        items={@words}
-        guessed_by={guessers_per_word(@guesses, @animals)}
-        clickable={
-          @roles[@player_id] ==
-            "guesser" and @phase == "guesses"
-        }
-        highlighted={@lostwords}
-      />
-      <Clues.render
-        phase={@phase}
-        roles={@roles}
-        names={@names}
-        clues={@clues}
-        player_id={@player_id}
-        received_clues_from={@received_clues_from}
-      />
-      <Standings.render player_id={@player_id} names={@names} animals={@animals} scores={@scores} active_players={@active_players} />
-      <NextRound.render phase={@phase} num_players={length(Map.keys(@names))} continue={@continue} />
+    <div class="flex justify-center font-oswald text-lg md:text-xl min-h-screen bg-gradient-to-b from-sky-100 to-sky-200">
+    <div class="w-full md:w-11/12 lg:w-3/4 xl:w-2/3 2xl:w-1/2" > 
+    <Header.header name={@table.players[@player_id].name} wins = {@table.state.wins} losses = {@table.state.losses} phase={@table.state.phase} num_players={length(Map.keys(Map.filter(@table.players, fn {_, value} -> !value.spectator end)))} />
+    <Main.main round={@table.round} state={@table.state} player_id={@player_id} players = {@table.players} :if={!@table.players[@player_id].spectator}/>
+    <Spectator.render :if={@table.players[@player_id].spectator} />
+    </div>
     </div>
     """
   end
+
+  #  def render(assigns) do
+  #    ~H"""
+  #    <div id="game" class="grid grid-cols-1 justify-items-center">
+  #      <Words.cards
+  #        id="words"
+  #        items={@words}
+  #        guessed_by={guessers_per_word(@guesses, @animals)}
+  #        clickable={
+  #          @roles[@player_id] ==
+  #            "guesser" and @phase == "guesses"
+  #        }
+  #        highlighted={@lostwords}
+  #      />
+  #      <Clues.render
+  #        phase={@phase}
+  #        roles={@roles}
+  #        names={@names}
+  #        clues={@clues}
+  #        player_id={@player_id}
+  #        received_clues_from={@received_clues_from}
+  #      />
+  #      <Standings.render player_id={@player_id} names={@names} animals={@animals} scores={@scores} active_players={@active_players} />
+  #      <NextRound.render phase={@phase} num_players={length(Map.keys(@names))} continue={@continue} />
+  #    </div>
+  #    """
+  #  end
   # TODO: add continue button (on server side check whether move is valid)
 
-  # TODO: this is brittle when one person does multiple guesses
-  def guessers_per_word(guesses, names) do
-    Enum.reduce(guesses, %{}, fn {id, [word]}, acc ->
-      Map.update(
-        acc,
-        word,
-        [names[id]],
-        &([names[id] | &1])
-      )
-    end)
-  end
+  #  # TODO: this is brittle when one person does multiple guesses
+  #  def guessers_per_word(guesses, names) do
+  #    Enum.reduce(guesses, %{}, fn {id, [word]}, acc ->
+  #      Map.update(
+  #        acc,
+  #        word,
+  #        [names[id]],
+  #        &([names[id] | &1])
+  #      )
+  #    end)
+  #  end
 
   def handle_event("start_round", _value, socket) do
-    Lostinwords.Game.start_round(socket.assigns.table_id)
+    Lostinwords.Game.manage_round(socket.assigns.table_id, :start, socket.assigns.player_id)
     {:noreply, socket}
   end
 
   def handle_event("submit_clue", %{"value" => %{"text" => clue}}, socket) do
     Lostinwords.Game.move(socket.assigns.table_id, socket.assigns.player_id, {:submit_clue, clue})
-    # if :ok
-    {:noreply,
-     socket
-     |> assign(:clues, Map.put(socket.assigns.clues, socket.assigns.player_id, clue))}
+    {:noreply, socket}
   end
 
   def handle_event("submit_guess", %{"value" => guess}, socket) do
-    Lostinwords.Game.move(socket.assigns.table_id, socket.assigns.player_id, {:submit_guess, guess})
+    Lostinwords.Game.move(
+      socket.assigns.table_id,
+      socket.assigns.player_id,
+      {:submit_guess, guess}
+    )
+
     {:noreply, socket}
   end
 
   def handle_event("set_name", %{"value" => %{"text" => name}}, socket) do
-    Lostinwords.Game.set_name(socket.assigns.table_id, socket.assigns.player_id, name)
+    Lostinwords.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :name, name)
     {:noreply, socket}
   end
 
-  def handle_event("force_continue", _value, socket) do
-    Lostinwords.Game.force_continue(socket.assigns.table_id)
+  def handle_event("leave_spectator", _value, socket) do
+    Lostinwords.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :spectator, false)
     {:noreply, socket}
   end
 
-# maybe add a set animal
-
-  def handle_info({:info_roles, roles}, socket) do
-    {:noreply, assign(socket, :roles, roles)}
+  def handle_info({:update, table}, socket) do
+    IO.inspect(table)
+    {:noreply, assign(socket, :table, table)}
   end
 
-  # TODO: just always get the words from the server!!!
-  # do this much much nicer TODO
-  def handle_info({:info_words, words}, socket) do
-    {:noreply, assign(socket, :words, 
-  # don't have explicit number 4
-    if length(words) < 4 do
-      words ++ [" "]   
-    else 
-      words
-    end
-    )}
+  def handle_info({:error, error}, socket) do
+    {:noreply, put_flash(socket, :error, error)}
   end
 
-  def handle_info({:info_unauthorized_move}, socket) do
-    {:noreply, put_flash(socket, :error, "Unauthorized Move")}
-  end
-
-  def handle_info({:info_received_clue, player_id}, socket) do
-    {:noreply,
-     assign(socket, :received_clues_from, [player_id | socket.assigns.received_clues_from])}
-  end
-
-  def handle_info({:info_clues, clues}, socket) do
-    {:noreply, assign(socket, :clues, clues)}
-  end
-
-  def handle_info({:info_received_guess, player_id, _verdict}, socket) do
-    {:noreply,
-     assign(socket, :received_guesses_from, [player_id | socket.assigns.received_guesses_from])}
-  end
-
-  # just get the new words and the revealed lostword from server!!!
-  def handle_info({:info_lostwords, lostwords}, socket) do
-    # make nicer
-    if socket.assigns.roles[socket.assigns.player_id] == "cluer" do
-      {:noreply, 
-        assign(socket, :lostwords, lostwords)
-      |> assign(:words, List.delete(socket.assigns.words ++ lostwords, " "))}
-    else
-      {:noreply, 
-        assign(socket, :lostwords, lostwords)
-      }
-    end
-  end
-
-  def handle_info({:info_finished, player_id}, socket) do
-    {:noreply, assign(socket, :finished, [player_id | socket.assigns.finished])}
-  end
-
-  def handle_info({:info_score, player_id, _plus_score, new_score}, socket) do
-    # sorted_scores = Enum.sort(@scores, &(elem(&1,1) <= elem(&2,1))) 
-    {:noreply, assign(socket, :scores, Map.put(socket.assigns.scores, player_id, new_score))}
-  end
-
-  def handle_info({:info_guesses, guesses}, socket) do
-    {:noreply, assign(socket, :guesses, guesses)}
-  end
-
-  def handle_info({:info_name_set, player_id, name}, socket) do
-    {:noreply, assign(socket, :names, Map.put(socket.assigns.names, player_id, name))
-      |> assign(:animals, Map.put(socket.assigns.animals, player_id, "dove.svg"))
-    }
-  end
-
-  def handle_info({:info_animal_set, player_id, animal}, socket) do
-    {:noreply, assign(socket, :animals, Map.put(socket.assigns.animals, player_id, animal))}
-  end
-
-  # TODO: maybe do this differently -> YES!!!
-  # server changes names/scores => info to client
-  # without explicit join info
-  # do this together with initial name being set automatically
-  def handle_info({:info_player_joined, player_id}, socket) do
-    {:noreply,
-     assign(socket, :names, Map.put(socket.assigns.names, player_id, ""))
-     |> assign(:scores, Map.put(socket.assigns.scores, player_id, 0))}
-  end
-
-  # maybe write reinit client state function
-  # put logic out of here!
-  def handle_info({:info_new_phase, phase}, socket) do
-    {:noreply,
-     if phase == "clues" do
-       assign(socket, :received_clues_from, [])
-       |> assign(:received_guesses_from, [])
-       |> assign(:clues, %{})
-       |> assign(:guesses, %{})
-       |> assign(:lostwords, [])
-     else
-       socket
-     end
-     |> assign(:continue, false)
-     |> assign(:phase, phase)}
-  end
-
-  # i think dis okay
-  # also table_id pubsub is a good idea!
-  # write function in pubsub mod for handling active players
   def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do
-    afterjoin = Enum.reduce(Map.keys(joins), socket.assigns.active_players, &([&1 | &2]))
-    afterleave = Enum.reduce(Map.keys(leaves), afterjoin, &Enum.filter(&2, fn x -> x != &1 end))
-    {:noreply, assign(socket, :active_players, afterleave)}
-  end
-
-  def handle_info({:info_continue, flag}, socket) do
-    {:noreply, assign(socket, :continue, flag)}
+    {:noreply,
+     assign(
+       socket,
+       :table,
+       Lostinwords.Game.Table.update_active_players(socket.assigns.table, joins, leaves)
+     )}
   end
 
   def mount(%{"table_id" => table_id}, %{"user_id" => player_id}, socket) do
-    Phoenix.PubSub.subscribe(Lostinwords.PubSub, "user:" <> player_id)
-    init_info = Lostinwords.Game.join(table_id, player_id)
+    Phoenix.PubSub.subscribe(Lostinwords.PubSub, "table:#{table_id}")
+    Phoenix.PubSub.subscribe(Lostinwords.PubSub, "player:#{player_id}")
+    table = Lostinwords.Game.join(table_id, player_id)
 
-    topic = "table:#{table_id}"
+    topic = "table_pres:#{table_id}"
 
     Phoenix.PubSub.subscribe(Lostinwords.PubSub, topic)
 
-    Presence.track(
+    Lostinwords.Presence.track(
       self(),
       topic,
       player_id,
@@ -211,6 +131,6 @@ defmodule LostinwordsWeb.GameLive do
      socket
      |> assign(:table_id, table_id)
      |> assign(:player_id, player_id)
-     |> assign(init_info)}
+     |> assign(:table, table)}
   end
 end

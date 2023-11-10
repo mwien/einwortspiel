@@ -36,9 +36,9 @@ Hooks.Diff = { // is this possible without hidden span?
       var text = this.el.querySelector('.text');
       var submit = this.el.querySelector('.submit');
       if(text.value === hidden.textContent) {
-	      submit.style.display = 'none';
+	      submit.style.visibility = 'hidden';
       } else {
-	      submit.style.display = '';
+	      submit.style.visibility = 'visible';
       }
     })
   }

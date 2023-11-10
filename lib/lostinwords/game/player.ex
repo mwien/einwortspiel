@@ -1,24 +1,40 @@
-defmodule Lostinwords.Players.Player do
+defmodule Lostinwords.Game.Player do
   alias __MODULE__
   alias Lostinwords.Generator
 
-  # have secret player_id and open one?
-
-  # put player_id in here? -> prob yes
-
-  # maybe add something like in round
+  # is spectator first after joining round!
+  # handle this somehow!
   defstruct [
-    :player_id,
-    :name,
-    :icon,
+    :active,
+    :id,
+    :name, 
     :score,
-    :active, # as in online
-    :spectator, # as in whether just onlooker
+    :spectator
   ]
 
-  def new(player_id) do
-    %Player{player_id: player_id, name: Generator.gen_name(), icon: Generator.gen_icon(), score: 0, active: true, # should work or race cond?
-      spectator: true} # what to do with spectator?
-  end 
+  def create_player(id) do
+    %Player{
+      active: true, # should be fine?
+      id: id,
+      name: Generator.gen_name(),
+      score: 0,
+      spectator: true
+    }
+  end
 
+  def update_player(player, attribute, value) do
+    Map.put(player, attribute, value) 
+  end
+
+  def update_score(player, plus_score) do
+    Map.put(player, :score, player.score + plus_score)
+  end
+
+  def update_active(player, set_to, update_list) do
+    cond do
+      Enum.member?(update_list, player.id) -> Map.put(player, :active, set_to)
+      true -> player
+    end
+  end
+  
 end

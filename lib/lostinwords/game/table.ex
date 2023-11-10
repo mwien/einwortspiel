@@ -1,174 +1,99 @@
 defmodule Lostinwords.Game.Table do
   alias __MODULE__
+  alias Lostinwords.Game.Player
   alias Lostinwords.Game.Round
+  alias Lostinwords.Game.Settings
+  alias Lostinwords.Game.TableState
 
   defstruct [
     :table_id,
-    :current_round,
-    :all_players,
-    :active_players,
-    :names,
-    :animals,
-    :scores,
+    :round,
+    :players,
     :settings,
-    :info
+    :state
   ]
 
   def open_table() do
     %Table{
       table_id: generate_table_id(),
-      current_round: nil,
-      all_players: [],
-      active_players: [],
-      names: %{},
-      animals: %{},
-      scores: %{},
-      settings: %{nr_leftwords: 3, nr_lostwords: 1, nr_cluers: 1},
-      info: []
+      round: nil,
+      players: %{}, 
+      settings: Settings.default_settings(),
+      state: TableState.create_state()
     }
   end
 
-  def start_round(table) do
-    Round.start(table.all_players, table.settings)
-    |> handle_update(table)
-    |> emit_info()
-  end
-
-  def move(table, player_id, move) do
-    Round.move(table.current_round, player_id, move)
-    |> handle_update(table)
-    |> emit_info()
-  end
-
- # why double emit info -> make this clean
-  def continue(table) do
-    if table.current_round == nil do
-      table
-    else   
-      Round.continue(table.current_round, table.active_players)
-      |> handle_update(table)
-      |> emit_info()
-    end
-  end
-
   def join(table, player_id) do
-    if !Enum.member?(table.all_players, player_id) do
-      %Table{
-        table
-        | all_players: [player_id | table.all_players],
-          scores: Map.put_new(table.scores, player_id, 0)
+    if !Map.has_key?(table.players, player_id) do
+      {:ok, 
+        %Table{table | 
+          players: Map.put(table.players, player_id, Player.create_player(player_id))
+        } 
       }
-      |> notify_all({:info_player_joined, player_id})
-      |> emit_info()
     else
-      table
-      |> emit_info()
+      # should this be error? -> maybe remove this
+      {:error, :already_joined}
     end
   end
 
-  def set_animal(table, player_id, animal) do
-    %Table{table | animals: Map.put(table.animals, player_id, animal)}
-    |> notify_all({:info_animal_set, player_id, animal})
-    |> emit_info()
+  def manage_round(table, :start) do
+    cond do
+      table.state.phase == :in_round -> 
+        {:error, :ongoing_round}
+      length(Map.keys(Map.filter(table.players, fn {_, value} -> !value.spectator end))) < 2 -> 
+        {:error, :too_few_players}
+      true -> 
+        newround = Round.start(Map.keys(Map.filter(table.players, fn {_, value} -> !value.spectator end)), table.settings)
+        {:ok, %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
+    end
   end
 
-  def set_name(table, player_id, name) do
-    %Table{table | names: Map.put(table.names, player_id, name)}
-    |> notify_all({:info_name_set, player_id, name})
-    |> emit_info()
+  def set_attribute(table, player_id, attribute, value) do
+    if Map.has_key?(table.players, player_id) do
+      {:ok,
+        %Table{table | 
+          players: Map.put(table.players, player_id, Player.update_player(table.players[player_id], attribute, value))
+        }
+      }
+    else
+      {:error, :invalid_player_id}
+    end
+  end
+
+  # TODO: check inround!!!
+  def move(table, player_id, move) do
+    if Map.has_key?(table.players, player_id) do
+      case Round.move(table.round, player_id, move) do
+        {:ok, {info, round}} -> {:ok, handle_update({info, round}, table)}
+        {:error, error} -> {:error, error}
+      end  
+    else
+      {:error, :invalid_player_id}   
+    end
   end
 
   def update_active_players(table, joins, leaves) do
-    afterjoin = Enum.reduce(Map.keys(joins), table.active_players, &([&1 | &2]))
-    afterleave = Enum.reduce(Map.keys(leaves), afterjoin, &Enum.filter(&2, fn x -> x != &1 end))
-    %Table{ table | active_players: afterleave }
-    |> check_continue_and_notify()
-    |> emit_info()
-    
+    %Table{table |
+      players: table.players
+      |> Map.new(fn {k, v} -> {k, Player.update_active(v, true, joins)} end)
+      |> Map.new(fn {k, v} -> {k, Player.update_active(v, false, leaves)} end)
+    }
   end
 
-  # make this more efficient -> i.e. don't send every time and also wait for a few seconds TODO
-  defp check_continue_and_notify(table) do
-    if table.current_round == nil do
-      table  
-    else
-      if Round.waiting_for_active(table.current_round, table.active_players) do
-        notify_all(table, {:info_continue, false}) 
-      else
-        notify_all(table, {:info_continue, true})
-      end
-    end
+  defp handle_update({info, round}, table) do
+    new_table = %Table{table | round: round}
+    Enum.reduce(Enum.reverse(info), new_table, &handle_instruction(&2, &1))
   end
 
-  defp handle_update({instructions, round}, table) do
-    new_table = %Table{table | current_round: round}
-    Enum.reduce(Enum.reverse(instructions), new_table, &handle_instruction(&2, &1))
-  end
-
-  defp handle_instruction(table, {:notify_table, {:plus_score, player, plus_score}}) do
-    new_score = table.scores[player] + plus_score
-
-    %Table{table | scores: Map.put(table.scores, player, new_score)}
-    |> notify_all({:info_score, player, plus_score, new_score})
-  end
-
-  defp handle_instruction(table, instruction) do
-    %Table{table | info: [instruction | table.info]}
-  end
-
-  def construct_assigns(table, player_id) do
-    if table.current_round == nil do
-      %{
-        names: table.names,
-        animals: table.animals,
-        scores: table.scores,
-        active_players: table.active_players,
-        roles: %{},
-        words: [],
-        received_clues_from: [],
-        clues: %{},
-        received_guesses_from: [],
-        guesses: %{},
-        finished: [],
-        phase: "not_started",
-        lostwords: [],
-        continue: false
-      }
-    else
-      %{
-        names: table.names,
-        animals: table.animals,
-        scores: table.scores,
-        active_players: table.active_players,
-        roles: Round.get_roles(table.current_round),
-        words: Round.get_words(table.current_round, player_id),
-        received_clues_from: Round.get_rec_clues(table.current_round),
-        clues: Round.get_clues(table.current_round, player_id),
-        received_guesses_from: Round.get_rec_guesses(table.current_round),
-        guesses: Round.get_guesses(table.current_round, player_id),
-        finished: Round.get_finishers(table.current_round),
-        phase: Round.get_phase(table.current_round),
-        lostwords: Round.get_lostwords(table.current_round),
-        continue: Round.waiting_for_active(table.current_round, table.active_players)
-      }
-    end
+  defp handle_instruction(table, {:result, result}) do
+    %Table{table | state: 
+      table.state
+      |> TableState.update_phase(:end_of_round)
+      |> TableState.update_stats(result)
+    }
   end
 
   defp generate_table_id() do
     :crypto.strong_rand_bytes(15) |> Base.url_encode64()
-  end
-
-  # think about how to do this -> avoid duplicate code
-  defp notify_all(table, payload) do
-    Enum.reduce(table.all_players, table, &notify_player(&2, &1, payload))
-  end
-
-  defp notify_player(table, player, payload) do
-    %Table{table | info: [{:notify_player, player, payload} | table.info]}
-  end
-
-  defp emit_info(table) do
-    # double check order of info
-    {table.info, %Table{table | info: []}}
   end
 end
