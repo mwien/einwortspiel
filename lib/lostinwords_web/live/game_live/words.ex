@@ -55,7 +55,7 @@ defmodule LostinwordsWeb.GameLive.Words do
       put_chosen("", chosen)
       |> put_correct(correct, chosen)
     else 
-      "" 
+      " bg-white" 
     end
 
   end
