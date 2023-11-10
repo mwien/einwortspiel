@@ -2,7 +2,7 @@
 
 Multiplayer word game using Elixir, Phoenix and Liveview. 
 
-The idea of the game is that every player has the task to describe three words with a single clue. Two of the three words are common two all players. Afterwards the players have to decide which word only they alone have. 
+The idea of the game is that every player has the task to describe three words with a single clue. Two of the three words are common to all players. Afterwards the players have to decide which word only they alone have. 
 
 You can play the game [here](http://116.203.183.51:4001/). 
 
