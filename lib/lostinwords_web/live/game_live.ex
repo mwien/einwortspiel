@@ -13,7 +13,7 @@ defmodule LostinwordsWeb.GameLive do
   # put min-h-screen stuff in body class
   def render(assigns) do
     ~H"""
-    <div class="flex justify-center font-oswald text-lg md:text-xl min-h-screen bg-gray-100">
+    <div class="flex justify-center font-oswald text-lg md:text-xl min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
     <div class="w-full md:w-11/12 lg:w-3/4 xl:w-2/3 2xl:w-1/2" > 
     <Header.header name={@table.players[@player_id].name} wins = {@table.state.wins} losses = {@table.state.losses} phase={@table.state.phase} num_players={length(Map.keys(Map.filter(@table.players, fn {_, value} -> !value.spectator end)))} />
     <Main.main round={@table.round} state={@table.state} player_id={@player_id} players = {@table.players} :if={!@table.players[@player_id].spectator}/>

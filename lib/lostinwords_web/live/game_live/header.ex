@@ -12,7 +12,7 @@ defmodule LostinwordsWeb.GameLive.Header do
 
   def header(assigns) do
     ~H"""
-    <header class = "p-0.5 bg-gray-50 shadow-md rounded-lg">
+    <header class = "p-0.5 bg-blue-50 shadow-md rounded-lg">
       <!--<h2 class="text-2xl font-bebasneue font-bold m-5"> Lost in Words </h2>-->
       <div class= "flex items-center justify-between">
           <Helpers.render_textform

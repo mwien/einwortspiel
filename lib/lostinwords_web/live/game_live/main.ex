@@ -29,7 +29,7 @@ defmodule LostinwordsWeb.GameLive.Main do
         end
         %>
       </div>
-      <div class="bg-gray-50 py-2 rounded-lg shadow-md" :if={Map.has_key?(@round.extrawords, @player_id)} >
+      <div class="bg-blue-50 py-2 rounded-lg shadow-md" :if={Map.has_key?(@round.extrawords, @player_id)} >
       <div class="mb-8">
       <Words.render words={get_words_for_player(@round.commonwords, @round.extrawords, @round.shuffle, @player_id)} active={@round.phase == :guesses and @round.guesses[@player_id] == nil} correctword={@round.extrawords[@player_id]} guess={@round.guesses[@player_id]} show = {@round.guesses[@player_id] != nil} :if={Map.has_key?(@round.extrawords, @player_id)} />
       </div>
@@ -41,7 +41,7 @@ defmodule LostinwordsWeb.GameLive.Main do
         You will join starting with the next round. For now you can spectate the current round.  
       </div>
       <div class="mt-16">
-      <div class="bg-gray-50 py-2 rounded-lg shadow-md">
+      <div class="bg-blue-50 py-2 rounded-lg shadow-md">
       <Others.render player_id={@player_id} players={Map.filter(@players, fn{key, value} -> Map.has_key?(@round.extrawords, key) and value.spectator == false end)} commonwords = {@round.commonwords} extrawords = {@round.extrawords} shuffle={@round.shuffle} clues = {@round.clues} guesses = {@round.guesses} phase = {@round.phase} />
       </div>
       </div>
