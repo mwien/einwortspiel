@@ -8,7 +8,7 @@ defmodule LostinwordsWeb.GameLive.Clue do
   # TODO: make if nicer
   def render(assigns) do
     ~H"""
-    <div class="text-center text-xl font-oswald m-4">
+    <div class="text-center">
       <span>
         Your clue:
         <%= if @active do %>

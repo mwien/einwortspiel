@@ -6,21 +6,21 @@ defmodule LostinwordsWeb.GameLive.NextRound do
   def render(assigns) do
     ~H"""
     <%= if @state == :end_of_round do %>
-      <div id="nextround" class="m-4">
+      <div id="nextround" class="m-2">
         <LostinwordsWeb.CoreComponents.button phx-click="start_round">
           Next
         </LostinwordsWeb.CoreComponents.button>
       </div>
     <% end %>
     <%= if @state == :init && @num_players >= 2 do %>
-      <div>
+      <div class="m-2">
         <LostinwordsWeb.CoreComponents.button phx-click="start_round">
           Start
         </LostinwordsWeb.CoreComponents.button>
       </div>
     <% end %>
     <%= if (@state == :init and @num_players < 2) or (@state != :init and @state != :end_of_round ) do %>
-      <div>
+      <div class="m-2">
         <LostinwordsWeb.CoreComponents.button phx-click="start_round" {%{disabled: "true"}} >
           Start
         </LostinwordsWeb.CoreComponents.button>

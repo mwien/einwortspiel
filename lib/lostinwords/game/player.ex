@@ -6,7 +6,6 @@ defmodule Lostinwords.Game.Player do
   # handle this somehow!
   defstruct [
     :active,
-    :animal,
     :id,
     :name, 
     :score,
@@ -14,12 +13,10 @@ defmodule Lostinwords.Game.Player do
   ]
 
   def create_player(id) do
-    {name, animal} = Generator.gen_animal()
     %Player{
       active: true, # should be fine?
-      animal: animal,
       id: id,
-      name: name,
+      name: Generator.gen_name(),
       score: 0,
       spectator: true
     }

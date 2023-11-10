@@ -14,9 +14,9 @@ defmodule LostinwordsWeb.GameLive.Others do
   attr :phase, :atom
   def render(assigns) do
     ~H"""
-      <div class="flex flex-col items-center mt-20">
-        <h3 class="text-xl font-oswald font-bold m-5" > Other Players: </h3>
-        <.miniview this_player={@players[player]} words={Main.get_words_for_player(@commonwords, @extrawords, @shuffle, player)} correctword={@extrawords[player]} clue={Main.get_clue_for_player(@clues, player)} guess ={@guesses[player]} phase={@phase} :for={player <- Map.keys(@players)} :if={player != @player_id}/>
+      <div class="flex flex-col items-center">
+        <!--<h3 class="font-bold m-5" > Other Players: </h3>-->
+        <.miniview this_player={@players[player]} words={Main.get_words_for_player(@commonwords, @extrawords, @shuffle, player)} correctword={@extrawords[player]} clue={Main.get_clue_for_player(@clues, player)} guess ={@guesses[player]} phase={if !Map.has_key?(@extrawords, @player_id) do :final else @phase end} :for={player <- Map.keys(@players)} :if={player != @player_id}/>
       </div>
     """
   end
@@ -26,7 +26,7 @@ defmodule LostinwordsWeb.GameLive.Others do
   # TODO: show clue only after first phase!
   def miniview(assigns) do
     ~H"""
-      <div class="text-xl font-oswald w-full" >
+      <div class="w-full mb-2" >
       <div class="my-2 ml-4"> 
      <Heroicons.ellipsis_horizontal class="mr-1 w-6 h-6 inline
                   duration-2000

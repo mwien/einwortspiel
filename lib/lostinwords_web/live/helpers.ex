@@ -15,15 +15,15 @@ defmodule LostinwordsWeb.Helpers do
       for={:value}
       id={@id}
       style="display:inline"
+      class="m-2"
       phx-submit={@submit_handler}
       phx-hook="Diff"
-      phx-update="ignore"
     >
       <%= text_input(form, :text,
         value: @value,
         class:
-          "text
-      bg-gray-50 border border-gray-300 text-gray-900 rounded-lg w-32 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          "text bg-gray-50 border border-gray-300 text-gray-900 rounded-lg w-32 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+        phx_update: "ignore"
       ) %>
       <.render_submit />
       <span class="hidden" hidden><%= @value %></span>
