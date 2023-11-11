@@ -63,7 +63,6 @@ Lager
 Leiter
 Lied
 Linse
-Loch
 Luft
 Lunge
 Lübeck

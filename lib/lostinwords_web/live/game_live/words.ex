@@ -32,8 +32,8 @@ defmodule LostinwordsWeb.GameLive.Words do
     <button
       phx-click="submit_guess"
       value={@value}
-      class={"rounded-lg h-24 w-48
-      shadow-md flex flex-col justify-center items-center" <> @classstr }
+      class={"rounded-sm h-24 w-48
+      shadow-md flex flex-col justify-center items-center font-bebasneue text-2xl" <> @classstr }
       {@rest}
     >
       <%= @value %>
