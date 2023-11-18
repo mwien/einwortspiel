@@ -27,8 +27,9 @@ defmodule LostinwordsWeb.GameLive.Main do
       <% end %>
     </div>
 
-    <div id="game" :if={@state.phase != :init}> 
-      <div class="flex justify-center my-10" :if={Map.has_key?(@round.extrawords, @player_id)} > 
+    <div id="game" class="my-10" :if={@state.phase != :init}> 
+      <div class="bg-violet-200 py-2 rounded-sm shadow-md" :if={Map.has_key?(@round.extrawords, @player_id)} >
+      <div class="flex justify-center my-4" :if={Map.has_key?(@round.extrawords, @player_id)} > 
         <Heroicons.ellipsis_horizontal class="mr-1 w-6 h-6 inline
                   duration-2000
                   animate-bounce" :if={(@round.phase == :clues and get_clue_for_player(@round.clues, @player_id) == "") or (@round.phase == :guesses and @round.guesses[@player_id] == nil)} />  
@@ -40,15 +41,14 @@ defmodule LostinwordsWeb.GameLive.Main do
         end
         %>
       </div>
-      <div class="bg-violet-200 py-2 rounded-sm shadow-md" :if={Map.has_key?(@round.extrawords, @player_id)} >
-      <div class="mb-8">
+      <div class="my-8">
       <Words.render words={get_words_for_player(@round.commonwords, @round.extrawords, @round.shuffle, @player_id)} active={@round.phase == :guesses and @round.guesses[@player_id] == nil} correctword={@round.extrawords[@player_id]} guess={@round.guesses[@player_id]} show = {@round.guesses[@player_id] != nil} :if={Map.has_key?(@round.extrawords, @player_id)} />
       </div>
-      <div class="mt-8">
+      <div class="my-4">
       <Clue.render clue={get_clue_for_player(@round.clues, @player_id)} active={@round.phase == :clues} :if={Map.has_key?(@round.extrawords, @player_id)} />
       </div>
       </div>
-      <div class="flex justify-center my-10" :if={!Map.has_key?(@round.extrawords, @player_id)} > 
+      <div class="flex justify-center my-10 bg-violet-200 py-8 rounded-sm shadow-md" :if={!Map.has_key?(@round.extrawords, @player_id)} > 
         You will join starting with the next round. For now you can spectate the current round.  
       </div>
       <div class="mt-16">
