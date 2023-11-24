@@ -1,0 +1,28 @@
+defmodule EinwortspielWeb.GameLive.Clue do
+  use Phoenix.Component
+
+  alias EinwortspielWeb.Helpers
+
+  attr :clue, :string
+  attr :active, :boolean
+  # TODO: make if nicer
+  def render(assigns) do
+    ~H"""
+    <div class="text-center">
+      <span>
+        Your clue:
+        <%= if @active do %>
+          <Helpers.render_textform
+            id="clueform"
+            submit_handler="submit_clue"
+            value={@clue}
+          />
+        <% else %>
+          <%= @clue %>
+        <% end %>
+      </span>
+    </div>
+    """
+  end
+
+end

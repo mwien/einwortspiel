@@ -1,8 +1,0 @@
-<header>
-  <h2 class="text-4xl font-bebasneue font-bold m-5 text-center"> Lost in Words </h2>
-</header>
-<div class = "flex justify-center mt-12"> 
-  <%= Phoenix.HTML.Form.form_for @conn, ~p"/table/create", [class: "text-center"], fn _f -> %>
-  <%= Phoenix.HTML.Form.submit "Play", class: "rounded-lg bg-zinc-900  py-2 px-3 font-semibold leading-6 text-white font-oswald text-lg" %>
-  <% end %>
-</div>

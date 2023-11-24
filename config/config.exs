@@ -8,13 +8,13 @@
 import Config
 
 # Configures the endpoint
-config :lostinwords, LostinwordsWeb.Endpoint,
+config :einwortspiel, EinwortspielWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [
-    formats: [html: LostinwordsWeb.ErrorHTML, json: LostinwordsWeb.ErrorJSON],
+    formats: [html: EinwortspielWeb.ErrorHTML, json: EinwortspielWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Lostinwords.PubSub,
+  pubsub_server: Einwortspiel.PubSub,
   live_view: [signing_salt: "Wa4/LaWx"]
 
 # Configures the mailer
@@ -24,7 +24,7 @@ config :lostinwords, LostinwordsWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :lostinwords, Lostinwords.Mailer, adapter: Swoosh.Adapters.Local
+config :einwortspiel, Einwortspiel.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

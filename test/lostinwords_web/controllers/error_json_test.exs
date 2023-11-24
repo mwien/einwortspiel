@@ -1,12 +1,12 @@
-defmodule LostinwordsWeb.ErrorJSONTest do
-  use LostinwordsWeb.ConnCase, async: true
+defmodule EinwortspielWeb.ErrorJSONTest do
+  use EinwortspielWeb.ConnCase, async: true
 
   test "renders 404" do
-    assert LostinwordsWeb.ErrorJSON.render("404.json", %{}) == %{errors: %{detail: "Not Found"}}
+    assert EinwortspielWeb.ErrorJSON.render("404.json", %{}) == %{errors: %{detail: "Not Found"}}
   end
 
   test "renders 500" do
-    assert LostinwordsWeb.ErrorJSON.render("500.json", %{}) ==
+    assert EinwortspielWeb.ErrorJSON.render("500.json", %{}) ==
              %{errors: %{detail: "Internal Server Error"}}
   end
 end

@@ -1,5 +1,5 @@
-defmodule LostinwordsWeb.PageControllerTest do
-  use LostinwordsWeb.ConnCase
+defmodule EinwortspielWeb.PageControllerTest do
+  use EinwortspielWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")

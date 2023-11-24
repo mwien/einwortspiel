@@ -2,13 +2,13 @@ import Config
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :lostinwords, LostinwordsWeb.Endpoint,
+config :einwortspiel, EinwortspielWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "qD8o2aZenVzvaGHoJ6YQxUySxKNXbMJ+z7YSrwAPYfXvLQsHaFNGmY5oYs6LZXpV",
   server: false
 
 # In test we don't send emails.
-config :lostinwords, Lostinwords.Mailer,
+config :einwortspiel, Einwortspiel.Mailer,
   adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters.

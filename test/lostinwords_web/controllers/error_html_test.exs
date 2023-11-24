@@ -1,15 +1,15 @@
-defmodule LostinwordsWeb.ErrorHTMLTest do
-  use LostinwordsWeb.ConnCase, async: true
+defmodule EinwortspielWeb.ErrorHTMLTest do
+  use EinwortspielWeb.ConnCase, async: true
 
   # Bring render_to_string/3 for testing custom views
   import Phoenix.Template
 
   test "renders 404.html" do
-    assert render_to_string(LostinwordsWeb.ErrorHTML, "404", "html", []) == "Not Found"
+    assert render_to_string(EinwortspielWeb.ErrorHTML, "404", "html", []) == "Not Found"
   end
 
   test "renders 500.html" do
-    assert render_to_string(LostinwordsWeb.ErrorHTML, "500", "html", []) ==
+    assert render_to_string(EinwortspielWeb.ErrorHTML, "500", "html", []) ==
              "Internal Server Error"
   end
 end

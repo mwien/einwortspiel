@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix=" · Under Development">
+      <%= assigns[:page_title] || "einwortspiel" %>
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+ <!-- <body class="min-h-screen bg-gradient-to-b from-indigo-200 to-indigo-500">-->
+  <body class="min-h-screen bg-violet-300">
+    <%= @inner_content %>
+  </body>
+</html>
