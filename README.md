@@ -1,4 +1,4 @@
-# Lost In Words
+# einwortspiel
 
 Multiplayer word game using Elixir, Phoenix and Liveview. 
 
