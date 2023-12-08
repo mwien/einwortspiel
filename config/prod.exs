@@ -11,7 +11,6 @@ import Config
 # before starting your production server.
 config :einwortspiel, EinwortspielWeb.Endpoint, 
 	cache_static_manifest: "priv/static/cache_manifest.json",
-	url: [host: "einwortspiel.com", port: 80],
 	check_origin: ["http://www.einwortspiel.com", "http://einwortspiel.com"]
 
 # Configures Swoosh API Client
