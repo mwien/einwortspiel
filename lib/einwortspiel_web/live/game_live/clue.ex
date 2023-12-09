@@ -13,9 +13,9 @@ defmodule EinwortspielWeb.GameLive.Clue do
         Your clue:
         <%= if @active do %>
           <Helpers.render_textform
-            id="clueform"
+            id={"clueform"}
+            form={to_form(%{"text" => @clue})}
             submit_handler="submit_clue"
-            value={@clue}
           />
         <% else %>
           <%= @clue %>

@@ -33,7 +33,7 @@ Hooks.Diff = { // is this possible without hidden span?
   mounted() {
     this.el.addEventListener("input", e => {
       var hidden = this.el.querySelector('.hidden');
-      var text = this.el.querySelector('.text');
+      var text = this.el.querySelector('#text');
       var submit = this.el.querySelector('.submit');
       if(text.value === hidden.textContent) {
 	      submit.style.visibility = 'hidden';

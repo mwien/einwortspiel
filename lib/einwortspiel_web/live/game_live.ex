@@ -68,7 +68,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("submit_clue", %{"value" => %{"text" => clue}}, socket) do
+  def handle_event("submit_clue", %{"text" => clue}, socket) do
     Einwortspiel.Game.move(socket.assigns.table_id, socket.assigns.player_id, {:submit_clue, clue})
     {:noreply, socket}
   end
@@ -83,7 +83,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("set_name", %{"value" => %{"text" => name}}, socket) do
+  def handle_event("set_name", %{"text" => name}, socket) do
     Einwortspiel.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :name, name)
     {:noreply, socket}
   end
