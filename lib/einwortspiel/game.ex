@@ -7,7 +7,10 @@ defmodule Einwortspiel.Game do
   end
 
   def join(table_id, player_id) do
-    GenServer.call(service_name(table_id), {:join, player_id})
+    case service_name(table_id) do
+      nil -> {:error, :redirect}
+      pid -> GenServer.call(pid, {:join, player_id})
+    end
   end
 
   # TODO: maybe add pause or something

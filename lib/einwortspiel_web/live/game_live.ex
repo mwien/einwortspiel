@@ -114,6 +114,7 @@ defmodule EinwortspielWeb.GameLive do
   def mount(%{"table_id" => table_id}, %{"user_id" => player_id}, socket) do
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
+    # TODO: add redirect
     table = Einwortspiel.Game.join(table_id, player_id)
 
     topic = "table_pres:#{table_id}"
