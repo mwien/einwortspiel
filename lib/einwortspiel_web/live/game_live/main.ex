@@ -4,12 +4,14 @@ defmodule EinwortspielWeb.GameLive.Main do
   alias EinwortspielWeb.GameLive.Words
   alias EinwortspielWeb.GameLive.Clue
   alias EinwortspielWeb.GameLive.Others
-
+  alias Phoenix.LiveView.JS
+  
   attr :round, Einwortspiel.Game.Round
   attr :state, Einwortspiel.Game.TableState
   attr :player_id, :string
   attr :players, :map
 
+  # TODO: style copy button
   def main(assigns) do
     ~H"""
     <div class="flex flex-col items-center my-6" :if={@state.phase == :init}> 
@@ -18,7 +20,11 @@ defmodule EinwortspielWeb.GameLive.Main do
         <%= "Waiting for second player to join." %> 
         </div>
         <div class="m-1">
-        <%= "(You can invite them by sharing the url.)" %>
+        <%= "Copy URL " %>
+        <button phx-click={JS.dispatch("urlcopy")}>  
+          📋
+        </button>
+
         </div>
       <% else %> 
         <div class="m-1">
