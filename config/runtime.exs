@@ -37,8 +37,7 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4001")
 
   config :einwortspiel, EinwortspielWeb.Endpoint,
-    # set to port 443 and https after adding ssl
-    url: [host: host, port: 80, scheme: "http"],
+    url: [host: host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
