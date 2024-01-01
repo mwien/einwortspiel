@@ -28,7 +28,7 @@ defmodule EinwortspielWeb.Helpers do
   defp render_submit(assigns) do
     ~H"""
     <button class="submit" style="visibility:hidden">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24">
         <path d="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z" />
       </svg>
     </button>
@@ -79,9 +79,9 @@ defmodule EinwortspielWeb.Helpers do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "text bg-gray-50 border border-gray-300 text-gray-900 rounded-lg w-32 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          @errors == [] && "border-zinc-300 focus:border-zinc-400",
+          "text bg-white focus:outline-none focus:ring rounded-lg w-32 focus:ring-violet-500 focus:border-violet-500 mr-1",
+          "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500",
+          @errors == [] && "border-violet-300 focus:border-violet-500",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}

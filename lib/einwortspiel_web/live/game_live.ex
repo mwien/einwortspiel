@@ -6,11 +6,6 @@ defmodule EinwortspielWeb.GameLive do
   alias EinwortspielWeb.GameLive.Spectator
 
   # have list of assigns
-  # just like struct in module
-
-  # TODO: guessed by
-  # TODO: highlighted
-  # put min-h-screen stuff in body class
   def render(assigns) do
     ~H"""
     <div class="flex justify-center font-oswald text-lg md:text-xl">
@@ -22,46 +17,6 @@ defmodule EinwortspielWeb.GameLive do
     </div>
     """
   end
-
-  #  def render(assigns) do
-  #    ~H"""
-  #    <div id="game" class="grid grid-cols-1 justify-items-center">
-  #      <Words.cards
-  #        id="words"
-  #        items={@words}
-  #        guessed_by={guessers_per_word(@guesses, @animals)}
-  #        clickable={
-  #          @roles[@player_id] ==
-  #            "guesser" and @phase == "guesses"
-  #        }
-  #        highlighted={@lostwords}
-  #      />
-  #      <Clues.render
-  #        phase={@phase}
-  #        roles={@roles}
-  #        names={@names}
-  #        clues={@clues}
-  #        player_id={@player_id}
-  #        received_clues_from={@received_clues_from}
-  #      />
-  #      <Standings.render player_id={@player_id} names={@names} animals={@animals} scores={@scores} active_players={@active_players} />
-  #      <NextRound.render phase={@phase} num_players={length(Map.keys(@names))} continue={@continue} />
-  #    </div>
-  #    """
-  #  end
-  # TODO: add continue button (on server side check whether move is valid)
-
-  #  # TODO: this is brittle when one person does multiple guesses
-  #  def guessers_per_word(guesses, names) do
-  #    Enum.reduce(guesses, %{}, fn {id, [word]}, acc ->
-  #      Map.update(
-  #        acc,
-  #        word,
-  #        [names[id]],
-  #        &([names[id] | &1])
-  #      )
-  #    end)
-  #  end
 
   def handle_event("start_round", _value, socket) do
     Einwortspiel.Game.manage_round(socket.assigns.table_id, :start, socket.assigns.player_id)
@@ -94,7 +49,6 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_info({:update, table}, socket) do
-    IO.inspect(table)
     {:noreply, assign(socket, :table, table)}
   end
 
@@ -114,23 +68,27 @@ defmodule EinwortspielWeb.GameLive do
   def mount(%{"table_id" => table_id}, %{"user_id" => player_id}, socket) do
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
-    table = Einwortspiel.Game.join(table_id, player_id)
 
-    topic = "table_pres:#{table_id}"
+    case Einwortspiel.Game.join(table_id, player_id) do
+      # TODO: maybe have proper error page
+      {:error, :redirect} -> {:ok, redirect(to: "/")}
+      table -> 
+        topic = "table_pres:#{table_id}"
 
-    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
+        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
 
-    Einwortspiel.Presence.track(
-      self(),
-      topic,
-      player_id,
-      %{}
-    )
+        Einwortspiel.Presence.track(
+          self(),
+          topic,
+          player_id,
+          %{}
+        )
 
-    {:ok,
-     socket
-     |> assign(:table_id, table_id)
-     |> assign(:player_id, player_id)
-     |> assign(:table, table)}
+        {:ok,
+         socket
+         |> assign(:table_id, table_id)
+         |> assign(:player_id, player_id)
+         |> assign(:table, table)}
+      end
   end
 end

@@ -4,21 +4,35 @@ defmodule EinwortspielWeb.GameLive.Main do
   alias EinwortspielWeb.GameLive.Words
   alias EinwortspielWeb.GameLive.Clue
   alias EinwortspielWeb.GameLive.Others
-
+  alias Phoenix.LiveView.JS
+  
   attr :round, Einwortspiel.Game.Round
   attr :state, Einwortspiel.Game.TableState
   attr :player_id, :string
   attr :players, :map
 
+  # TODO: style copy button
   def main(assigns) do
     ~H"""
     <div class="flex flex-col items-center my-6" :if={@state.phase == :init}> 
       <%= if length(Map.keys(Map.filter(@players, fn {_, value} -> !value.spectator end))) < 2 do %>
-        <div class="m-1">
-        <%= "Waiting for second player to join." %> 
+        <div class="m-4">
+        <%= "Waiting for second player to join" %> 
+        <Heroicons.ellipsis_horizontal class="ml-1.5 w-6 h-6 inline
+                  duration-2000
+                  animate-bounce"
+        />
         </div>
-        <div class="m-1">
-        <%= "(You can invite them by sharing the url.)" %>
+        <div class="m-4">
+        <%= "Copy URL " %>
+        <EinwortspielWeb.CoreComponents.button phx-click={JS.dispatch("urlcopy")} class="focus:ring focus:outline-none focus:ring-violet-500 ml-1.5">  
+          <svg height="21" width="21" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360">
+            <path d="M318.54,57.282h-47.652V15c0-8.284-6.716-15-15-15H34.264c-8.284,0-15,6.716-15,15v265.522c0,8.284,6.716,15,15,15h47.651
+	          v42.281c0,8.284,6.716,15,15,15H318.54c8.284,0,15-6.716,15-15V72.282C333.54,63.998,326.824,57.282,318.54,57.282z
+	          M49.264,265.522V30h191.623v27.282H96.916c-8.284,0-15,6.716-15,15v193.24H49.264z M303.54,322.804H111.916V87.282H303.54V322.804z"/>
+          </svg>
+        </EinwortspielWeb.CoreComponents.button>
+
         </div>
       <% else %> 
         <div class="m-1">
