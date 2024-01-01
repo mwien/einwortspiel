@@ -230,8 +230,8 @@ defmodule EinwortspielWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-violet-900 hover:bg-violet-700 py-2 px-3",
-        "font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-lg bg-white hover:bg-gray-200 py-2 px-3 focus:outline-none focus:ring focus:ring-violet-500 focus:border-violet-500",
+        "leading-6 active:text-white/80",
         @class
       ]}
       {@rest}
@@ -377,7 +377,7 @@ defmodule EinwortspielWeb.CoreComponents do
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
           "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
+          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-violet-500",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
