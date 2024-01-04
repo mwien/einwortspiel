@@ -2,11 +2,11 @@ defmodule Einwortspiel.Game.Settings do
   alias __MODULE__
  
   defstruct [
-    nr_commonwords: 2,
-    language: "de"
+    language: "de",
+    nr_commonwords: 2
   ]
 
-  def default_settings() do
-    %Settings{} 
+  def get_settings(options) do
+    struct(%Settings{}, options)
   end
 end

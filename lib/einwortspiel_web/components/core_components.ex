@@ -394,7 +394,7 @@ defmodule EinwortspielWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block w-full rounded-sm text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-violet-500",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -414,7 +414,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def radiolabel(assigns) do
     ~H"""
-    <label for={@for} class="text-md inline bg-white border border-gray-200 rounded-sm cursor-pointer peer-checked:border-violet-600 peer-checked:text-violet-600 hover:bg-gray-100">
+    <label for={@for} class="sm:p-0.5 p-1 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
       <%= render_slot(@inner_block) %>
     </label>
     """

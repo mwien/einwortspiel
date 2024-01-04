@@ -1,20 +1,24 @@
 defmodule Einwortspiel.Generator do
 
   # this is not best solution -> recompile force necessary
-  @nouns File.read!("lib/einwortspiel/generator/nouns_de.txt")
-         |> String.split()
+  # also duplicate code
+  @nouns_de File.read!("lib/einwortspiel/generator/nouns_de.txt")
+         |> String.split() |> Enum.map(&String.trim(&1))
+
+  @nouns_en File.read!("lib/einwortspiel/generator/nouns_en.txt")
+         |> String.split() |> Enum.map(&String.trim(&1))
+
   @catchy_adjectives File.read!("lib/einwortspiel/generator/catchy_adjectives_en.txt")
-         |> String.split()
+         |> String.split() |> Enum.map(&String.trim(&1))
 
   @catchy_nouns File.read!("lib/einwortspiel/generator/catchy_nouns_en.txt")
-         |> String.split()
+         |> String.split() |> Enum.map(&String.trim(&1))
 
-  def gen_words(k, language) do
-    # TODO: make this nicer
-    case language do
-      "de" -> Enum.take_random(@nouns, k)
-      "en" -> Enum.take_random(@catchy_nouns, k)
-    end
+  @languages %{"de" => @nouns_de, "en" => @nouns_en}
+
+  def gen_words(k, lang) do
+    Map.get(@languages, lang)
+    |> Enum.take_random(k)
   end
 
   def gen_name() do

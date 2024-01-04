@@ -1,24 +1,25 @@
-<div class="flex flex-col items-center font-oswald md:text-lg lg:text-xl  h-screen">
+<div class="flex flex-col items-center font-oswald h-screen">
   <header>
-    <h2 class="text-4xl lg:text-7xl font-bebasneue font-bold m-5 text-center"> einwortspiel </h2>
+    <h2 class="text-4xl font-bebasneue font-bold m-5 text-center"> einwortspiel </h2>
   </header>
-  <!-- add game settings (language) -->
+
   <main class = "grow flex flex-col justify-evenly md:w-3/4 lg:w-3/5 xl:w-1/2 2xl:w-2/5">
     <div class = "flex justify-center"> 
       <.form :let={f} for={%{"language" => "de"}} action={~p"/table/create"} class="flex flex-col justify-evenly items-center text-center gap-4 w-full"> 
-        <.button class="text-xl lg:text-4xl font-semibold font-bebasneue py-4 w-16 lg:w-40 lg:py-16 lg:px-8">
+        <.button class="text-2xl font-semibold font-bebasneue pt-3 m-2">
           Play
         </.button>
 
-        <fieldset class="bg-white p-4 rounded-sm lg:mt-20 w-full">
-          <p class="text-lg lg:text-2xl mb-2 font-bebasneue"> Game Language: </p>
-          <ul class="items-center inline">
+        <fieldset class="bg-white p-4 rounded-sm">
+          <h4 class="text-xl mb-2 font-bebasneue"> Game Language </h4>
+          <ul class="items-center">
           <li class="inline m-0.5">
           <.input field={f[:language]}
             id="lang_de"
             type="radio"
             label="German"
             value="de"
+            {%{"checked" => true}}
           />
           </li>
           <li class="inline m-0.5">
@@ -32,19 +33,18 @@
           </ul>
         </fieldset>
 
-
       </.form>
     </div>
 
-    <div class="flex flex-col text-sm md:text-md lg:text-lg justify-evenly gap-3">
-    <div class = "font-oswald rounded-sm bg-white p-1.5 md:p-2" >
-      <h4 class="text-center font-bebasneue text-lg md:text-xl lg:text-2xl mb-2"> The Game </h4>
+    <div class="flex flex-col justify-evenly gap-4">
+    <div class = "rounded-sm bg-white p-1.5 md:p-2" >
+      <h4 class="text-center font-bebasneue text-xl mb-2"> The Game </h4>
       <p> Each players gets three words, which have to be described by a single clue. Two of those three words are the same for all players, the remaining word is different. Based on the clues of the other players, everybody has to find the word that they alone have.
       </p>
     </div>
     
-    <div class = "font-oswald rounded-sm bg-white p-1.5 md:p-2" >
-      <h4 class="text-center font-bebasneue text-lg md:text-xl lg:text-2xl mb-2"> How To Play </h4>
+    <div class = "rounded-sm bg-white p-1.5 md:p-2" >
+      <h4 class="text-center font-bebasneue text-xl mb-2"> How To Play </h4>
       <ol class="list-decimal list-inside">
       <li> Set the language for the game and press play to create a game table. </li>
       <li> Invite other players by sharing the URL. </li>
@@ -58,10 +58,9 @@
 
   <footer class="m-2">
     <small>
-      <dl class="grid grid-flow-col auto-cols-max justify-center" >
+      <dl class="grid grid-flow-col auto-cols-max justify-center items-center" >
       <dt class="col-start-1 justify-self-end" >
-        <!-- remove hacky mt and properly center svg -->
-        <div class="w-3.5 h-3.5 mt-1 lg:mt-2">
+        <div class="w-3.5 h-3.5">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div> 
       </dt> <dd class="col-start-2 justify-self-start ml-1.5"> marcel.wienoebst (AT) gmx.de </dd>
       <dt class="col-start-1 justify-self-end">
