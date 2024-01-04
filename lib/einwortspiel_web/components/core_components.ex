@@ -230,7 +230,7 @@ defmodule EinwortspielWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-white hover:bg-gray-200 py-2 px-3 focus:outline-none focus:ring focus:ring-violet-500 focus:border-violet-500",
+        "phx-submit-loading:opacity-75 rounded-sm bg-white hover:bg-gray-200 py-2 px-3",
         "leading-6 active:text-white/80",
         @class
       ]}
@@ -365,6 +365,24 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
 
+  def input(%{type: "radio"} = assigns) do
+    ~H"""
+    <div phx-feedback-for={@name} class="inline">
+      <input
+        type={@type}
+        name={@name}
+        id={@id}
+        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        class="hidden peer"
+        {@rest}
+      />
+      <.radiolabel for={@id}><%= @label %></.radiolabel>
+      <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+  
+
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
@@ -376,7 +394,7 @@ defmodule EinwortspielWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block w-full rounded-sm text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-violet-500",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -385,6 +403,20 @@ defmodule EinwortspielWeb.CoreComponents do
       />
       <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
+    """
+  end
+  
+  @doc """
+  Renders a radio label.
+  """
+  attr :for, :string, default: nil
+  slot :inner_block, required: true
+
+  def radiolabel(assigns) do
+    ~H"""
+    <label for={@for} class="sm:p-0.5 p-1 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
+      <%= render_slot(@inner_block) %>
+    </label>
     """
   end
 

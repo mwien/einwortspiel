@@ -12,8 +12,8 @@ defmodule Einwortspiel.Game.TableSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def open_table() do
-    table = Table.open_table()
+  def open_table(options) do
+    table = Table.open_table(options)
     DynamicSupervisor.start_child(__MODULE__, {Einwortspiel.Game.TableServer, table})
     table.table_id
   end

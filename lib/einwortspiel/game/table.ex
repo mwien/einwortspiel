@@ -13,12 +13,12 @@ defmodule Einwortspiel.Game.Table do
     :state
   ]
 
-  def open_table() do
+  def open_table(options) do
     %Table{
       table_id: generate_table_id(),
       round: nil,
       players: %{}, 
-      settings: Settings.default_settings(),
+      settings: Settings.get_settings(options),
       state: TableState.create_state()
     }
   end

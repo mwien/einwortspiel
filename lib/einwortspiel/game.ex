@@ -2,8 +2,8 @@ defmodule Einwortspiel.Game do
   alias Einwortspiel.Game.TableSupervisor
 
   # Client-facing API for the game
-  def open_table() do
-    TableSupervisor.open_table()
+  def open_table(options) do
+    TableSupervisor.open_table(options)
   end
 
   def join(table_id, player_id) do
