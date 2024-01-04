@@ -3,6 +3,7 @@ defmodule Einwortspiel.Game.Settings do
  
   defstruct [
     nr_commonwords: 2,
+    language: "de"
   ]
 
   def default_settings() do

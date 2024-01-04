@@ -1,8 +1,9 @@
 defmodule EinwortspielWeb.TableController do
   use EinwortspielWeb, :controller
 
-  def create(conn, _params) do
-    table_id = Einwortspiel.Game.open_table()
+  def create(conn, params) do
+    IO.inspect(params)
+    table_id = Einwortspiel.Game.open_table(%{"language" => params["language"]})
 
     conn
     # use path helpers

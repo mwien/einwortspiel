@@ -9,8 +9,12 @@ defmodule Einwortspiel.Generator do
   @catchy_nouns File.read!("lib/einwortspiel/generator/catchy_nouns_en.txt")
          |> String.split()
 
-  def gen_words(k) do
-    Enum.take_random(@nouns, k)
+  def gen_words(k, language) do
+    # TODO: make this nicer
+    case language do
+      "de" -> Enum.take_random(@nouns, k)
+      "en" -> Enum.take_random(@catchy_nouns, k)
+    end
   end
 
   def gen_name() do

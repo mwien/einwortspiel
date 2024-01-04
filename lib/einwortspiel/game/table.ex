@@ -13,14 +13,19 @@ defmodule Einwortspiel.Game.Table do
     :state
   ]
 
-  def open_table() do
-    %Table{
+  def open_table(options) do
+    default_table = %Table{
       table_id: generate_table_id(),
       round: nil,
       players: %{}, 
       settings: Settings.default_settings(),
       state: TableState.create_state()
     }
+    # TODO: make this nicer -> have functions in settings.ex
+    case Map.get(options, "language") do
+      nil -> default_table
+      lang -> %Table{default_table | settings: Map.put(default_table.settings, :language, lang)}
+    end
   end
 
   def join(table, player_id) do

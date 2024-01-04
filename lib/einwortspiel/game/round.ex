@@ -18,7 +18,7 @@ defmodule Einwortspiel.Game.Round do
   ]
 
   def start(players, settings) do
-    words = Generator.gen_words(settings.nr_commonwords + length(players))
+    words = Generator.gen_words(settings.nr_commonwords + length(players), settings.language)
     create_round(
       Enum.take(words, settings.nr_commonwords),
       Enum.take(words, -length(players)),
