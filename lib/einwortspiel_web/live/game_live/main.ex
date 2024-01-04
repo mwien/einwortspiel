@@ -23,6 +23,11 @@ defmodule EinwortspielWeb.GameLive.Main do
                   animate-bounce"
         />
         </div>
+      <% else %> 
+        <div class="m-4">
+        <%= "Ready to start" %>
+        </div>
+      <% end %>
         <div class="m-4">
         <%= "Copy URL " %>
         <EinwortspielWeb.CoreComponents.button phx-click={JS.dispatch("urlcopy")} class="focus:ring-1 focus:ring-violet-500 ml-1.5 focus:fill-violet-700">  
@@ -34,11 +39,6 @@ defmodule EinwortspielWeb.GameLive.Main do
         </EinwortspielWeb.CoreComponents.button>
 
         </div>
-      <% else %> 
-        <div class="m-1">
-        <%= "Ready to start." %>
-        </div>
-      <% end %>
     </div>
 
     <div id="game" class="my-10" :if={@state.phase != :init}> 
