@@ -230,7 +230,7 @@ defmodule EinwortspielWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-sm bg-white hover:bg-gray-200 py-2 px-3",
+        "phx-submit-loading:opacity-75 rounded-sm bg-white hover:bg-gray-200 ",
         "leading-8 active:text-white/80",
         @class
       ]}

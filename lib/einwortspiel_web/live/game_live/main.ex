@@ -31,7 +31,7 @@ defmodule EinwortspielWeb.GameLive.Main do
       <% end %>
         <div class="m-4">
         <%= "Copy URL " %>
-        <EinwortspielWeb.CoreComponents.button phx-click={JS.dispatch("urlcopy")} class="focus:ring-1 focus:ring-violet-500 ml-1.5 focus:fill-violet-700">  
+        <EinwortspielWeb.CoreComponents.button phx-click={JS.dispatch("urlcopy")} class="focus:ring-1 focus:ring-violet-500 ml-1.5 focus:fill-violet-700 px-2 py-2">  
           <svg height="21" width="21" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360">
             <path d="M318.54,57.282h-47.652V15c0-8.284-6.716-15-15-15H34.264c-8.284,0-15,6.716-15,15v265.522c0,8.284,6.716,15,15,15h47.651
 	          v42.281c0,8.284,6.716,15,15,15H318.54c8.284,0,15-6.716,15-15V72.282C333.54,63.998,326.824,57.282,318.54,57.282z
