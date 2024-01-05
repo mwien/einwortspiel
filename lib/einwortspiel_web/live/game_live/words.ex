@@ -1,6 +1,8 @@
 defmodule EinwortspielWeb.GameLive.Words do
   use Phoenix.Component
 
+  # TODO: class can be multiple strings in list!
+
   attr :words, :list
   attr :active, :boolean
   attr :correctword, :string 
@@ -62,7 +64,7 @@ defmodule EinwortspielWeb.GameLive.Words do
 
   def put_chosen(str, chosen) do
     case chosen do
-      true -> str <> " border-8"
+      true -> str <> " border-4 border-violet-500"
         _ -> str
     end
   end
