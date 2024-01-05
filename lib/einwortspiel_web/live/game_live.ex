@@ -71,7 +71,7 @@ defmodule EinwortspielWeb.GameLive do
 
     case Einwortspiel.Game.join(table_id, player_id) do
       # TODO: maybe have proper error page
-      {:error, :redirect} -> {:ok, redirect(to: "/")}
+      {:error, :redirect} -> {:ok, redirect(socket, to: ~p"/")}
       table -> 
         topic = "table_pres:#{table_id}"
 
