@@ -85,7 +85,7 @@ defmodule EinwortspielWeb.Helpers do
         name={@name}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "text bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mr-1 py-0.5 px-1 w-32 leading-8",
+          "text bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mr-1 py-0.5 px-1 w-36 leading-8",
           "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500",
           @errors == [] && "border-violet-300 focus:border-violet-500",
           @errors != [] && "border-rose-400 focus:border-rose-400"
