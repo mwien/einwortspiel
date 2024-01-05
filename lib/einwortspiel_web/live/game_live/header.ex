@@ -20,7 +20,7 @@ defmodule EinwortspielWeb.GameLive.Header do
             form={to_form(%{"text" => @name})}
             submit_handler="set_name"
           />
-        <div> 
+        <div class = "bg-white rounded-sm py-0.5 px-1 leading-8"> 
           <span> <Heroicons.plus_circle class="w-5 h-5 mb-1 inline"/> <%= @wins %> </span> 
           <span> <Heroicons.minus_circle class="w-5 h-5 ml-1 mb-1 inline"/> <%= @losses %> </span>
         </div>

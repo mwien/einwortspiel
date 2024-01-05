@@ -2,6 +2,8 @@ defmodule EinwortspielWeb.Helpers do
   use Phoenix.Component
   import EinwortspielWeb.CoreComponents
 
+  # TODO: game_input should have width option given by rest
+
   attr :id, :string
   attr :form, :map
   attr :submit_handler, :string
@@ -15,7 +17,7 @@ defmodule EinwortspielWeb.Helpers do
       phx-submit={@submit_handler}
       phx-hook="Diff"
     >
-      <.game_input field={@form[:text]} phx-update="ignore" />
+      <.game_input field={@form[:text]} />
       <.render_submit />
       <span class="hidden"><%= @form[:text].value %></span>
     </.form>
@@ -68,7 +70,12 @@ defmodule EinwortspielWeb.Helpers do
     |> assign_new(:value, fn -> field.value end)
     |> game_input()
   end
-  
+ 
+  # TODO: autocomplete not properly working in firefox
+  # -> need to give per round unique id 
+  # -> add this later
+  # ----> add proper id!!!
+
   def game_input(assigns) do
     ~H"""
     <div phx-feedback-for={@name} class="inline">
@@ -76,15 +83,15 @@ defmodule EinwortspielWeb.Helpers do
       <input
         type={@type}
         name={@name}
-        id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "text bg-white focus:outline-none focus:ring-1 rounded-sm w-32 focus:ring-violet-500 mr-1",
+          "text bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mr-1 py-0.5 px-1 w-32 leading-8",
           "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500",
           @errors == [] && "border-violet-300 focus:border-violet-500",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
+        autocomplete = "off"
       />
       <.error :for={msg <- @errors}><%= msg %></.error>
     </div>

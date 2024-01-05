@@ -32,7 +32,7 @@ defmodule EinwortspielWeb.GameLive.Others do
                   duration-2000
                   animate-bounce" :if={(@phase == :clues and @clue == "") or (@phase == :guesses and @guess == nil)} />  
      <Heroicons.check_circle class="mr-1 w-6 h-6 inline" :if={(@phase == :clues and @clue != "") or (@phase == :guesses and @guess != nil)} />
-          <%= @this_player.name <> ": " %> <%= if @phase != :clues do @clue else "" end %> 
+          <%= @this_player.name <> ": " %> <span class="inline-block bg-white leading-8 min-w-32 py-0.5 px-1 ml-2" :if={@phase != :clues} > <%= @clue %> </span>
         </div> 
       <Words.render words={@words} active={false} correctword={@correctword} guess={@guess} show={@phase == :final} :if={@phase == :final}/> 
       </div>

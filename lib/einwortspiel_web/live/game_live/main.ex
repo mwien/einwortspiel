@@ -26,6 +26,7 @@ defmodule EinwortspielWeb.GameLive.Main do
       <% else %> 
         <div class="m-4">
         <%= "Ready to start" %>
+        <Heroicons.check_circle class="ml-1 w-6 h-6 inline" />
         </div>
       <% end %>
         <div class="m-4">
@@ -50,7 +51,7 @@ defmodule EinwortspielWeb.GameLive.Main do
         <Heroicons.check_circle class="mr-1 w-6 h-6 inline" :if={(@round.phase == :clues and get_clue_for_player(@round.clues, @player_id) != "") or (@round.phase == :guesses and @round.guesses[@player_id] != nil)} />
         <%= case @round.phase do 
           :clues -> "Describe your words with one clue."
-          :guesses -> "Guess the word only you have."
+          :guesses -> "Guess the word that only you have."
           _ -> "You " <> if @round.guesses == @round.extrawords do "win" else "lose" end  <> " the round."
         end
         %>

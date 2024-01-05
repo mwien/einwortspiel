@@ -8,7 +8,7 @@ defmodule EinwortspielWeb.GameLive.Clue do
   # TODO: make if nicer
   def render(assigns) do
     ~H"""
-    <div class="text-center">
+    <div class="text-center flex flex-col justify-center">
       <span>
         Your clue:
         <%= if @active do %>
@@ -18,7 +18,7 @@ defmodule EinwortspielWeb.GameLive.Clue do
             submit_handler="submit_clue"
           />
         <% else %>
-          <%= @clue %>
+          <div class="inline-block text-start rounded-sm w-32 m-2 py-0.5 px-1 bg-white leading-8"> <%= @clue %> </div>
         <% end %>
       </span>
     </div>

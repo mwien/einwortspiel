@@ -27,20 +27,27 @@ import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
+function checkdiff(el) {
+  var hidden = el.querySelector('.hidden');
+  var text = el.querySelector('input[type=text]');
+  var submit = el.querySelector('.submit');
+  if(text.value === hidden.textContent) {
+	  submit.style.visibility = 'hidden';
+  } else {
+	  submit.style.visibility = 'visible';
+  }
+}
+
 let Hooks = {}
 // think about disabling submit when equal, but I don't want to touch this right now (phx-submit magic etc)
 Hooks.Diff = { // is this possible without hidden span?
   mounted() {
     this.el.addEventListener("input", e => {
-      var hidden = this.el.querySelector('.hidden');
-      var text = this.el.querySelector('#text');
-      var submit = this.el.querySelector('.submit');
-      if(text.value === hidden.textContent) {
-	      submit.style.visibility = 'hidden';
-      } else {
-	      submit.style.visibility = 'visible';
-      }
-    })
+      checkdiff(this.el)
+    });
+  },
+  updated() {
+    checkdiff(this.el)
   }
 }
 

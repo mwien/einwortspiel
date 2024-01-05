@@ -64,7 +64,7 @@ defmodule EinwortspielWeb.GameLive.Words do
 
   def put_chosen(str, chosen) do
     case chosen do
-      true -> str <> " border-4 border-violet-500"
+      true -> str <> " ring ring-inset ring-violet-500"
         _ -> str
     end
   end
