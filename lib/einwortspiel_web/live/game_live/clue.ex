@@ -18,7 +18,12 @@ defmodule EinwortspielWeb.GameLive.Clue do
             submit_handler="submit_clue"
           />
         <% else %>
-          <div class="inline-block text-start rounded-sm w-32 m-2 py-0.5 px-1 bg-white leading-8"> <%= @clue %> </div>
+          <div class="inline-block m-2">
+            <div class="inline-block text-start rounded-sm w-32 mr-1 py-0.5 px-1 bg-white leading-8"> 
+              <span class="inline-block"> <%= @clue %> </span>
+            </div>
+            <Helpers.render_submit />
+          </div>
         <% end %>
       </span>
     </div>

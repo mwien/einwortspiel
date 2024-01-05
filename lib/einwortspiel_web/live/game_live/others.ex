@@ -27,7 +27,7 @@ defmodule EinwortspielWeb.GameLive.Others do
   def miniview(assigns) do
     ~H"""
       <div class="w-full mb-2" >
-      <div class="my-2 ml-4"> 
+      <div class="mt-2 mb-4 ml-4"> 
      <Heroicons.ellipsis_horizontal class="mr-1 w-6 h-6 inline
                   duration-2000
                   animate-bounce" :if={(@phase == :clues and @clue == "") or (@phase == :guesses and @guess == nil)} />  

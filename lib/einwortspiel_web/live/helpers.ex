@@ -27,7 +27,7 @@ defmodule EinwortspielWeb.Helpers do
   # phx-disable-with looks nice for showing
   # ... during send to server
 
-  defp render_submit(assigns) do
+  def render_submit(assigns) do
     ~H"""
     <button class="submit" style="visibility:hidden">
       <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24">
