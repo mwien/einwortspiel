@@ -24,6 +24,8 @@ defmodule EinwortspielWeb.GameLive.Others do
   # TODO: show other stuff as well
   # TODO: maybe only give player name and icon!
   # TODO: show clue only after first phase!
+
+  # TODO: shifts left in last phase as checkmark disappears
   def miniview(assigns) do
     ~H"""
       <div class="w-full mb-2" >
