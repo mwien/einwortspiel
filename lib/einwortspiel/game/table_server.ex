@@ -21,10 +21,14 @@ defmodule Einwortspiel.Game.TableServer do
     {:ok, table}
   end
 
+  def handle_call({:get_table}, _from, state) do
+    {:reply, state, state}
+  end
+
   def handle_call({:join, player_id}, _from, state) do
     case Table.join(state, player_id) do
-      {:ok, table} -> {:reply, table, handle_update(table)}
-      {:error, :already_joined} -> {:reply, state, state}
+      {:ok, table} -> {:reply, :ok, handle_update(table)}
+      {:error, error} -> {:reply, handle_error(error, player_id), state}
     end
   end
 

@@ -11,7 +11,6 @@ defmodule EinwortspielWeb.GameLive.Main do
   attr :player_id, :string
   attr :players, :map
 
-  # TODO: style copy button
   def main(assigns) do
     ~H"""
     <div class="flex flex-col items-center my-6" :if={@state.phase == :init}> 

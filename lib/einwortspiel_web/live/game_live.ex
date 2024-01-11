@@ -3,15 +3,45 @@ defmodule EinwortspielWeb.GameLive do
 
   alias EinwortspielWeb.GameLive.Header
   alias EinwortspielWeb.GameLive.Main
-  alias EinwortspielWeb.GameLive.Spectator
+  # TODO: redo GameLive.Spectator for join -> welcome page (set username there)
 
-  # have list of assigns
   def render(assigns) do
     ~H"""
-    <Header.header name={@table.players[@player_id].name} wins = {@table.state.wins} losses = {@table.state.losses} phase={@table.state.phase} num_players={length(Map.keys(Map.filter(@table.players, fn {_, value} -> !value.spectator end)))} />
-    <Main.main round={@table.round} state={@table.state} player_id={@player_id} players = {@table.players} :if={!@table.players[@player_id].spectator}/>
-    <Spectator.render :if={@table.players[@player_id].spectator} />
+    <Header.header 
+      player_id={@player_id}
+      players={@table.players}
+      state={@table.state}
+    />
+    <Main.main 
+      player_id={@player_id} 
+      players={@table.players} 
+      round={@table.round} 
+      state={@table.state} 
+    />
     """
+  end
+  
+  def handle_event("join", _value, socket) do
+    # TODO: pattern match in function arguments
+    table_id = socket.assigns.table_id
+    player_id = socket.assigns.player_id
+    topic = "table_pres:#{table_id}"
+    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
+    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
+    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
+    Einwortspiel.Presence.track(
+      self(),
+      topic,
+      player_id,
+      %{}
+    )
+    Einwortspiel.Game.join(table_id, player_id)
+    {:noreply, socket}
+  end
+  
+  def handle_event("set_name", %{"text" => name}, socket) do
+    Einwortspiel.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :name, name)
+    {:noreply, socket}
   end
 
   def handle_event("start_round", _value, socket) do
@@ -34,16 +64,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("set_name", %{"text" => name}, socket) do
-    Einwortspiel.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :name, name)
-    {:noreply, socket}
-  end
-
-  def handle_event("leave_spectator", _value, socket) do
-    Einwortspiel.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :spectator, false)
-    {:noreply, socket}
-  end
-
+  # make this more fine_grained at some point
   def handle_info({:update, table}, socket) do
     {:noreply, assign(socket, :table, table)}
   end
@@ -62,29 +83,14 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def mount(%{"table_id" => table_id}, %{"user_id" => player_id}, socket) do
-    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
-    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
-
-    case Einwortspiel.Game.join(table_id, player_id) do
-      # TODO: maybe have proper error page
+    case Einwortspiel.Game.get_table(table_id) do
       {:error, :redirect} -> {:ok, redirect(socket, to: ~p"/")}
-      table -> 
-        topic = "table_pres:#{table_id}"
-
-        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
-
-        Einwortspiel.Presence.track(
-          self(),
-          topic,
-          player_id,
-          %{}
-        )
-
-        {:ok,
-         socket
-         |> assign(:table_id, table_id)
-         |> assign(:player_id, player_id)
-         |> assign(:table, table)}
-      end
+      table -> {:ok, 
+        socket 
+        |> assign(:table_id, table_id)
+        |> assign(:player_id, player_id)
+        |> assign(:table, table)
+      }
+    end
   end
 end
