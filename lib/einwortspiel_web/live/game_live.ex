@@ -1,6 +1,8 @@
 defmodule EinwortspielWeb.GameLive do
   use EinwortspielWeb, :live_view
 
+  # TODO: at some point think about delegating all handle_events to other module which transforms socket/table accordingly
+
   alias EinwortspielWeb.GameLive.Header
   alias EinwortspielWeb.GameLive.Main
   # TODO: redo GameLive.Spectator for join -> welcome page (set username there)
@@ -21,12 +23,10 @@ defmodule EinwortspielWeb.GameLive do
     """
   end
   
-  def handle_event("join", _value, socket) do
-    # TODO: pattern match in function arguments
-    table_id = socket.assigns.table_id
-    player_id = socket.assigns.player_id
+  def handle_event("join", _value, %{assigns: %{table_id: table_id, player_id: player_id}} = socket) do
     topic = "table_pres:#{table_id}"
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
+    # TODO: do we use this currently?
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
     Einwortspiel.Presence.track(
@@ -39,7 +39,8 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
   
-  def handle_event("set_name", %{"text" => name}, socket) do
+  # TODO: why text -> name
+  def handle_event("set_name", %{"name" => name}, socket) do
     Einwortspiel.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :name, name)
     {:noreply, socket}
   end
@@ -49,11 +50,13 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
+  # TODO: why text => clue
   def handle_event("submit_clue", %{"text" => clue}, socket) do
     Einwortspiel.Game.move(socket.assigns.table_id, socket.assigns.player_id, {:submit_clue, clue})
     {:noreply, socket}
   end
 
+  # TODO: why value => guess
   def handle_event("submit_guess", %{"value" => guess}, socket) do
     Einwortspiel.Game.move(
       socket.assigns.table_id,
@@ -64,7 +67,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  # make this more fine_grained at some point
+  # make this more fine_grained at some point -> round, state, players, chat, ...
   def handle_info({:update, table}, socket) do
     {:noreply, assign(socket, :table, table)}
   end

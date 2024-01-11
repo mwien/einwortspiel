@@ -13,6 +13,7 @@ defmodule EinwortspielWeb.GameLive.Main do
 
   def main(assigns) do
     ~H"""
+    <main class="w-full">
     <div class="flex flex-col items-center my-6" :if={@state.phase == :init}> 
       <%= if length(Map.keys(Map.filter(@players, fn {_, value} -> !value.spectator end))) < 2 do %>
         <div class="m-4">
@@ -71,6 +72,7 @@ defmodule EinwortspielWeb.GameLive.Main do
       </div>
       </div>
     </div>
+    </main>
     """
   end
 
