@@ -2,10 +2,8 @@ defmodule EinwortspielWeb.GameLive do
   use EinwortspielWeb, :live_view
 
   # TODO: at some point think about delegating all handle_events to other module which transforms socket/table accordingly
-
   alias EinwortspielWeb.GameLive.Header
   alias EinwortspielWeb.GameLive.Main
-  # TODO: redo GameLive.Spectator for join -> welcome page (set username there)
 
   def render(assigns) do
     ~H"""

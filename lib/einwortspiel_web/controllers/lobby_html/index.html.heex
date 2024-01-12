@@ -1,15 +1,15 @@
-<div class="flex flex-col items-center h-dvh">
-  <header class="mb-4 p-0.5 bg-violet-200 shadow-md rounded-sm w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto text-center">
-    <h2 class="text-4xl font-bebasneue font-bold"> einwortspiel </h2>
+<div class="flex flex-col justify-between items-center h-dvh">
+  <header class="flex items-center justify-center mb-1 p-0.5 bg-violet-200 shadow-md rounded-sm w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto text-center">
+    <h2 class="text-4xl font-bebasneue m-1"> einwortspiel </h2>
   </header>
 
-  <main class = "grow flex flex-col justify-evenly w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto">
-    <.form :let={f} for={%{"language" => "de"}} action={~p"/table/create"} class="text-center bg-violet-200 shadow-md rounded-sm p-0.5"> 
-      <.button class="text-2xl font-semibold font-bebasneue pt-3 pb-2 px-3 my-1.5">
+  <main class = "flex flex-col w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto">
+    <.form :let={f} for={%{"language" => "de"}} action={~p"/table/create"} class="text-center bg-violet-200 shadow-md rounded-sm p-0.5 my-1"> 
+      <.button class="text-2xl font-bebasneue pt-3 pb-2 px-3 my-1.5">
         Play
       </.button>
 
-      <fieldset class="bg-white p-1.5 rounded-sm w-fit mx-auto my-1.5">
+      <fieldset class="bg-white p-1.5 rounded-sm w-fit mx-auto my-1.5 shadow-sm">
         <h4 class="text-xl mb-1.5 font-bebasneue"> 
           Game Language 
         </h4>
@@ -35,17 +35,18 @@
       </fieldset>
     </.form>
 
-    <div class="bg-violet-200 shadow-md rounded-sm p-0.5">
-      <div class="rounded-sm bg-white p-1.5 w-11/12 mt-1.5 mb-2.5 mx-auto">
-        <h4 class="text-center font-bebasneue text-xl mb-1.5"> 
+    <!--fix paddings-->
+    <div class="bg-violet-200 shadow-md rounded-sm px-2 py-0.5 my-1">
+      <div class="rounded-sm shadow-sm bg-white p-1.5 mt-1.5 mb-2.5 mx-auto">
+        <h4 class="font-bebasneue text-xl mb-1"> 
           The Game 
         </h4>
         <p> 
           Each player gets three words, which have to be described by a single clue. Two of those three words are the same for all players, the remaining word is different. Based on the clues of the other players, everybody has to find the word that they alone have.
         </p>
       </div>
-      <div class="rounded-sm bg-white p-1.5 w-11/12 mb-1.5 mt-2.5 mx-auto" >
-        <h4 class="text-center font-bebasneue text-xl mb-1.5"> 
+      <div class="rounded-sm shadow-sm bg-white p-1.5 mb-1.5 mt-2.5 mx-auto" >
+        <h4 class="font-bebasneue text-xl mb-1"> 
           How To Play 
         </h4>
         <ol class="list-decimal list-inside">
