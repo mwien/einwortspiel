@@ -18,7 +18,7 @@ defmodule Einwortspiel.Game.Player do
       id: id,
       name: Generator.gen_name(),
       score: 0,
-      spectator: true
+      spectator: false # TODO: spectator handling
     }
   end
 

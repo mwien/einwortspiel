@@ -1,18 +1,17 @@
 defmodule EinwortspielWeb.GameLive do
   use EinwortspielWeb, :live_view
 
-  # TODO: at some point think about delegating all handle_events to other module which transforms socket/table accordingly
   alias EinwortspielWeb.GameLive.Header
   alias EinwortspielWeb.GameLive.Main
 
   def render(assigns) do
     ~H"""
-    <Header.header 
+    <Header.render
       player_id={@player_id}
       players={@table.players}
       state={@table.state}
     />
-    <Main.main 
+    <Main.render
       player_id={@player_id} 
       players={@table.players} 
       round={@table.round} 
@@ -22,6 +21,7 @@ defmodule EinwortspielWeb.GameLive do
   end
   
   def handle_event("join", _value, %{assigns: %{table_id: table_id, player_id: player_id}} = socket) do
+    # could also subscribe on mount
     topic = "table_pres:#{table_id}"
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
     # TODO: do we use this currently?
@@ -45,6 +45,7 @@ defmodule EinwortspielWeb.GameLive do
 
   def handle_event("start_round", _value, socket) do
     Einwortspiel.Game.manage_round(socket.assigns.table_id, :start, socket.assigns.player_id)
+    IO.inspect(socket.assigns.table)
     {:noreply, socket}
   end
 
