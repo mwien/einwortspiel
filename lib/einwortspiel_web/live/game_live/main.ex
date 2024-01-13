@@ -2,9 +2,6 @@ defmodule EinwortspielWeb.GameLive.Main do
   use EinwortspielWeb, :html
 
   alias EinwortspielWeb.GameLive.PlayerComponent
-  alias EinwortspielWeb.GameLive.Words
-  alias EinwortspielWeb.GameLive.Clue
-  alias EinwortspielWeb.GameLive.Others
   alias Phoenix.LiveView.JS
   
   attr :round, Einwortspiel.Game.Round
@@ -31,29 +28,32 @@ defmodule EinwortspielWeb.GameLive.Main do
                     animate-bounce"
           />
         </div>
-        <div class="m-4" :if={map_size(@players) >= 2}> 
+        <div class="m-4" :if={map_size(Map.filter(@players, fn {_, player} -> player.active end)) >= 2}> 
           Ready to start
           <Heroicons.check_circle class="ml-1 w-6 h-6 inline" />
         </div>
       </div>
+      <!-- also have player component when there is no current round -->
       <div :if={Map.has_key?(@players, @player_id) and @round != nil}>
-        <PlayerComponent.render 
+        <PlayerComponent.ingame 
           player={@players[@player_id]}
           commonwords={@round.commonwords}
           extraword={@round.extrawords[@player_id]}
           shuffle={@round.shuffle[@player_id]}
           clue={Map.get(@round.clues, @player_id, "")}
           guess={Map.get(@round.guesses, @player_id, "")}
-          reveal={:full}
+          thisplayer={true}
+          phase={@round.phase}
         /> 
-        <PlayerComponent.render 
+        <PlayerComponent.ingame 
           player={@players[player]}
           commonwords={@round.commonwords}
           extraword={@round.extrawords[player]}
           shuffle={@round.shuffle[player]}
           clue={Map.get(@round.clues, player, "")}
           guess={Map.get(@round.guesses, player, "")}
-          reveal={:full}
+          thisplayer={false}
+          phase={@round.phase}
           :for={player <- Map.keys(@players)}
           :if={player != @player_id}
         />

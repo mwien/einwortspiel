@@ -1,8 +1,12 @@
 defmodule EinwortspielWeb.GameLive.Header do
-  use Phoenix.Component 
+  use EinwortspielWeb, :html
   
   alias EinwortspielWeb.GameLive.NextRound
   alias EinwortspielWeb.Helpers
+
+  # TODO: maybe this should be component which has a slot
+
+  # TODO: use heroicons through icon from core_components
 
   attr :player_id, :string
   attr :players, :map
@@ -32,6 +36,7 @@ defmodule EinwortspielWeb.GameLive.Header do
       <h2 class="text-4xl font-bebasneue m-1"> einwortspiel </h2>
       <!-- make button -->
       <Heroicons.question_mark_circle class="w-5 h-5"/>
+      <.icon name="hero-cog-6-tooth" />
       <Heroicons.cog_6_tooth class="w-5 h-5"/>
     </header> 
     """

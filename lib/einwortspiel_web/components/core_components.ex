@@ -630,7 +630,6 @@ defmodule EinwortspielWeb.CoreComponents do
   end
 
   ## JS Commands
-
   def show(js \\ %JS{}, selector) do
     JS.show(js,
       to: selector,
@@ -691,9 +690,9 @@ defmodule EinwortspielWeb.CoreComponents do
     # with our gettext backend as first argument. Translations are
     # available in the errors.po file (as we use the "errors" domain).
     if count = opts[:count] do
-      Gettext.dngettext(HelloWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(EinwortspielWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(HelloWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(EinwortspielWeb.Gettext, "errors", msg, opts)
     end
   end
 

@@ -37,13 +37,14 @@ defmodule Einwortspiel.Game.Table do
   end
 
   def manage_round(table, :start) do
+    IO.inspect(table)
     cond do
       table.state.phase == :in_round -> 
         {:error, :ongoing_round}
-      length(Map.keys(Map.filter(table.players, fn {_, value} -> !value.spectator end))) < 2 -> 
+      length(Map.keys(Map.filter(table.players, fn {_, value} -> value.active end))) < 2 -> 
         {:error, :too_few_players}
       true -> 
-        newround = Round.start(Map.keys(Map.filter(table.players, fn {_, value} -> !value.spectator end)), table.settings)
+        newround = Round.start(Map.keys(Map.filter(table.players, fn {_, value} -> value.active end)), table.settings)
         {:ok, %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
     end
   end
@@ -62,6 +63,8 @@ defmodule Einwortspiel.Game.Table do
 
   # TODO: check inround!!!
   def move(table, player_id, move) do
+    IO.inspect(table)
+    IO.inspect(move)
     if Map.has_key?(table.players, player_id) do
       case Round.move(table.round, player_id, move) do
         {:ok, {info, round}} -> {:ok, handle_update({info, round}, table)}
@@ -72,11 +75,11 @@ defmodule Einwortspiel.Game.Table do
     end
   end
 
-  def update_active_players(table, joins, leaves) do
+  def update_connected_players(table, joins, leaves) do
     %Table{table |
       players: table.players
-      |> Map.new(fn {k, v} -> {k, Player.update_active(v, true, joins)} end)
-      |> Map.new(fn {k, v} -> {k, Player.update_active(v, false, leaves)} end)
+      |> Map.new(fn {k, v} -> {k, Player.update_connected(v, true, joins)} end)
+      |> Map.new(fn {k, v} -> {k, Player.update_connected(v, false, leaves)} end)
     }
   end
 

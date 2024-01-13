@@ -51,6 +51,7 @@ defmodule EinwortspielWeb.GameLive do
 
   # TODO: why text => clue
   def handle_event("submit_clue", %{"text" => clue}, socket) do
+    IO.inspect(clue)
     Einwortspiel.Game.move(socket.assigns.table_id, socket.assigns.player_id, {:submit_clue, clue})
     {:noreply, socket}
   end
@@ -80,7 +81,7 @@ defmodule EinwortspielWeb.GameLive do
      assign(
        socket,
        :table,
-       Einwortspiel.Game.Table.update_active_players(socket.assigns.table, joins, leaves)
+       Einwortspiel.Game.Table.update_connected_players(socket.assigns.table, joins, leaves)
      )}
   end
 

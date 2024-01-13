@@ -33,7 +33,7 @@ defmodule Einwortspiel.Game.TableServer do
   end
 
   def handle_call({:manage_round, command, player_id}, _from, state) do
-    case Table.manage_round(state, command) do
+    case Table.manage_round(state, command) |> IO.inspect() do
       {:ok, table} -> {:reply, :ok, handle_update(table)}
       {:error, error} -> {:reply, handle_error(error, player_id), state}
     end
@@ -56,7 +56,7 @@ defmodule Einwortspiel.Game.TableServer do
   def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, table) do
     {
       :noreply,
-      Table.update_active_players(table, joins, leaves)
+      Table.update_connected_players(table, joins, leaves)
     }
   end
 
