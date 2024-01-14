@@ -1,51 +1,54 @@
 <div class="flex flex-col justify-between items-center h-dvh">
-  <header class="flex items-center justify-center mb-1 p-0.5 bg-violet-200 shadow-md rounded-sm w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto text-center">
+  <.header>
     <h2 class="text-4xl font-bebasneue m-1"> einwortspiel </h2>
-  </header>
+  </.header>
 
   <main class = "flex flex-col w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto">
-    <.form :let={f} for={%{"language" => "de"}} action={~p"/table/create"} class="text-center bg-violet-200 shadow-md rounded-sm p-0.5 my-1"> 
-      <.button class="text-2xl font-bebasneue pt-3 pb-2 px-3 my-1.5">
-        Play
-      </.button>
+    <.box class="my-1">
+      <.form :let={f} for={%{"language" => "de"}} action={~p"/table/create"} class="text-center"> 
+        <.button class="text-2xl font-bebasneue pt-3 pb-2 px-3 my-1.5">
+          Play
+        </.button>
 
-      <fieldset class="bg-white p-1.5 rounded-sm w-fit mx-auto my-1.5 shadow-sm">
-        <h4 class="text-xl mb-1.5 font-bebasneue"> 
-          Game Language 
-        </h4>
-        <ul class="mb-0.5">
-        <li class="inline m-0.5">
-        <.input field={f[:language]}
-          id="lang_de"
-          type="radio"
-          label="German"
-          value="de"
-          {%{"checked" => true}}
-        />
-        </li>
-        <li class="inline m-0.5">
-        <.input field={f[:language]}
-          id="lang_en"
-          type="radio"
-          label="English"
-          value="en"
-        />
-        </li>
-        </ul>
-      </fieldset>
-    </.form>
+        <fieldset class="w-fit mx-auto my-1.5">
+          <.inner_box>
+            <h4 class="text-xl mb-1.5 font-bebasneue"> 
+              Game Language 
+            </h4>
+            <ul class="mb-0.5">
+            <li class="inline m-0.5">
+            <.input field={f[:language]}
+              id="lang_de"
+              type="radio"
+              label="German"
+              value="de"
+              {%{"checked" => true}}
+            />
+            </li>
+            <li class="inline m-0.5">
+            <.input field={f[:language]}
+              id="lang_en"
+              type="radio"
+              label="English"
+              value="en"
+            />
+            </li>
+            </ul>
+          </.inner_box>
+        </fieldset>
+      </.form>
+    </.box>
 
-    <!--fix paddings-->
-    <div class="bg-violet-200 shadow-md rounded-sm px-2 py-0.5 my-1">
-      <div class="rounded-sm shadow-sm bg-white p-1.5 mt-1.5 mb-2.5 mx-auto">
+    <.box class="my-1">
+      <.inner_box class="m-1.5 mb-2.5">
         <h4 class="font-bebasneue text-xl mb-1"> 
           The Game 
         </h4>
         <p> 
           Each player gets three words, which have to be described by a single clue. Two of those three words are the same for all players, the remaining word is different. Based on the clues of the other players, everybody has to find the word that they alone have.
         </p>
-      </div>
-      <div class="rounded-sm shadow-sm bg-white p-1.5 mb-1.5 mt-2.5 mx-auto" >
+      </.inner_box>
+      <.inner_box class="m-1.5 mt-2.5" >
         <h4 class="font-bebasneue text-xl mb-1"> 
           How To Play 
         </h4>
@@ -54,8 +57,8 @@
           <li> Invite other players by sharing the URL. </li>
           <li> Start playing. </li>
         </ol>
-      </div>
-      </div>
+      </.inner_box>
+    </.box>
   </main>
 
   <footer class="m-1 text-sm">

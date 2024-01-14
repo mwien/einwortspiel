@@ -19,6 +19,51 @@ defmodule EinwortspielWeb.CoreComponents do
   alias Phoenix.LiveView.JS
   import EinwortspielWeb.Gettext
 
+  ### own function components
+  
+  # TODO: use this everywhere
+  attr :class, :string, default: nil
+  
+  def box(assigns) do 
+    ~H"""
+    <div class={[
+        "bg-violet-200 shadow-md rounded-sm p-0.5",
+        @class
+      ]}
+    >
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+  
+  attr :class, :string, default: nil
+
+  # make completely white or little bit gray?
+  def inner_box(assigns) do
+    ~H"""
+    <div class={[
+        "bg-white shadow-sm rounded-sm p-1",
+        @class,
+      ]}
+    > 
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+  
+  def header(assigns) do
+    ~H"""
+    <header class="w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto mb-1">
+      <.box class="flex items-center justify-between text-center">
+        <%= render_slot(@inner_block) %>
+      </.box> 
+    </header> 
+    """
+  end
+
+
+  ### default function components
+  
   @doc """
   Renders a modal.
 
@@ -448,31 +493,6 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
   
-  @doc """
-  Renders a header with title.
-  """
-  attr :class, :string, default: nil
-
-  slot :inner_block, required: true
-  slot :subtitle
-  slot :actions
-
-  def header(assigns) do
-    ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
-          <%= render_slot(@inner_block) %>
-        </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
-          <%= render_slot(@subtitle) %>
-        </p>
-      </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
-    </header>
-    """
-  end
-
   @doc ~S"""
   Renders a table with generic styling.
 

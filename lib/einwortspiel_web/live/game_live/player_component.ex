@@ -2,6 +2,8 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
   use EinwortspielWeb, :html
 
   alias EinwortspielWeb.GameLive.{Words, Clue}
+  # TODO: move to core components
+  alias EinwortspielWeb.Helpers
   
   # different functions for ingame beforegame and thisplayer
 
@@ -11,7 +13,12 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     ~H"""
     <div> 
       <div class="flex justify-between"> 
-        <%= @player.name %>
+        <!-- put helpers stuff in core_comps -->
+        <Helpers.render_textform
+          id={"nameform"}
+          form={to_form(%{"text" => @player.name})}
+          submit_handler="set_name"
+        />
         <Clue.render 
           clue={@clue} 
           active={@phase == :clues} 

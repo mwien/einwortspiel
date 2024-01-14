@@ -6,7 +6,7 @@ defmodule EinwortspielWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <Header.render
+    <Header.ingame
       player_id={@player_id}
       players={@table.players}
       state={@table.state}
@@ -21,10 +21,9 @@ defmodule EinwortspielWeb.GameLive do
   end
   
   def handle_event("join", _value, %{assigns: %{table_id: table_id, player_id: player_id}} = socket) do
-    # could also subscribe on mount
     topic = "table_pres:#{table_id}"
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
-    # TODO: do we use this currently?
+    # TUDU: do we use this currently?
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
     Einwortspiel.Presence.track(
@@ -37,37 +36,44 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
   
-  # TODO: why text -> name
-  def handle_event("set_name", %{"name" => name}, socket) do
-    Einwortspiel.Game.set_attribute(socket.assigns.table_id, socket.assigns.player_id, :name, name)
+  # TUDU -> "text" vs "value" (form vs button) -> unify?
+  def handle_event("set_name", %{"text" => name}, socket) do
+    Einwortspiel.Game.set_attribute(
+      socket.assigns.table_id, 
+      socket.assigns.player_id, 
+      :name, name
+    )
     {:noreply, socket}
   end
 
   def handle_event("start_round", _value, socket) do
-    Einwortspiel.Game.manage_round(socket.assigns.table_id, :start, socket.assigns.player_id)
-    IO.inspect(socket.assigns.table)
+    Einwortspiel.Game.manage_round(
+      socket.assigns.table_id, 
+      :start, 
+      socket.assigns.player_id
+    )
     {:noreply, socket}
   end
 
-  # TODO: why text => clue
   def handle_event("submit_clue", %{"text" => clue}, socket) do
-    IO.inspect(clue)
-    Einwortspiel.Game.move(socket.assigns.table_id, socket.assigns.player_id, {:submit_clue, clue})
+    Einwortspiel.Game.move(
+      socket.assigns.table_id, 
+      socket.assigns.player_id, 
+      {:submit_clue, clue}
+    )
     {:noreply, socket}
   end
 
-  # TODO: why value => guess
   def handle_event("submit_guess", %{"value" => guess}, socket) do
     Einwortspiel.Game.move(
       socket.assigns.table_id,
       socket.assigns.player_id,
       {:submit_guess, guess}
     )
-
     {:noreply, socket}
   end
 
-  # make this more fine_grained at some point -> round, state, players, chat, ...
+  # TUDU: make this more fine_grained at some point -> round, state, players, chat, ...
   def handle_info({:update, table}, socket) do
     {:noreply, assign(socket, :table, table)}
   end
