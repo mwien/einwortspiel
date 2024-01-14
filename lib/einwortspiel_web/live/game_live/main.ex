@@ -9,17 +9,13 @@ defmodule EinwortspielWeb.GameLive.Main do
   attr :player_id, :string
   attr :players, :map
 
-  # TODO: allow players to leave 
-  # -> this makes logic a bit more complex
+  # TUDU: allow players to leave -> this makes logic a bit more complex
+
+  # TODO: have greet, preround, inround
   def render(assigns) do
     ~H"""
     <main class="flex flex-col items-center w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto"> 
-      <div :if={!Map.has_key?(@players, @player_id)}> 
-        <div class="my-4" > Click below to </div>
-        <EinwortspielWeb.CoreComponents.button phx-click="join" class="my-4 py-1.5 px-2" >
-          Join
-        </EinwortspielWeb.CoreComponents.button>
-      </div>
+      <.greet :if={!Map.has_key?(@players, @player_id)}/> 
       <div :if={Map.has_key?(@players, @player_id) and @round == nil}> 
         <div class="m-4" :if={map_size(@players) < 2}> 
           Waiting for second player to join
@@ -33,7 +29,6 @@ defmodule EinwortspielWeb.GameLive.Main do
           <Heroicons.check_circle class="ml-1 w-6 h-6 inline" />
         </div>
       </div>
-      <!-- also have player component when there is no current round -->
       <div :if={Map.has_key?(@players, @player_id) and @round != nil}>
         <PlayerComponent.ingame 
           player={@players[@player_id]}
@@ -62,6 +57,21 @@ defmodule EinwortspielWeb.GameLive.Main do
     """
   end
 
+  # TODO: improve this -> Choose name -> also shouldnt show stuff in header before joining!!!
+  # -> maybe greet vs before round vs inround is in game_live and then delegates???
+  # -> that actually sounds very good!
+  def greet(assigns) do
+    ~H"""
+    <.box class="flex flex-col items-center w-full">
+      <div class="my-2" > 
+        Click below to 
+      </div>
+      <.button phx-click="join" class="my-2 py-1.5 px-2" >
+        Join
+      </.button>
+    </.box>
+    """
+  end
 
   #def main(assigns) do
 #  ~H"""

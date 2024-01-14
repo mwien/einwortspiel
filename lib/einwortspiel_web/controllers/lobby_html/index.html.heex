@@ -60,19 +60,18 @@
       </.inner_box>
     </.box>
   </main>
-
   <footer class="m-1 text-sm">
-      <dl class="grid grid-flow-col auto-cols-max justify-center" >
-        <dt class="col-start-1 justify-self-end" >
-          <div class="w-3.5 h-3.5 mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          </div> 
-        </dt>
-        <dd class="col-start-2 justify-self-start ml-1.5"> marcel.wienoebst (AT) gmx.de </dd>
-        <dt class="col-start-1 justify-self-end text-md">
-          &copy;
-        </dt> 
-        <dd class="col-start-2 justify-self-start ml-1.5"> <%= Map.fetch!(DateTime.utc_now, :year)  %> Marcel Wienöbst. All rights reserved. </dd>
-      </dl>
+    <dl class="grid grid-flow-col auto-cols-max justify-center" >
+      <dt class="col-start-1 justify-self-end" >
+        <div class="w-3.5 h-3.5 mt-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div> 
+      </dt>
+      <dd class="col-start-2 justify-self-start ml-1.5"> marcel.wienoebst (AT) gmx.de </dd>
+      <dt class="col-start-1 justify-self-end text-md">
+        &copy;
+      </dt> 
+      <dd class="col-start-2 justify-self-start ml-1.5"> <%= Map.fetch!(DateTime.utc_now, :year)  %> Marcel Wienöbst. All rights reserved. </dd>
+    </dl>
   </footer>
 </div>
