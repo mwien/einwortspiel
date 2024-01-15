@@ -5,6 +5,29 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
   # TODO: move to core components
   alias EinwortspielWeb.Helpers
   
+  def render(assigns) do
+    ~H"""
+    <.box class="my-2"> 
+      <div class="flex justify-between"> 
+        <Helpers.render_textform
+          id={"nameform"}
+          form={to_form(%{"text" => @player.name})}
+          submit_handler="set_name"
+          :if={@thisplayer}
+        /> 
+        <.inner_box :if={!@thisplayer}> 
+          <%= @player.name %>
+        </.inner_box>
+        <Clue.render 
+          clue={@clue} 
+          active={@phase == :clues} 
+          :if={@state != :init and (@thisplayer or @phase != :clues)} 
+        />
+      </div>
+    </.box>
+    """
+  end
+
   # different functions for ingame beforegame and thisplayer
 
   # TODO make clue field gray if not active

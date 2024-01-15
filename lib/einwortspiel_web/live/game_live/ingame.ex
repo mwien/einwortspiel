@@ -1,6 +1,8 @@
 defmodule EinwortspielWeb.GameLive.Ingame do
   use EinwortspielWeb, :html 
 
+  alias EinwortspielWeb.GameLive.PlayerComponent
+
   def render(assigns) do
     ~H"""
     <.header>
@@ -22,7 +24,23 @@ defmodule EinwortspielWeb.GameLive.Ingame do
       </div>
     </.header> 
     <.main> 
-      TODO 
+      TODO player components -> first own then others
+      <PlayerComponent.render 
+        clue={@round.clues[@player_id]}
+        phase={@round.phase}
+        player={@players[@player_id]}
+        thisplayer={true}
+        state={@state}
+      />
+      <PlayerComponent.render
+        clue={@round.clues[player]}
+        phase={@round.phase}
+        player={@players[player]}
+        thisplayer={false}
+        state={@state}
+        :for={player <- Map.keys(@players)}
+        :if={player != @player_id}
+      />
     </.main>
     """ 
   end

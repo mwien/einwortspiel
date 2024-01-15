@@ -12,6 +12,9 @@ defmodule EinwortspielWeb.GameLive do
       :if={Map.has_key?(@table.players, @player_id) and @table.state.phase == :init} 
     /> 
     <Ingame.render 
+      round={@table.round}
+      player_id={@player_id}
+      players={@table.players}
       state={@table.state}
       :if={Map.has_key?(@table.players, @player_id) and @table.state.phase != :init}
     />
