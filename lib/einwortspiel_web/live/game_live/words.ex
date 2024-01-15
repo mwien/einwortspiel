@@ -13,7 +13,7 @@ defmodule EinwortspielWeb.GameLive.Words do
   # do grid -> for mobile one col -> else two or three
   def render(assigns) do
     ~H"""
-      <div class="flex justify-evenly"> 
+      <div class="flex justify-center my-2"> 
         <.word
           :for={word <- @words}
           value = {word}

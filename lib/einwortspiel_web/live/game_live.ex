@@ -8,7 +8,9 @@ defmodule EinwortspielWeb.GameLive do
     ~H"""
     <Greet.render :if={!Map.has_key?(@table.players, @player_id)} />
     <Pregame.render 
+      player_id={@player_id}
       players={@table.players}
+      state={@table.state}
       :if={Map.has_key?(@table.players, @player_id) and @table.state.phase == :init} 
     /> 
     <Ingame.render 

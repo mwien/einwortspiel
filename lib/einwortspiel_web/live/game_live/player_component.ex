@@ -6,6 +6,17 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
   # could also have Name.render?
   # TODO: add Words.render
 
+  # TODO: do not pass full state!
+  attr :player, Einwortspiel.Game.Player 
+  attr :thisplayer, :boolean
+  attr :state, :atom
+  attr :clue, :string, default: ""
+  attr :phase, :atom, default: nil 
+  attr :commonwords, :list, default: nil
+  attr :extraword, :string, default: nil
+  attr :shuffle, :list, default: nil 
+  attr :guess, :list, default: nil
+
   def render(assigns) do
     ~H"""
     <.box class="my-2"> 
@@ -22,53 +33,26 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
         <Clue.render 
           clue={@clue} 
           active={@phase == :clues} 
-          :if={@state != :init and (@thisplayer or @phase != :clues)} 
+          :if={@state.phase != :init and (@thisplayer or @phase != :clues)} 
         />
       </div>
+      <Words.render 
+        words={prepare_words(@commonwords, @extraword, @shuffle)} 
+        active={@phase == :guesses and @thisplayer}
+        correctword={@extraword}
+        guess={@guess}
+        show={@guess != nil}
+        :if={@state.phase != :init and (@thisplayer or @phase == :final)}
+      />
     </.box>
     """
   end
 
-  # different functions for ingame beforegame and thisplayer
-
-  # TODO make clue field gray if not active
-  # -> do this generally
-  # def ingame(assigns) do
-  #   ~H"""
-  #   <div> 
-  #     <div class="flex justify-between"> 
-  #       <!-- put helpers stuff in core_comps -->
-  #       <Helpers.render_textform
-  #         id={"nameform"}
-  #         form={to_form(%{"text" => @player.name})}
-  #         submit_handler="set_name"
-  #       />
-  #       <Clue.render 
-  #         clue={@clue} 
-  #         active={@phase == :clues} 
-  #         :if={@thisplayer or @phase != :clues} 
-  #       />
-  #     </div>
-  #     <Words.render 
-  #       words={prepare_words(@commonwords, @extraword, @shuffle)} 
-  #       active={@phase == :guesses and @thisplayer}
-  #       correctword={@extraword}
-  #       guess={@guess}
-  #       show={@guess != ""}
-  #       :if={@thisplayer or @phase == :final}
-  #     />
-  #   </div>
-  #   """
-  # end
-
-  # # TODO: add beforegame
-
-
-  # defp prepare_words(commonwords, extraword, shuffle) do
-  #   [extraword | commonwords] 
-  #   |> Enum.zip(shuffle)
-  #   |> List.keysort(1)
-  #   |> Enum.unzip()
-  #   |> elem(0)
-  # end
+  defp prepare_words(commonwords, extraword, shuffle) do
+    [extraword | commonwords] 
+    |> Enum.zip(shuffle)
+    |> List.keysort(1)
+    |> Enum.unzip()
+    |> elem(0)
+  end
 end
