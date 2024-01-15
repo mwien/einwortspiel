@@ -1,44 +1,25 @@
 defmodule EinwortspielWeb.GameLive do
   use EinwortspielWeb, :live_view
 
-  alias EinwortspielWeb.GameLive.Header
-  alias EinwortspielWeb.GameLive.Main
+  alias EinwortspielWeb.GameLive.{Greet, Pregame, Ingame}
 
+  # TUDU: have functions in app for player in table players etc (prob. in table module)
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col justify-between items-center h-dvh">
-      <Header.ingame
-        player_id={@player_id}
-        players={@table.players}
-        state={@table.state}
-      />
-      <Main.render
-        player_id={@player_id} 
-        players={@table.players} 
-        round={@table.round} 
-        state={@table.state} 
-      />
-      <footer class="m-1 text-sm">
-        <dl class="grid grid-flow-col auto-cols-max justify-center" >
-          <dt class="col-start-1 justify-self-end" >
-            <div class="w-3.5 h-3.5 mt-1">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            </div> 
-          </dt>
-          <dd class="col-start-2 justify-self-start ml-1.5"> marcel.wienoebst (AT) gmx.de </dd>
-          <dt class="col-start-1 justify-self-end text-md">
-            &copy;
-          </dt> 
-          <dd class="col-start-2 justify-self-start ml-1.5"> <%= Map.fetch!(DateTime.utc_now, :year)  %> Marcel Wienöbst. All rights reserved. </dd>
-        </dl>
-      </footer>
-    </div>
+    <Greet.render :if={!Map.has_key?(@table.players, @player_id)} />
+    <Pregame.render 
+      players={@table.players}
+      :if={Map.has_key?(@table.players, @player_id) and @table.state.phase == :init} 
+    /> 
+    <Ingame.render 
+      state={@table.state}
+      :if={Map.has_key?(@table.players, @player_id) and @table.state.phase != :init}
+    />
     """
   end
   
   def handle_event("join", _value, %{assigns: %{table_id: table_id, player_id: player_id}} = socket) do
     topic = "table_pres:#{table_id}"
-    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
     # TUDU: do we use this currently?
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
@@ -110,7 +91,9 @@ defmodule EinwortspielWeb.GameLive do
   def mount(%{"table_id" => table_id}, %{"user_id" => player_id}, socket) do
     case Einwortspiel.Game.get_table(table_id) do
       {:error, :redirect} -> {:ok, redirect(socket, to: ~p"/")}
-      table -> {:ok, 
+      table -> 
+        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
+        {:ok, 
         socket 
         |> assign(:table_id, table_id)
         |> assign(:player_id, player_id)

@@ -57,7 +57,6 @@ defmodule EinwortspielWeb.GameLive.Header do
         </EinwortspielWeb.CoreComponents.button>
       </div>
     <% end %>
-    
     """
   end
 

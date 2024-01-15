@@ -20,7 +20,16 @@ defmodule EinwortspielWeb.CoreComponents do
   import EinwortspielWeb.Gettext
 
   ### own function components
+  # comment!
   
+  def main(assigns) do
+    ~H"""
+    <main class = "flex flex-col w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto">
+      <%= render_slot(@inner_block) %>
+    </main>
+    """
+  end
+
   # TODO: use this everywhere
   attr :class, :string, default: nil
   
@@ -269,6 +278,8 @@ defmodule EinwortspielWeb.CoreComponents do
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
+
+  # TODO: maybe modify the leading-8 thing
 
   def button(assigns) do
     ~H"""

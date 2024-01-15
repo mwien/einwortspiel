@@ -53,7 +53,8 @@ defmodule EinwortspielWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {EinwortspielWeb.Layouts, :app}
+        layout: {EinwortspielWeb.Layouts, :app},
+        container: {:div, class: "contents"}
 
       unquote(html_helpers())
     end
