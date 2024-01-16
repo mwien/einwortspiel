@@ -4,7 +4,7 @@
 <.main>
   <.box class="my-1">
     <.form :let={f} for={%{"language" => "de"}} action={~p"/table/create"} class="text-center"> 
-      <.button class="text-2xl font-bebasneue pt-3 pb-2 px-3 my-1.5">
+      <.button class="text-xl font-bebasneue pt-3 pb-2 px-3 my-1.5">
         Play
       </.button>
 
@@ -14,7 +14,7 @@
             Game Language 
           </h4>
           <ul class="mb-0.5">
-          <li class="inline m-0.5">
+          <li class="inline-block m-0.5">
           <.input field={f[:language]}
             id="lang_de"
             type="radio"
@@ -23,7 +23,7 @@
             {%{"checked" => true}}
           />
           </li>
-          <li class="inline m-0.5">
+          <li class="inline-block m-0.5">
           <.input field={f[:language]}
             id="lang_en"
             type="radio"

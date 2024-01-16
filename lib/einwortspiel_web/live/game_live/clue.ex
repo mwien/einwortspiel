@@ -20,7 +20,12 @@ defmodule EinwortspielWeb.GameLive.Clue do
       value={@clue}
       class={"w-7/12"}
       :if={!@active}
-    />
+    >
+      <.icon 
+        name="hero-ellipsis-horizontal"
+        class="mx-2 w-4 h-4 md:w-5 md:h-5 duration-2000 animate-bounce"
+      />
+    </.textform_placeholder>
     """
   end
 

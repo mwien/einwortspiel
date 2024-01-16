@@ -28,11 +28,11 @@ defmodule EinwortspielWeb.CoreComponents do
   def textform_placeholder(assigns) do
     ~H"""
     <div class={["flex items-center my-2 mx-0.5", @class]}>
-      <%= @label %>
-      <div class="text-start rounded-sm mx-1 py-0.5 px-1 bg-violet-50 inline-block flex-grow truncate" >   
+      <span class="mr-0.5"> <%= @label %> </span>
+      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip" >   
         <%= @value %>
-      </div>  
-      <.submit />
+      </div> 
+      <.submit/>
     </div>
     """
   end
@@ -63,7 +63,7 @@ defmodule EinwortspielWeb.CoreComponents do
   def submit(assigns) do
     ~H"""
     <button class="submit flex flex-col items-center" style="visibility:hidden">
-      <.icon name="hero-paper-airplane" class="w-4 h-4" />
+      <.icon name="hero-paper-airplane" class="w-4 h-4 md:w-5 md:h-5" />
     </button>
     """
   end
@@ -580,7 +580,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def radiolabel(assigns) do
     ~H"""
-    <label for={@for} class="sm:p-0.5 p-1 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
+    <label for={@for} class="p-0.5 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
       <%= render_slot(@inner_block) %>
     </label>
     """

@@ -12,7 +12,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
   # TODO: do not pass full state!
   attr :player, Einwortspiel.Game.Player 
   attr :thisplayer, :boolean
-  attr :state, :atom
+  attr :state, Einwortspiel.Game.TableState
   attr :clue, :string, default: ""
   attr :phase, :atom, default: nil 
   attr :commonwords, :list, default: nil
@@ -22,8 +22,8 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
 
   def render(assigns) do
     ~H"""
-    <.box class="my-2"> 
-      <div class="flex justify-between"> 
+    <.box class={"mt-2" <> if @thisplayer, do: " mb-4", else: " mb-2"}> 
+      <div class="flex justify-between items-center"> 
         <.textform
           id={"nameform"}
           label={""}
@@ -38,11 +38,30 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
           class={"w-4/12"}
           :if={!@thisplayer}
         /> 
-        <Clue.render 
-          clue={@clue} 
-          active={@phase == :clues} 
-          :if={@state.phase != :init and (@thisplayer or @phase != :clues)} 
-        />
+      <.textform
+        id={"clueform"}
+        label={"Clue"}
+        form={to_form(%{"text" => @clue})}
+        submit_handler="submit_clue"
+        class={"w-6/12"}
+        :if={@thisplayer and @phase == :clues}
+      />
+      <.textform_placeholder 
+        label={"Clue"}
+        value={@clue}
+        class={"w-6/12"}
+        :if={@state.phase != :init and @phase != :clues}
+      />
+      <.icon 
+        name="hero-ellipsis-horizontal"
+        class="mx-1 w-4 h-4 md:w-5 md:h-5 duration-2000 animate-bounce"
+        :if={(@phase == :clues and @clue == nil) or (@phase == :guesses and @guess == nil)}
+      />
+      <.icon 
+        name="hero-check-circle"
+        class="mx-1 w-4 h-4 md:w-5 md:h-5"
+        :if={(@phase == :clues and @clue != nil) or (@phase == :guesses and @guess != nil)}
+      />
       </div>
       <Words.render 
         words={prepare_words(@commonwords, @extraword, @shuffle)} 

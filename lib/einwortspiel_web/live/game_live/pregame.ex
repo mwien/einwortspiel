@@ -15,7 +15,7 @@ defmodule EinwortspielWeb.GameLive.Pregame do
     <.main> 
       <.box class="text-center my-1" > 
         <p class="m-1" :if={map_size(@players) < 2} >
-          At least two players are necessary to start a game
+          Waiting for second player
           <.icon 
             name="hero-ellipsis-horizontal"
             class="ml-1.5 w-5 h-5 duration-2000 animate-bounce"
@@ -29,7 +29,7 @@ defmodule EinwortspielWeb.GameLive.Pregame do
           />
         </p>
         <p class="m-1">  
-          Share the url to invite other players
+          Share the url to invite further players
           <.button phx-click={JS.dispatch("urlcopy")} class="my-1 ml-1 px-1.5 pb-0.5 group">  
             <.icon name="hero-clipboard-document" class="w-5 h-5 group-focus:hidden"/>
             <.icon name="hero-clipboard-document-check" class="w-5 h-5 hidden group-focus:inline-block"/>
