@@ -6,21 +6,17 @@ defmodule EinwortspielWeb.GameLive.Ingame do
   def render(assigns) do
     ~H"""
     <.header>
-      <h2 class="text-4xl font-bebasneue m-1"> einwortspiel </h2>
+      <h2 class="text-3xl md:text-4xl font-bebasneue m-1"> einwortspiel </h2>
       <div class="flex items-center">
         <.button phx-click="start_round" class="px-1 py-0.5 m-1" :if={@state.phase == :end_of_round}> 
           Next
         </.button>
-        <.inner_box class="m-1">
-          <span> 
-            <.icon name="hero-plus-circle" class="mb-1"/> 
-            <%= @state.wins %> 
-          </span> 
-          <span> 
-            <.icon name="hero-minus-circle" class="mb-1"/> 
-            <%= @state.losses %> 
-          </span>
-        </.inner_box>
+        <div class="my-1 px-1 py-0.5 bg-green-300 rounded-sm shadow-sm">
+          <%= @state.wins %>
+        </div>
+        <div class="my-1 px-1 py-0.5 bg-red-400 rounded-sm shadow-sm">
+          <%= @state.losses %>
+        </div>
       </div>
     </.header> 
     <.main> 

@@ -8,7 +8,7 @@ defmodule EinwortspielWeb.GameLive.Greet do
   def render(assigns) do
     ~H"""
     <.header>
-      <h2 class="text-4xl font-bebasneue m-1"> einwortspiel </h2>
+      <h2 class="text-3xl md:text-4xl font-bebasneue m-1"> einwortspiel </h2>
     </.header>
     <.main> 
       <.box class="flex flex-col items-center w-full">

@@ -3,6 +3,9 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
 
   alias EinwortspielWeb.GameLive.{Words, Clue}
   
+
+  # TODO: have clue/name/words in here?
+
   # could also have Name.render?
   # TODO: add Words.render
 
@@ -23,13 +26,18 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
       <div class="flex justify-between"> 
         <.textform
           id={"nameform"}
+          label={""}
           form={to_form(%{"text" => @player.name})}
           submit_handler="set_name"
+          class={"w-4/12"}
           :if={@thisplayer}
         /> 
-        <.textform_placeholder :if={!@thisplayer}> 
-          <%= @player.name %>
-        </.textform_placeholder>
+        <.textform_placeholder 
+          label={""} 
+          value={@player.name}
+          class={"w-4/12"}
+          :if={!@thisplayer}
+        /> 
         <Clue.render 
           clue={@clue} 
           active={@phase == :clues} 

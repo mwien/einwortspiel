@@ -22,39 +22,48 @@ defmodule EinwortspielWeb.CoreComponents do
   ### own function components
   # comment!
 
+  attr :label, :string 
+  attr :value, :string 
+  attr :class, :string
   def textform_placeholder(assigns) do
     ~H"""
-    <div class="inline-block text-start rounded-sm w-36 m-2 py-0.5 px-1 bg-violet-50 leading-8" >   
-      <%= render_slot(@inner_block) %>
-    </div>  
-    <.submit />
+    <div class={["flex items-center my-2 mx-0.5", @class]}>
+      <%= @label %>
+      <div class="text-start rounded-sm mx-1 py-0.5 px-1 bg-violet-50 inline-block flex-grow truncate" >   
+        <%= @value %>
+      </div>  
+      <.submit />
+    </div>
     """
   end
 
   attr :id, :string
+  attr :label, :string
   attr :form, :map
   attr :submit_handler, :string
   attr :rest, :global
+  attr :class, :string
   def textform(assigns) do
     ~H"""
     <.form
       for={@form}
       id={@id}
-      class="inline-block m-2"
+      class={["flex items-center my-2 mx-0.5", @class]}
       phx-submit={@submit_handler}
       phx-hook="Diff"
     >
-      <.game_input field={@form[:text]} />
+      <.game_input label={@label} field={@form[:text]} />
       <.submit />
       <span class="hidden"><%= @form[:text].value %></span>
     </.form>
     """
   end
   
+  # TODO: maybe make airplane larger for big screens
   def submit(assigns) do
     ~H"""
-    <button class="submit" style="visibility:hidden">
-      <.icon name="hero-paper-airplane" class="w-6 h-6" />
+    <button class="submit flex flex-col items-center" style="visibility:hidden">
+      <.icon name="hero-paper-airplane" class="w-4 h-4" />
     </button>
     """
   end
@@ -103,14 +112,14 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def game_input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class="inline">
+    <div phx-feedback-for={@name} class="contents">
       <.label for={@id}><%= @label %></.label>
       <input
         type={@type}
         name={@name}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "text-lg bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mr-1 py-0.5 px-1 w-36 leading-8",
+          "text-base md:text-lg bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mx-0.5 py-0.5 px-1 flex-grow min-w-0",
           "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500",
           @errors == [] && "border-violet-300 focus:border-violet-500",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -125,7 +134,7 @@ defmodule EinwortspielWeb.CoreComponents do
   
   def main(assigns) do
     ~H"""
-    <main class = "flex flex-col w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto">
+    <main class = "flex flex-col flex-grow w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto">
       <%= render_slot(@inner_block) %>
     </main>
     """
@@ -152,7 +161,7 @@ defmodule EinwortspielWeb.CoreComponents do
   def inner_box(assigns) do
     ~H"""
     <div class={[
-        "bg-white shadow-sm rounded-sm p-1",
+        "bg-white shadow-sm rounded-sm p-0.5",
         @class,
       ]}
     > 
@@ -163,7 +172,7 @@ defmodule EinwortspielWeb.CoreComponents do
   
   def header(assigns) do
     ~H"""
-    <header class="w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto mb-1">
+    <header class="w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto mb-4">
       <.box class="flex items-center justify-between text-center">
         <%= render_slot(@inner_block) %>
       </.box> 
@@ -388,7 +397,7 @@ defmodule EinwortspielWeb.CoreComponents do
       type={@type}
       class={[
         "phx-submit-loading:opacity-75 rounded-sm bg-white hover:bg-gray-200 shadow-sm",
-        "leading-8 active:text-white/80",
+        "active:text-white/80",
         @class
       ]}
       {@rest}
@@ -585,7 +594,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block mr-0.5">
       <%= render_slot(@inner_block) %>
     </label>
     """

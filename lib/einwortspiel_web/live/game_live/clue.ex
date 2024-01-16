@@ -7,18 +7,20 @@ defmodule EinwortspielWeb.GameLive.Clue do
   # use textform placeholder
   def render(assigns) do
     ~H"""
-    <div>
-      Clue:
-      <.textform
-        id={"clueform"}
-        form={to_form(%{"text" => @clue})}
-        submit_handler="submit_clue"
-        :if={@active}
-      />
-      <.textform_placeholder :if={!@active}>
-        <%= @clue %> 
-      </.textform_placeholder>
-    </div>
+    <.textform
+      id={"clueform"}
+      label={"Clue"}
+      form={to_form(%{"text" => @clue})}
+      submit_handler="submit_clue"
+      class={"w-7/12"}
+      :if={@active}
+    />
+    <.textform_placeholder 
+      label={"Clue"}
+      value={@clue}
+      class={"w-7/12"}
+      :if={!@active}
+    />
     """
   end
 
