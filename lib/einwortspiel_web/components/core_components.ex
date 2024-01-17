@@ -131,6 +131,8 @@ defmodule EinwortspielWeb.CoreComponents do
     </div>
     """
   end
+
+  slot :inner_block, required: true
   
   def main(assigns) do
     ~H"""
@@ -140,7 +142,7 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
 
-  # TODO: use this everywhere
+  slot :inner_block, required: true
   attr :class, :string, default: nil
   
   def box(assigns) do 
@@ -155,6 +157,7 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
   
+  slot :inner_block, required: true
   attr :class, :string, default: nil
 
   # make completely white or little bit gray?
@@ -169,6 +172,8 @@ defmodule EinwortspielWeb.CoreComponents do
     </div>
     """
   end
+  
+  slot :inner_block, required: true
   
   def header(assigns) do
     ~H"""

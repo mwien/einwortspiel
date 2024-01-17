@@ -1,7 +1,7 @@
 defmodule EinwortspielWeb.GameLive.PlayerComponent do
   use EinwortspielWeb, :html
 
-  alias EinwortspielWeb.GameLive.{Words, Clue}
+  alias EinwortspielWeb.GameLive.Words
   
 
   # TODO: have clue/name/words in here?

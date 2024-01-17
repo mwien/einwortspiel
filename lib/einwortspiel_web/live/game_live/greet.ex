@@ -3,7 +3,6 @@ defmodule EinwortspielWeb.GameLive.Greet do
 
   # TODO: have generate name option 
   # TODO: move set name here, start with empty name
-  # TODO: maybe have grow for main => not centered vertically
 
   def render(assigns) do
     ~H"""

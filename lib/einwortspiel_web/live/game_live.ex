@@ -6,7 +6,9 @@ defmodule EinwortspielWeb.GameLive do
   # TUDU: have functions in app for player in table players etc (prob. in table module)
   def render(assigns) do
     ~H"""
-    <Greet.render :if={!Map.has_key?(@table.players, @player_id)} />
+    <Greet.render 
+      :if={!Map.has_key?(@table.players, @player_id)} 
+    />
     <Pregame.render 
       player_id={@player_id}
       players={@table.players}
