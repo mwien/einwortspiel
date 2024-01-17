@@ -15,6 +15,7 @@ defmodule EinwortspielWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
+  use EinwortspielWeb, :verified_routes
 
   alias Phoenix.LiveView.JS
   import EinwortspielWeb.Gettext
@@ -59,7 +60,6 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
   
-  # TODO: maybe make airplane larger for big screens
   def submit(assigns) do
     ~H"""
     <button class="submit flex flex-col items-center" style="visibility:hidden">
@@ -69,7 +69,6 @@ defmodule EinwortspielWeb.CoreComponents do
   end
   
   ##### TODO: make this cleaner!!!
-
   attr :id, :any, default: nil
   attr :name, :any
   attr :label, :string, default: nil
@@ -104,11 +103,10 @@ defmodule EinwortspielWeb.CoreComponents do
     |> game_input()
   end
   
-  # TODO: assigns?
+  # TODO: add assigns!
   # TODO: autocomplete not properly working in firefox
   # -> need to give per round unique id 
   # -> add this later
-  # ----> add proper id!!!
 
   def game_input(assigns) do
     ~H"""
@@ -179,12 +177,12 @@ defmodule EinwortspielWeb.CoreComponents do
     ~H"""
     <header class="w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto mb-4">
       <.box class="flex items-center justify-between text-center">
+        <h2 class="text-3xl md:text-4xl font-bebasneue m-1"> <a href={~p"/"}> einwortspiel </a> </h2>
         <%= render_slot(@inner_block) %>
       </.box> 
     </header> 
     """
   end
-
 
   ### default function components
   

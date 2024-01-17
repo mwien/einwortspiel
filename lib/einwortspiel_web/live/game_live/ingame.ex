@@ -6,7 +6,6 @@ defmodule EinwortspielWeb.GameLive.Ingame do
   def render(assigns) do
     ~H"""
     <.header>
-      <h2 class="text-3xl md:text-4xl font-bebasneue m-1"> einwortspiel </h2>
       <div class="flex items-center">
         <.button phx-click="start_round" class="px-1 py-0.5 m-1" :if={@state.phase == :end_of_round}> 
           Next
@@ -22,13 +21,16 @@ defmodule EinwortspielWeb.GameLive.Ingame do
       </div>
     </.header> 
     <.main> 
-      <.box class="my-1 flex items-center justify-center" :if={@round.phase == :clues}>
+      <.box class="my-1 text-center" :if={!Map.has_key?(@round.extrawords, @player_id)}>
+        <span class="my-1"> Spectating current round, you will join starting with the next one! </span>  
+      </.box>
+      <.box class="my-1 text-center" :if={@round.phase == :clues}>
         <span class="my-1"> Describe your words with one clue! </span> 
       </.box>
-      <.box class="my-1 flex items-center justify-center" :if={@round.phase == :guesses}>
+      <.box class="my-1 text-center" :if={@round.phase == :guesses}>
         <span class="my-1"> Guess the word that only you have! </span> 
       </.box>
-      <.box class="my-1 flex items-center justify-center" :if={@round.phase == :final}>
+      <.box class="my-1 text-center" :if={@round.phase == :final}>
         <span class="my-1" :if={@round.guesses == @round.extrawords}> You win the round! </span> 
         <span class="my-1" :if={@round.guesses != @round.extrawords}> You lose the round! </span> 
       </.box>
@@ -42,6 +44,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
         extraword={@round.extrawords[@player_id]}
         shuffle={@round.shuffle[@player_id]}
         guess={@round.guesses[@player_id]}
+        :if={Map.has_key?(@round.extrawords, @player_id)}
       />
       <PlayerComponent.render
         clue={@round.clues[player]}
@@ -54,7 +57,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
         shuffle={@round.shuffle[player]}
         guess={@round.guesses[player]}
         :for={player <- Map.keys(@players)}
-        :if={player != @player_id}
+        :if={player != @player_id and Map.has_key?(@round.extrawords, player)}
       />
     </.main>
     """ 
