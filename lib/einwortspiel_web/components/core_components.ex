@@ -134,7 +134,7 @@ defmodule EinwortspielWeb.CoreComponents do
   
   def main(assigns) do
     ~H"""
-    <main class = "flex flex-col flex-grow w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto">
+    <main class = "flex flex-col flex-grow w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
       <%= render_slot(@inner_block) %>
     </main>
     """
@@ -146,7 +146,7 @@ defmodule EinwortspielWeb.CoreComponents do
   def box(assigns) do 
     ~H"""
     <div class={[
-        "bg-violet-200 shadow-md rounded-sm p-0.5",
+        "bg-violet-200 shadow-md rounded-sm p-0.5 mx-1",
         @class
       ]}
     >
@@ -172,7 +172,7 @@ defmodule EinwortspielWeb.CoreComponents do
   
   def header(assigns) do
     ~H"""
-    <header class="w-11/12 lg:w-3/5 2xl:w-1/2 mx-auto mb-4">
+    <header class="w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto mb-4">
       <.box class="flex items-center justify-between text-center">
         <%= render_slot(@inner_block) %>
       </.box> 

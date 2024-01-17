@@ -62,6 +62,11 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
         class="mx-1 w-4 h-4 md:w-5 md:h-5"
         :if={(@phase == :clues and @clue != nil) or (@phase == :guesses and @guess != nil)}
       />
+      <.icon 
+        name="hero-check-circle"
+        class="mx-1 w-4 h-4 md:w-5 md:h-5 invisible"
+        :if={@phase == :final}
+      />
       </div>
       <Words.render 
         words={prepare_words(@commonwords, @extraword, @shuffle)} 
