@@ -37,7 +37,6 @@ defmodule Einwortspiel.Game.Table do
   end
 
   def manage_round(table, :start) do
-    IO.inspect(table)
     cond do
       table.state.phase == :in_round -> 
         {:error, :ongoing_round}
@@ -63,8 +62,6 @@ defmodule Einwortspiel.Game.Table do
 
   # TODO: check inround!!!
   def move(table, player_id, move) do
-    IO.inspect(table)
-    IO.inspect(move)
     if Map.has_key?(table.players, player_id) do
       case Round.move(table.round, player_id, move) do
         {:ok, {info, round}} -> {:ok, handle_update({info, round}, table)}
