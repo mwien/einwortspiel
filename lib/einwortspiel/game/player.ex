@@ -2,23 +2,21 @@ defmodule Einwortspiel.Game.Player do
   alias __MODULE__
   alias Einwortspiel.Generator
 
-  # is spectator first after joining round!
-  # handle this somehow!
   defstruct [
     :active,
+    :connected,
     :id,
     :name, 
     :score,
-    :spectator
   ]
 
   def create_player(id) do
     %Player{
-      active: true, # should be fine?
+      active: true, 
+      connected: true, # should be fine?
       id: id,
       name: Generator.gen_name(),
       score: 0,
-      spectator: true
     }
   end
 
@@ -30,9 +28,9 @@ defmodule Einwortspiel.Game.Player do
     Map.put(player, :score, player.score + plus_score)
   end
 
-  def update_active(player, set_to, update_list) do
+  def update_connected(player, set_to, update_list) do
     cond do
-      Enum.member?(update_list, player.id) -> Map.put(player, :active, set_to)
+      Enum.member?(update_list, player.id) -> Map.put(player, :connected, set_to)
       true -> player
     end
   end

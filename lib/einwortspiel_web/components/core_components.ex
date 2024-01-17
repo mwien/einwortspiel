@@ -15,10 +15,177 @@ defmodule EinwortspielWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
+  use EinwortspielWeb, :verified_routes
 
   alias Phoenix.LiveView.JS
   import EinwortspielWeb.Gettext
 
+  ### own function components
+  # comment!
+
+  attr :label, :string 
+  attr :value, :string 
+  attr :class, :string
+  def textform_placeholder(assigns) do
+    ~H"""
+    <div class={["flex items-center my-2 mx-0.5", @class]}>
+      <span class="mr-0.5"> <%= @label %> </span>
+      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip" >   
+        <%= @value %>
+      </div> 
+      <.submit/>
+    </div>
+    """
+  end
+
+  attr :id, :string
+  attr :label, :string
+  attr :form, :map
+  attr :submit_handler, :string
+  attr :rest, :global
+  attr :class, :string
+  def textform(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      id={@id}
+      class={["flex items-center my-2 mx-0.5", @class]}
+      phx-submit={@submit_handler}
+      phx-hook="Diff"
+    >
+      <.game_input label={@label} field={@form[:text]} />
+      <.submit />
+      <span class="hidden"><%= @form[:text].value %></span>
+    </.form>
+    """
+  end
+  
+  def submit(assigns) do
+    ~H"""
+    <button class="submit flex flex-col items-center" style="visibility:hidden">
+      <.icon name="hero-paper-airplane" class="w-4 h-4 md:w-5 md:h-5" />
+    </button>
+    """
+  end
+  
+  ##### TODO: make this cleaner!!!
+  attr :id, :any, default: nil
+  attr :name, :any
+  attr :label, :string, default: nil
+  attr :value, :any
+
+  attr :type, :string,
+    default: "text",
+    values: ~w(checkbox color date datetime-local email file hidden month number password
+               range radio search select tel text textarea time url week)
+
+  attr :field, Phoenix.HTML.FormField,
+    doc: "a form field struct retrieved from the form, for example: @form[:email]"
+
+  attr :errors, :list, default: []
+  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
+  attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
+  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
+  attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+
+  attr :rest, :global,
+    include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step)
+
+  slot :inner_block
+
+  def game_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    assigns
+    |> assign(field: nil, id: assigns.id || field.id)
+    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
+    |> assign_new(:value, fn -> field.value end)
+    |> game_input()
+  end
+  
+  # TODO: add assigns!
+  # TODO: autocomplete not properly working in firefox
+  # -> need to give per round unique id 
+  # -> add this later
+
+  def game_input(assigns) do
+    ~H"""
+    <div phx-feedback-for={@name} class="contents">
+      <.label for={@id}><%= @label %></.label>
+      <input
+        type={@type}
+        name={@name}
+        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        class={[
+          "text-base md:text-lg bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mx-0.5 py-0.5 px-1 flex-grow min-w-0",
+          "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500",
+          @errors == [] && "border-violet-300 focus:border-violet-500",
+          @errors != [] && "border-rose-400 focus:border-rose-400"
+        ]}
+        {@rest}
+        autocomplete = "off"
+      />
+      <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+
+  slot :inner_block, required: true
+  
+  def main(assigns) do
+    ~H"""
+    <main class = "flex flex-col flex-grow w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
+      <%= render_slot(@inner_block) %>
+    </main>
+    """
+  end
+
+  slot :inner_block, required: true
+  attr :class, :string, default: nil
+  
+  def box(assigns) do 
+    ~H"""
+    <div class={[
+        "bg-violet-200 shadow-md rounded-sm p-0.5 mx-1",
+        @class
+      ]}
+    >
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+  
+  slot :inner_block, required: true
+  attr :class, :string, default: nil
+
+  # make completely white or little bit gray?
+  def inner_box(assigns) do
+    ~H"""
+    <div class={[
+        "bg-white shadow-sm rounded-sm p-0.5",
+        @class,
+      ]}
+    > 
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+  
+  slot :inner_block, required: true
+  
+  def header(assigns) do
+    ~H"""
+    <header class="w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto mb-4">
+      <.box class="flex items-center justify-between text-center">
+        <h2 class="text-3xl md:text-4xl font-bebasneue m-1"> <a href={~p"/"}> einwortspiel </a> </h2>
+        <%= render_slot(@inner_block) %>
+      </.box> 
+    </header> 
+    """
+  end
+
+  ### default function components
+  
   @doc """
   Renders a modal.
 
@@ -225,13 +392,15 @@ defmodule EinwortspielWeb.CoreComponents do
 
   slot :inner_block, required: true
 
+  # TODO: maybe modify the leading-8 thing
+
   def button(assigns) do
     ~H"""
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-sm bg-white hover:bg-gray-200 ",
-        "leading-8 active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-sm bg-white hover:bg-gray-200 shadow-sm",
+        "active:text-white/80",
         @class
       ]}
       {@rest}
@@ -414,7 +583,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def radiolabel(assigns) do
     ~H"""
-    <label for={@for} class="sm:p-0.5 p-1 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
+    <label for={@for} class="p-0.5 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -428,7 +597,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block mr-0.5">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -448,31 +617,6 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
   
-  @doc """
-  Renders a header with title.
-  """
-  attr :class, :string, default: nil
-
-  slot :inner_block, required: true
-  slot :subtitle
-  slot :actions
-
-  def header(assigns) do
-    ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
-          <%= render_slot(@inner_block) %>
-        </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
-          <%= render_slot(@subtitle) %>
-        </p>
-      </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
-    </header>
-    """
-  end
-
   @doc ~S"""
   Renders a table with generic styling.
 
@@ -630,7 +774,6 @@ defmodule EinwortspielWeb.CoreComponents do
   end
 
   ## JS Commands
-
   def show(js \\ %JS{}, selector) do
     JS.show(js,
       to: selector,
@@ -691,9 +834,9 @@ defmodule EinwortspielWeb.CoreComponents do
     # with our gettext backend as first argument. Translations are
     # available in the errors.po file (as we use the "errors" domain).
     if count = opts[:count] do
-      Gettext.dngettext(HelloWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(EinwortspielWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(HelloWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(EinwortspielWeb.Gettext, "errors", msg, opts)
     end
   end
 

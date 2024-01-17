@@ -17,7 +17,7 @@ defmodule EinwortspielWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images favicon.svg robots.txt)
 
   def router do
     quote do
@@ -53,7 +53,8 @@ defmodule EinwortspielWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {EinwortspielWeb.Layouts, :app}
+        layout: {EinwortspielWeb.Layouts, :app},
+        container: {:div, class: "contents"}
 
       unquote(html_helpers())
     end

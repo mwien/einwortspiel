@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
+    <link rel="icon" type="image/svg+xml" href={~p"/favicon.svg"} />
     <.live_title suffix="">
       <%= assigns[:page_title] || "Einwortspiel" %>
     </.live_title>
@@ -11,8 +12,23 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
- <!-- <body class="min-h-screen bg-gradient-to-b from-indigo-200 to-indigo-500">-->
-  <body class="min-h-screen bg-violet-300">
-    <%= @inner_content %>
+  <body class="font-oswald md:text-lg bg-violet-300">
+    <div class="flex flex-col justify-between items-center h-dvh">
+      <%= @inner_content %>
+      <footer class="mt-2 text-xs md:text-sm w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
+        <.box>
+        <dl class="grid grid-flow-col auto-cols-max justify-center items-start" >
+          <dt class="col-start-1 justify-self-center self-start" >
+            <.icon name="hero-envelope" class="w-2.5 md:w-3.5 h-2.5 md:h-3.5" />
+          </dt>
+          <dd class="col-start-2 justify-self-start ml-1.5"> marcel.wienoebst (AT) gmx.de </dd>
+          <dt class="col-start-1 justify-self-center">
+            &copy;
+          </dt> 
+          <dd class="col-start-2 justify-self-start ml-1.5"> <%= Map.fetch!(DateTime.utc_now, :year)  %> Marcel Wienöbst. All rights reserved. </dd>
+        </dl>
+        </.box>
+      </footer>
+    </div>
   </body>
 </html>

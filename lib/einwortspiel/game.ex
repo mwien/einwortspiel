@@ -6,24 +6,39 @@ defmodule Einwortspiel.Game do
     TableSupervisor.open_table(options)
   end
 
-  def join(table_id, player_id) do
+  def get_table(table_id) do
     case service_name(table_id) do
       nil -> {:error, :redirect}
-      pid -> GenServer.call(pid, {:join, player_id})
+      pid -> GenServer.call(pid, {:get_table})
     end
   end
 
-  # TODO: maybe add pause or something
+  # TODO: also check that table_id exists as service name and handle error?
+  def join(table_id, player_id) do
+    service_name(table_id)  
+    |> GenServer.call({:join, player_id})
+  end
+
+  # possible commands: 
+  # :start -> for starting the (next) round
   def manage_round(table_id, command, player_id) do
-    GenServer.call(service_name(table_id), {:manage_round, command, player_id})
+    service_name(table_id)
+    |> GenServer.call({:manage_round, command, player_id})
   end
 
+  # possible attributes: 
+  # :name -> name of player
   def set_attribute(table_id, player_id, attribute, value) do
-    GenServer.call(service_name(table_id), {:set_attribute, player_id, attribute, value})
+    service_name(table_id)
+    |> GenServer.call({:set_attribute, player_id, attribute, value})
   end
 
+  # possible moves: 
+  # {:submit_clue, clue} 
+  # {:submit_guess, guess}
   def move(table_id, player_id, move) do
-    GenServer.call(service_name(table_id), {:move, player_id, move})
+    service_name(table_id)
+    |> GenServer.call({:move, player_id, move})
   end
 
   def service_name(table_id) do
