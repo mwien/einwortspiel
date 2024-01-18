@@ -14,11 +14,12 @@ defmodule Einwortspiel.Game.Round do
     :waiting_for,
     :clues,
     :guesses,
-    :info,
+    :info
   ]
 
   def start(players, settings) do
     words = Generator.gen_words(settings.nr_commonwords + length(players), settings.language)
+
     create_round(
       Enum.take(words, settings.nr_commonwords),
       Enum.take(words, -length(players)),
@@ -35,7 +36,7 @@ defmodule Einwortspiel.Game.Round do
       waiting_for: players,
       clues: %{},
       guesses: %{},
-      info: [],
+      info: []
     }
   end
 
@@ -46,6 +47,7 @@ defmodule Einwortspiel.Game.Round do
          round
          |> update_phase()
          |> emit_info()}
+
       {:error, error} ->
         {:error, error}
     end
@@ -70,9 +72,8 @@ defmodule Einwortspiel.Game.Round do
        %Round{
          round
          | guesses: Map.put(round.guesses, player, guess),
-          waiting_for: List.delete(round.waiting_for, player)
-       }
-      }
+           waiting_for: List.delete(round.waiting_for, player)
+       }}
     else
       {:error, :unauthorized_move}
     end

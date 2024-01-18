@@ -23,17 +23,18 @@ defmodule EinwortspielWeb.CoreComponents do
   ### own function components
   # comment!
 
-  attr :label, :string 
-  attr :value, :string 
+  attr :label, :string
+  attr :value, :string
   attr :class, :string
+
   def textform_placeholder(assigns) do
     ~H"""
     <div class={["flex items-center my-2 mx-0.5", @class]}>
-      <span class="mr-0.5"> <%= @label %> </span>
-      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip" >   
+      <span class="mr-0.5"><%= @label %></span>
+      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip">
         <%= @value %>
-      </div> 
-      <.submit/>
+      </div>
+      <.submit />
     </div>
     """
   end
@@ -44,6 +45,7 @@ defmodule EinwortspielWeb.CoreComponents do
   attr :submit_handler, :string
   attr :rest, :global
   attr :class, :string
+
   def textform(assigns) do
     ~H"""
     <.form
@@ -59,7 +61,7 @@ defmodule EinwortspielWeb.CoreComponents do
     </.form>
     """
   end
-  
+
   def submit(assigns) do
     ~H"""
     <button class="submit flex flex-col items-center" style="visibility:hidden">
@@ -67,7 +69,7 @@ defmodule EinwortspielWeb.CoreComponents do
     </button>
     """
   end
-  
+
   ##### TODO: make this cleaner!!!
   attr :id, :any, default: nil
   attr :name, :any
@@ -102,7 +104,7 @@ defmodule EinwortspielWeb.CoreComponents do
     |> assign_new(:value, fn -> field.value end)
     |> game_input()
   end
-  
+
   # TODO: add assigns!
   # TODO: autocomplete not properly working in firefox
   # -> need to give per round unique id 
@@ -123,7 +125,7 @@ defmodule EinwortspielWeb.CoreComponents do
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
-        autocomplete = "off"
+        autocomplete="off"
       />
       <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
@@ -131,10 +133,10 @@ defmodule EinwortspielWeb.CoreComponents do
   end
 
   slot :inner_block, required: true
-  
+
   def main(assigns) do
     ~H"""
-    <main class = "flex flex-col flex-grow w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
+    <main class="flex flex-col flex-grow w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
       <%= render_slot(@inner_block) %>
     </main>
     """
@@ -142,19 +144,18 @@ defmodule EinwortspielWeb.CoreComponents do
 
   slot :inner_block, required: true
   attr :class, :string, default: nil
-  
-  def box(assigns) do 
+
+  def box(assigns) do
     ~H"""
     <div class={[
-        "bg-violet-200 shadow-md rounded-sm p-0.5 mx-1",
-        @class
-      ]}
-    >
+      "bg-violet-200 shadow-md rounded-sm p-0.5 mx-1",
+      @class
+    ]}>
       <%= render_slot(@inner_block) %>
     </div>
     """
   end
-  
+
   slot :inner_block, required: true
   attr :class, :string, default: nil
 
@@ -162,30 +163,29 @@ defmodule EinwortspielWeb.CoreComponents do
   def inner_box(assigns) do
     ~H"""
     <div class={[
-        "bg-white shadow-sm rounded-sm p-0.5",
-        @class,
-      ]}
-    > 
+      "bg-white shadow-sm rounded-sm p-0.5",
+      @class
+    ]}>
       <%= render_slot(@inner_block) %>
     </div>
     """
   end
-  
+
   slot :inner_block, required: true
-  
+
   def header(assigns) do
     ~H"""
     <header class="w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto mb-4">
       <.box class="flex items-center justify-between text-center">
-        <h2 class="text-3xl md:text-4xl font-bebasneue m-1"> <a href={~p"/"}> einwortspiel </a> </h2>
+        <h2 class="text-3xl md:text-4xl font-bebasneue m-1"><a href={~p"/"}> einwortspiel </a></h2>
         <%= render_slot(@inner_block) %>
-      </.box> 
-    </header> 
+      </.box>
+    </header>
     """
   end
 
   ### default function components
-  
+
   @doc """
   Renders a modal.
 
@@ -550,7 +550,6 @@ defmodule EinwortspielWeb.CoreComponents do
     </div>
     """
   end
-  
 
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
@@ -574,7 +573,7 @@ defmodule EinwortspielWeb.CoreComponents do
     </div>
     """
   end
-  
+
   @doc """
   Renders a radio label.
   """
@@ -583,7 +582,10 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def radiolabel(assigns) do
     ~H"""
-    <label for={@for} class="p-0.5 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
+    <label
+      for={@for}
+      class="p-0.5 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100"
+    >
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -616,7 +618,7 @@ defmodule EinwortspielWeb.CoreComponents do
     </p>
     """
   end
-  
+
   @doc ~S"""
   Renders a table with generic styling.
 

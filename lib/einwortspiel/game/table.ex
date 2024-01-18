@@ -17,7 +17,7 @@ defmodule Einwortspiel.Game.Table do
     %Table{
       table_id: generate_table_id(),
       round: nil,
-      players: %{}, 
+      players: %{},
       settings: Settings.get_settings(options),
       state: TableState.create_state()
     }
@@ -25,11 +25,8 @@ defmodule Einwortspiel.Game.Table do
 
   def join(table, player_id) do
     if !Map.has_key?(table.players, player_id) do
-      {:ok, 
-        %Table{table | 
-          players: Map.put(table.players, player_id, Player.create_player(player_id))
-        } 
-      }
+      {:ok,
+       %Table{table | players: Map.put(table.players, player_id, Player.create_player(player_id))}}
     else
       # should this be error? -> maybe remove this
       {:error, :already_joined}
@@ -38,23 +35,36 @@ defmodule Einwortspiel.Game.Table do
 
   def manage_round(table, :start) do
     cond do
-      table.state.phase == :in_round -> 
+      table.state.phase == :in_round ->
         {:error, :ongoing_round}
-      length(Map.keys(Map.filter(table.players, fn {_, value} -> value.active end))) < 2 -> 
+
+      length(Map.keys(Map.filter(table.players, fn {_, value} -> value.active end))) < 2 ->
         {:error, :too_few_players}
-      true -> 
-        newround = Round.start(Map.keys(Map.filter(table.players, fn {_, value} -> value.active end)), table.settings)
-        {:ok, %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
+
+      true ->
+        newround =
+          Round.start(
+            Map.keys(Map.filter(table.players, fn {_, value} -> value.active end)),
+            table.settings
+          )
+
+        {:ok,
+         %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
     end
   end
 
   def set_attribute(table, player_id, attribute, value) do
     if Map.has_key?(table.players, player_id) do
       {:ok,
-        %Table{table | 
-          players: Map.put(table.players, player_id, Player.update_player(table.players[player_id], attribute, value))
-        }
-      }
+       %Table{
+         table
+         | players:
+             Map.put(
+               table.players,
+               player_id,
+               Player.update_player(table.players[player_id], attribute, value)
+             )
+       }}
     else
       {:error, :invalid_player_id}
     end
@@ -66,17 +76,19 @@ defmodule Einwortspiel.Game.Table do
       case Round.move(table.round, player_id, move) do
         {:ok, {info, round}} -> {:ok, handle_update({info, round}, table)}
         {:error, error} -> {:error, error}
-      end  
+      end
     else
-      {:error, :invalid_player_id}   
+      {:error, :invalid_player_id}
     end
   end
 
   def update_connected_players(table, joins, leaves) do
-    %Table{table |
-      players: table.players
-      |> Map.new(fn {k, v} -> {k, Player.update_connected(v, true, joins)} end)
-      |> Map.new(fn {k, v} -> {k, Player.update_connected(v, false, leaves)} end)
+    %Table{
+      table
+      | players:
+          table.players
+          |> Map.new(fn {k, v} -> {k, Player.update_connected(v, true, joins)} end)
+          |> Map.new(fn {k, v} -> {k, Player.update_connected(v, false, leaves)} end)
     }
   end
 
@@ -86,10 +98,12 @@ defmodule Einwortspiel.Game.Table do
   end
 
   defp handle_instruction(table, {:result, result}) do
-    %Table{table | state: 
-      table.state
-      |> TableState.update_phase(:end_of_round)
-      |> TableState.update_stats(result)
+    %Table{
+      table
+      | state:
+          table.state
+          |> TableState.update_phase(:end_of_round)
+          |> TableState.update_stats(result)
     }
   end
 

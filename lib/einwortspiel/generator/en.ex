@@ -1,5 +1,4 @@
 defmodule Einwortspiel.Generator.EN do
-  
   def words() do
     [
       "Airplane",
@@ -123,7 +122,7 @@ defmodule Einwortspiel.Generator.EN do
       "Way",
       "Window",
       "Wings",
-      "Wood",
+      "Wood"
     ]
   end
 
@@ -153,9 +152,9 @@ defmodule Einwortspiel.Generator.EN do
       "Stranger",
       "Telephone",
       "Vibe",
-      "Zebra",
+      "Zebra"
     ]
-  end 
+  end
 
   def catchy_adjectives() do
     [
@@ -184,7 +183,7 @@ defmodule Einwortspiel.Generator.EN do
       "Rich",
       "Stormy",
       "Tough",
-      "Zealous",
+      "Zealous"
     ]
   end
 end

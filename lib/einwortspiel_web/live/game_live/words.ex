@@ -5,23 +5,23 @@ defmodule EinwortspielWeb.GameLive.Words do
 
   attr :words, :list
   attr :active, :boolean
-  attr :correctword, :string 
-  attr :guess, :string 
+  attr :correctword, :string
+  attr :guess, :string
   attr :show, :boolean
   # attr :guessed_by, :map 
   # attr :highlighted, :map
   # do grid -> for mobile one col -> else two or three
   def render(assigns) do
     ~H"""
-      <div class="flex justify-center my-2 mx-1"> 
-        <.word
-          :for={word <- @words}
-          value = {word}
-          classstr = {highlight(word == @guess, word == @correctword, @show)}
-          {getextra(%{}, @active)
+    <div class="flex justify-center my-2 mx-1">
+      <.word
+        :for={word <- @words}
+        value={word}
+        classstr={highlight(word == @guess, word == @correctword, @show)}
+        {getextra(%{}, @active)
           }
-        />
-      </div>
+      />
+    </div>
     """
   end
 
@@ -30,7 +30,7 @@ defmodule EinwortspielWeb.GameLive.Words do
   attr :rest, :global
   # TODO: maybe rename card?
   def word(assigns) do
-    ~H""" 
+    ~H"""
     <button
       phx-click="submit_guess"
       value={@value}
@@ -56,19 +56,18 @@ defmodule EinwortspielWeb.GameLive.Words do
     if show do
       put_chosen("", chosen)
       |> put_correct(correct, chosen)
-    else 
-      " bg-white" 
+    else
+      " bg-white"
     end
-
   end
 
   def put_chosen(str, chosen) do
     case chosen do
       true -> str <> " ring ring-inset ring-violet-500"
-        _ -> str
+      _ -> str
     end
   end
-  
+
   def put_correct(str, correct, chosen) do
     cond do
       correct -> str <> " bg-green-300 "

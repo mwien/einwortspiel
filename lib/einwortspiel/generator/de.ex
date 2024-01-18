@@ -1,5 +1,4 @@
 defmodule Einwortspiel.Generator.DE do
-  
   def words() do
     [
       "Arm",
@@ -134,7 +133,7 @@ defmodule Einwortspiel.Generator.DE do
       "Zeit",
       "Zelt",
       "Zimmer",
-      "Zunge",
+      "Zunge"
     ]
   end
 end
