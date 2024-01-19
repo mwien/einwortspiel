@@ -1,6 +1,6 @@
 defmodule EinwortspielWeb.GameLive.Header do
   use EinwortspielWeb, :html
-  
+
   #  alias EinwortspielWeb.GameLive.NextRound
   #  alias EinwortspielWeb.Helpers
   #
@@ -59,5 +59,4 @@ defmodule EinwortspielWeb.GameLive.Header do
   #    <% end %>
   #    """
   #  end
-
 end

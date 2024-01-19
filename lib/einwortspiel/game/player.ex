@@ -6,22 +6,23 @@ defmodule Einwortspiel.Game.Player do
     :active,
     :connected,
     :id,
-    :name, 
-    :score,
+    :name,
+    :score
   ]
 
   def create_player(id) do
     %Player{
-      active: true, 
-      connected: true, # should be fine?
+      active: true,
+      # should be fine?
+      connected: true,
       id: id,
       name: Generator.gen_name(),
-      score: 0,
+      score: 0
     }
   end
 
   def update_player(player, attribute, value) do
-    Map.put(player, attribute, value) 
+    Map.put(player, attribute, value)
   end
 
   def update_score(player, plus_score) do
@@ -34,5 +35,4 @@ defmodule Einwortspiel.Game.Player do
       true -> player
     end
   end
-  
 end

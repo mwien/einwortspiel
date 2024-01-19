@@ -1,5 +1,4 @@
 defmodule Einwortspiel.Generator do
-
   @languages %{"de" => __MODULE__.DE, "en" => __MODULE__.EN}
 
   def gen_words(k, lang) do

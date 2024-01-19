@@ -1,18 +1,6 @@
 defmodule EinwortspielWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
-
-  At first glance, this module may seem daunting, but its goal is to provide
-  core building blocks for your application, such as modals, tables, and
-  forms. The components consist mostly of markup and are well-documented
-  with doc strings and declarative assigns. You may customize and style
-  them in any way you want, based on your application growth and needs.
-
-  The default components use Tailwind CSS, a utility-first CSS framework.
-  See the [Tailwind CSS documentation](https://tailwindcss.com) to learn
-  how to customize them or feel free to swap in another framework altogether.
-
-  Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
   use EinwortspielWeb, :verified_routes
@@ -20,30 +8,31 @@ defmodule EinwortspielWeb.CoreComponents do
   alias Phoenix.LiveView.JS
   import EinwortspielWeb.Gettext
 
-  ### own function components
-  # comment!
+  ### own components
 
-  attr :label, :string 
-  attr :value, :string 
+  attr :label, :string, default: ""
+  attr :value, :string
   attr :class, :string
+
   def textform_placeholder(assigns) do
     ~H"""
     <div class={["flex items-center my-2 mx-0.5", @class]}>
-      <span class="mr-0.5"> <%= @label %> </span>
-      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip" >   
+      <span class="mr-0.5"><%= @label %></span>
+      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip">
         <%= @value %>
-      </div> 
-      <.submit/>
+      </div>
+      <.submit />
     </div>
     """
   end
 
   attr :id, :string
-  attr :label, :string
+  attr :label, :string, default: ""
   attr :form, :map
   attr :submit_handler, :string
+  attr :class, :string, default: ""
   attr :rest, :global
-  attr :class, :string
+
   def textform(assigns) do
     ~H"""
     <.form
@@ -59,7 +48,7 @@ defmodule EinwortspielWeb.CoreComponents do
     </.form>
     """
   end
-  
+
   def submit(assigns) do
     ~H"""
     <button class="submit flex flex-col items-center" style="visibility:hidden">
@@ -67,74 +56,36 @@ defmodule EinwortspielWeb.CoreComponents do
     </button>
     """
   end
-  
-  ##### TODO: make this cleaner!!!
+
+  # maybe add option for class
   attr :id, :any, default: nil
-  attr :name, :any
   attr :label, :string, default: nil
-  attr :value, :any
-
-  attr :type, :string,
-    default: "text",
-    values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
-
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
-  attr :errors, :list, default: []
-  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
-  attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
-  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
-  attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
-
-  attr :rest, :global,
-    include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step)
-
-  slot :inner_block
-
-  def game_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    assigns
-    |> assign(field: nil, id: assigns.id || field.id)
-    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
-    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
-    |> assign_new(:value, fn -> field.value end)
-    |> game_input()
-  end
-  
-  # TODO: add assigns!
-  # TODO: autocomplete not properly working in firefox
-  # -> need to give per round unique id 
-  # -> add this later
-
   def game_input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class="contents">
+    <div phx-feedback-for={@field.name} class="contents">
       <.label for={@id}><%= @label %></.label>
       <input
-        type={@type}
-        name={@name}
-        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        type={"text"}
+        name={@field.name}
+        value={Phoenix.HTML.Form.normalize_value("text", @field.value)}
         class={[
           "text-base md:text-lg bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mx-0.5 py-0.5 px-1 flex-grow min-w-0",
-          "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500",
-          @errors == [] && "border-violet-300 focus:border-violet-500",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500"
         ]}
-        {@rest}
-        autocomplete = "off"
+        autocomplete="off"
       />
-      <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
     """
   end
 
   slot :inner_block, required: true
-  
+
   def main(assigns) do
     ~H"""
-    <main class = "flex flex-col flex-grow w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
+    <main class="flex flex-col flex-grow w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
       <%= render_slot(@inner_block) %>
     </main>
     """
@@ -142,50 +93,48 @@ defmodule EinwortspielWeb.CoreComponents do
 
   slot :inner_block, required: true
   attr :class, :string, default: nil
-  
-  def box(assigns) do 
+
+  def box(assigns) do
     ~H"""
     <div class={[
-        "bg-violet-200 shadow-md rounded-sm p-0.5 mx-1",
-        @class
-      ]}
-    >
+      "bg-violet-200 shadow-md rounded-sm p-0.5 mx-1",
+      @class
+    ]}>
       <%= render_slot(@inner_block) %>
     </div>
     """
   end
-  
+
   slot :inner_block, required: true
   attr :class, :string, default: nil
 
-  # make completely white or little bit gray?
+  # make completely white or a little bit gray?
   def inner_box(assigns) do
     ~H"""
     <div class={[
-        "bg-white shadow-sm rounded-sm p-0.5",
-        @class,
-      ]}
-    > 
+      "bg-white shadow-sm rounded-sm p-0.5",
+      @class
+    ]}>
       <%= render_slot(@inner_block) %>
     </div>
     """
   end
-  
+
   slot :inner_block, required: true
-  
+
   def header(assigns) do
     ~H"""
     <header class="w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto mb-4">
       <.box class="flex items-center justify-between text-center">
-        <h2 class="text-3xl md:text-4xl font-bebasneue m-1"> <a href={~p"/"}> einwortspiel </a> </h2>
+        <h2 class="text-3xl md:text-4xl font-bebasneue m-1"><a href={~p"/"}> einwortspiel </a></h2>
         <%= render_slot(@inner_block) %>
-      </.box> 
-    </header> 
+      </.box>
+    </header>
     """
   end
 
-  ### default function components
-  
+  ### Below are the default function components
+
   @doc """
   Renders a modal.
 
@@ -392,8 +341,6 @@ defmodule EinwortspielWeb.CoreComponents do
 
   slot :inner_block, required: true
 
-  # TODO: maybe modify the leading-8 thing
-
   def button(assigns) do
     ~H"""
     <button
@@ -550,7 +497,6 @@ defmodule EinwortspielWeb.CoreComponents do
     </div>
     """
   end
-  
 
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
@@ -574,7 +520,7 @@ defmodule EinwortspielWeb.CoreComponents do
     </div>
     """
   end
-  
+
   @doc """
   Renders a radio label.
   """
@@ -583,7 +529,10 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def radiolabel(assigns) do
     ~H"""
-    <label for={@for} class="p-0.5 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100">
+    <label
+      for={@for}
+      class="p-0.5 bg-white rounded-sm cursor-pointer peer-checked:ring-violet-500 peer-checked:ring-1 peer-checked:text-violet-700 hover:bg-gray-100"
+    >
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -616,7 +565,7 @@ defmodule EinwortspielWeb.CoreComponents do
     </p>
     """
   end
-  
+
   @doc ~S"""
   Renders a table with generic styling.
 

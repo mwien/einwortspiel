@@ -15,7 +15,7 @@ defmodule Einwortspiel.Game do
 
   # TODO: also check that table_id exists as service name and handle error?
   def join(table_id, player_id) do
-    service_name(table_id)  
+    service_name(table_id)
     |> GenServer.call({:join, player_id})
   end
 
