@@ -3,15 +3,18 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
 
   alias EinwortspielWeb.GameLive.Words
 
-  # TODO: do not pass full state!
-  attr :player, Einwortspiel.Game.Player
+  # TODO: split this up a bit 
+  # e.g. -> for each item have phases where its shown and how 
+  # then just use a map or something
+
   attr :thisplayer, :boolean
-  attr :state, Einwortspiel.Game.TableState
-  attr :clue, :string, default: ""
-  attr :phase, :atom, default: nil
+  attr :player, Einwortspiel.Game.Player
+  attr :table_phase, :atom
+  attr :round_phase, :atom, default: nil
   attr :commonwords, :list, default: nil
   attr :extraword, :string, default: nil
   attr :shuffle, :list, default: nil
+  attr :clue, :string, default: ""
   attr :guess, :list, default: nil
 
   def render(assigns) do
@@ -21,14 +24,13 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
         <.textform
           :if={@thisplayer}
           id="nameform"
-          label=""
           form={to_form(%{"text" => @player.name})}
           submit_handler="set_name"
           class="w-4/12"
         />
-        <.textform_placeholder :if={!@thisplayer} label="" value={@player.name} class="w-4/12" />
+        <.textform_placeholder :if={!@thisplayer} value={@player.name} class="w-4/12" />
         <.textform
-          :if={@thisplayer and @phase == :clues}
+          :if={@thisplayer and @round_phase == :clues}
           id="clueform"
           label="Clue"
           form={to_form(%{"text" => @clue})}
@@ -36,31 +38,31 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
           class="w-6/12"
         />
         <.textform_placeholder
-          :if={@state.phase != :init and @phase != :clues}
+          :if={@table_phase != :init and @round_phase != :clues}
           label="Clue"
           value={@clue}
           class="w-6/12"
         />
         <.icon
-          :if={(@phase == :clues and @clue == nil) or (@phase == :guesses and @guess == nil)}
+          :if={(@round_phase == :clues and @clue == nil) or (@round_phase == :guesses and @guess == nil)}
           name="hero-ellipsis-horizontal"
           class="mx-1 w-4 h-4 md:w-5 md:h-5 duration-2000 animate-bounce"
         />
         <.icon
-          :if={(@phase == :clues and @clue != nil) or (@phase == :guesses and @guess != nil)}
+          :if={(@round_phase == :clues and @clue != nil) or (@round_phase == :guesses and @guess != nil)}
           name="hero-check-circle"
           class="mx-1 w-4 h-4 md:w-5 md:h-5"
         />
         <.icon
-          :if={@phase == :final}
+          :if={@round_phase == :final}
           name="hero-check-circle"
           class="mx-1 w-4 h-4 md:w-5 md:h-5 invisible"
         />
       </div>
       <Words.render
-        :if={@state.phase != :init and (@thisplayer or @phase == :final)}
+        :if={@table_phase != :init and (@thisplayer or @round_phase == :final)}
         words={prepare_words(@commonwords, @extraword, @shuffle)}
-        active={@phase == :guesses and @thisplayer}
+        active={@round_phase == :guesses and @thisplayer}
         correctword={@extraword}
         guess={@guess}
         show={@guess != nil}

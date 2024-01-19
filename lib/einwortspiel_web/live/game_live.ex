@@ -4,6 +4,10 @@ defmodule EinwortspielWeb.GameLive do
   alias EinwortspielWeb.GameLive.{Greet, Pregame, Ingame}
 
   # TUDU: have functions in app for player in table players etc (prob. in table module)
+
+  attr :player_id, :string 
+  attr :table, Einwortspiel.Game.Table
+
   def render(assigns) do
     ~H"""
     <Greet.render :if={!Map.has_key?(@table.players, @player_id)} />
@@ -11,13 +15,12 @@ defmodule EinwortspielWeb.GameLive do
       :if={Map.has_key?(@table.players, @player_id) and @table.state.phase == :init}
       player_id={@player_id}
       players={@table.players}
-      state={@table.state}
     />
     <Ingame.render
       :if={Map.has_key?(@table.players, @player_id) and @table.state.phase != :init}
-      round={@table.round}
       player_id={@player_id}
       players={@table.players}
+      round={@table.round}
       state={@table.state}
     />
     """

@@ -1,18 +1,6 @@
 defmodule EinwortspielWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
-
-  At first glance, this module may seem daunting, but its goal is to provide
-  core building blocks for your application, such as modals, tables, and
-  forms. The components consist mostly of markup and are well-documented
-  with doc strings and declarative assigns. You may customize and style
-  them in any way you want, based on your application growth and needs.
-
-  The default components use Tailwind CSS, a utility-first CSS framework.
-  See the [Tailwind CSS documentation](https://tailwindcss.com) to learn
-  how to customize them or feel free to swap in another framework altogether.
-
-  Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
   use EinwortspielWeb, :verified_routes
@@ -20,10 +8,9 @@ defmodule EinwortspielWeb.CoreComponents do
   alias Phoenix.LiveView.JS
   import EinwortspielWeb.Gettext
 
-  ### own function components
-  # comment!
+  ### own components
 
-  attr :label, :string
+  attr :label, :string, default: ""
   attr :value, :string
   attr :class, :string
 
@@ -40,11 +27,11 @@ defmodule EinwortspielWeb.CoreComponents do
   end
 
   attr :id, :string
-  attr :label, :string
+  attr :label, :string, default: ""
   attr :form, :map
   attr :submit_handler, :string
+  attr :class, :string, default: ""
   attr :rest, :global
-  attr :class, :string
 
   def textform(assigns) do
     ~H"""
@@ -70,64 +57,26 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
 
-  ##### TODO: make this cleaner!!!
+  # maybe add option for class
   attr :id, :any, default: nil
-  attr :name, :any
   attr :label, :string, default: nil
-  attr :value, :any
-
-  attr :type, :string,
-    default: "text",
-    values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
-
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
-  attr :errors, :list, default: []
-  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
-  attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
-  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
-  attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
-
-  attr :rest, :global,
-    include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step)
-
-  slot :inner_block
-
-  def game_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    assigns
-    |> assign(field: nil, id: assigns.id || field.id)
-    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
-    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
-    |> assign_new(:value, fn -> field.value end)
-    |> game_input()
-  end
-
-  # TODO: add assigns!
-  # TODO: autocomplete not properly working in firefox
-  # -> need to give per round unique id 
-  # -> add this later
-
   def game_input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class="contents">
+    <div phx-feedback-for={@field.name} class="contents">
       <.label for={@id}><%= @label %></.label>
       <input
-        type={@type}
-        name={@name}
-        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        type={"text"}
+        name={@field.name}
+        value={Phoenix.HTML.Form.normalize_value("text", @field.value)}
         class={[
           "text-base md:text-lg bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mx-0.5 py-0.5 px-1 flex-grow min-w-0",
-          "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500",
-          @errors == [] && "border-violet-300 focus:border-violet-500",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500"
         ]}
-        {@rest}
         autocomplete="off"
       />
-      <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
     """
   end
@@ -159,7 +108,7 @@ defmodule EinwortspielWeb.CoreComponents do
   slot :inner_block, required: true
   attr :class, :string, default: nil
 
-  # make completely white or little bit gray?
+  # make completely white or a little bit gray?
   def inner_box(assigns) do
     ~H"""
     <div class={[
@@ -184,7 +133,7 @@ defmodule EinwortspielWeb.CoreComponents do
     """
   end
 
-  ### default function components
+  ### Below are the default function components
 
   @doc """
   Renders a modal.
@@ -391,8 +340,6 @@ defmodule EinwortspielWeb.CoreComponents do
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
-
-  # TODO: maybe modify the leading-8 thing
 
   def button(assigns) do
     ~H"""

@@ -2,6 +2,13 @@ defmodule EinwortspielWeb.GameLive.Ingame do
   use EinwortspielWeb, :html
 
   alias EinwortspielWeb.GameLive.PlayerComponent
+  
+  # TODO: map phase to string -> only one call of box with lookup
+
+  attr :player_id, :string 
+  attr :players, :map 
+  attr :round, Einwortspiel.Game.Round
+  attr :state, Einwortspiel.Game.TableState
 
   def render(assigns) do
     ~H"""
@@ -38,27 +45,27 @@ defmodule EinwortspielWeb.GameLive.Ingame do
       </.box>
       <PlayerComponent.render
         :if={Map.has_key?(@round.extrawords, @player_id)}
-        clue={@round.clues[@player_id]}
-        phase={@round.phase}
-        player={@players[@player_id]}
         thisplayer={true}
-        state={@state}
+        player={@players[@player_id]}
+        table_phase={@state.phase}
+        round_phase={@round.phase}
         commonwords={@round.commonwords}
         extraword={@round.extrawords[@player_id]}
         shuffle={@round.shuffle[@player_id]}
+        clue={@round.clues[@player_id]}
         guess={@round.guesses[@player_id]}
       />
       <PlayerComponent.render
         :for={player <- Map.keys(@players)}
         :if={player != @player_id and Map.has_key?(@round.extrawords, player)}
-        clue={@round.clues[player]}
-        phase={@round.phase}
-        player={@players[player]}
         thisplayer={false}
-        state={@state}
+        player={@players[player]}
+        table_phase={@state.phase}
+        round_phase={@round.phase}
         commonwords={@round.commonwords}
         extraword={@round.extrawords[player]}
         shuffle={@round.shuffle[player]}
+        clue={@round.clues[player]}
         guess={@round.guesses[player]}
       />
     </.main>

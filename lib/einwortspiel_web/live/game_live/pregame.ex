@@ -4,6 +4,9 @@ defmodule EinwortspielWeb.GameLive.Pregame do
   alias EinwortspielWeb.GameLive.PlayerComponent
 
   # TUDU: change map_size(@players) to correct function counting active players!
+  attr :player_id, :string
+  attr :players, :map
+
   def render(assigns) do
     ~H"""
     <.header>
@@ -31,13 +34,13 @@ defmodule EinwortspielWeb.GameLive.Pregame do
           </.button>
         </p>
       </.box>
-      <PlayerComponent.render player={@players[@player_id]} thisplayer={true} state={@state} />
+      <PlayerComponent.render player={@players[@player_id]} thisplayer={true} table_phase={:init} />
       <PlayerComponent.render
         :for={player <- Map.keys(@players)}
         :if={player != @player_id}
         player={@players[player]}
         thisplayer={false}
-        state={@state}
+        table_phase={:init}
       />
     </.main>
     """
