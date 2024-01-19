@@ -1,4 +1,4 @@
-# einwortspiel
+# Einwortspiel
 
 Multiplayer word game using Elixir, Phoenix and Liveview. 
 
