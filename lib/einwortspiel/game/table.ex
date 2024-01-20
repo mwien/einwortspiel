@@ -34,14 +34,9 @@ defmodule Einwortspiel.Game.Table do
   end
 
   def manage_round(table, :start) do
-    cond do
-      table.state.phase == :in_round ->
-        {:error, :ongoing_round}
-
-      length(Map.keys(Map.filter(table.players, fn {_, value} -> value.active end))) < 2 ->
-        {:error, :too_few_players}
-
-      true ->
+    case can_start_round?(table) do
+      {false, error} -> {:error, error}
+      true -> 
         newround =
           Round.start(
             Map.keys(Map.filter(table.players, fn {_, value} -> value.active end)),
@@ -51,6 +46,14 @@ defmodule Einwortspiel.Game.Table do
         {:ok,
          %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
     end
+  end
+
+  def can_start_round?(table) do
+    cond do
+      table.state.phase == :in_round -> {false, :ongoing_round}
+      Enum.count(Map.values(table.players), &(&1.active)) < 2 -> {false, :too_few_players}
+      true -> true
+    end 
   end
 
   def set_attribute(table, player_id, attribute, value) do

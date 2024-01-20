@@ -1,5 +1,5 @@
 defmodule Einwortspiel.Game do
-  alias Einwortspiel.Game.TableSupervisor
+  alias Einwortspiel.Game.{Table, TableSupervisor}
 
   # Client-facing API for the game
   def open_table(options) do
@@ -17,6 +17,11 @@ defmodule Einwortspiel.Game do
   def join(table_id, player_id) do
     service_name(table_id)
     |> GenServer.call({:join, player_id})
+  end
+
+  # check whether new round can be started
+  def can_start_round?(table) do 
+    Table.can_start_round?(table)
   end
 
   # possible commands: 
@@ -41,7 +46,7 @@ defmodule Einwortspiel.Game do
     |> GenServer.call({:move, player_id, move})
   end
 
-  def service_name(table_id) do
+  defp service_name(table_id) do
     GenServer.whereis(Einwortspiel.Application.via_tuple(table_id))
   end
 end
