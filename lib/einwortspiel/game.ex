@@ -13,6 +13,10 @@ defmodule Einwortspiel.Game do
     end
   end
 
+  def has_joined?(table, player_id) do
+    Map.has_key?(table.players, player_id)
+  end
+
   # TODO: also check that table_id exists as service name and handle error?
   def join(table_id, player_id) do
     service_name(table_id)
@@ -20,7 +24,7 @@ defmodule Einwortspiel.Game do
   end
 
   # check whether new round can be started
-  def can_start_round?(table) do 
+  def can_start_round?(table) do
     Table.can_start_round?(table)
   end
 

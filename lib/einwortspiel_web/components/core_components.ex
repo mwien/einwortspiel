@@ -60,6 +60,7 @@ defmodule EinwortspielWeb.CoreComponents do
   # maybe add option for class
   attr :id, :any, default: nil
   attr :label, :string, default: nil
+
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -68,7 +69,7 @@ defmodule EinwortspielWeb.CoreComponents do
     <div phx-feedback-for={@field.name} class="contents">
       <.label for={@id}><%= @label %></.label>
       <input
-        type={"text"}
+        type="text"
         name={@field.name}
         value={Phoenix.HTML.Form.normalize_value("text", @field.value)}
         class={[

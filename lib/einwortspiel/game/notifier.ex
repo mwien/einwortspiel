@@ -8,7 +8,6 @@ defmodule Einwortspiel.Game.Notifier do
   end
 
   def publish_player(player_id, payload) do
-    # IO.inspect({table_id, player_id, instruction_payload})
     PubSub.broadcast(Einwortspiel.PubSub, "player:" <> player_id, payload)
   end
 end

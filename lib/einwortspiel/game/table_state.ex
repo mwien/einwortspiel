@@ -21,10 +21,10 @@ defmodule Einwortspiel.Game.TableState do
     Map.put(state, :phase, new_phase)
   end
 
-  def update_stats(state, win) do
-    case win do
-      true -> Map.put(state, :wins, state.wins + 1)
-      _ -> Map.put(state, :losses, state.losses + 1)
+  def update_stats(state, result) do
+    case result do
+      :win -> Map.put(state, :wins, state.wins + 1)
+      :loss -> Map.put(state, :losses, state.losses + 1)
     end
   end
 end

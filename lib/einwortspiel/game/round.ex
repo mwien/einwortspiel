@@ -2,14 +2,11 @@ defmodule Einwortspiel.Game.Round do
   alias __MODULE__
   alias Einwortspiel.Generator
 
-  # TODO: maybe use state machine
+  # TUDU: maybe use state machine for game state (and maybe notifications)
 
-  # add typespecs later if ever
-  # TODO: maybe shuffle should not be here?
   defstruct [
-    :commonwords,
+    :allwords,
     :extrawords,
-    :shuffle,
     :phase,
     :waiting_for,
     :clues,
@@ -28,12 +25,16 @@ defmodule Einwortspiel.Game.Round do
   end
 
   def create_round(commonwords, extrawords, players) do
+    extrawords = Map.new(Enum.zip(players, extrawords))
+
     %Round{
-      commonwords: commonwords,
-      extrawords: Map.new(Enum.zip(players, extrawords)),
-      shuffle: Map.new(players, fn x -> {x, Enum.shuffle(0..length(commonwords))} end),
+      allwords:
+        Map.new(extrawords, fn {player, extraword} ->
+          {player, Enum.shuffle([extraword | commonwords])}
+        end),
+      extrawords: extrawords,
       phase: :clues,
-      waiting_for: players,
+      waiting_for: MapSet.new(players),
       clues: %{},
       guesses: %{},
       info: []
@@ -54,12 +55,12 @@ defmodule Einwortspiel.Game.Round do
   end
 
   def handle_move(round, player, {:submit_clue, clue}) do
-    if Enum.member?(round.waiting_for, player) and round.phase == :clues do
+    if MapSet.member?(round.waiting_for, player) and round.phase == :clues do
       {:ok,
        %Round{
          round
          | clues: Map.put(round.clues, player, clue),
-           waiting_for: List.delete(round.waiting_for, player)
+           waiting_for: MapSet.delete(round.waiting_for, player)
        }}
     else
       {:error, :unauthorized_move}
@@ -67,12 +68,12 @@ defmodule Einwortspiel.Game.Round do
   end
 
   def handle_move(round, player, {:submit_guess, guess}) do
-    if Enum.member?(round.waiting_for, player) and round.phase == :guesses do
+    if MapSet.member?(round.waiting_for, player) and round.phase == :guesses do
       {:ok,
        %Round{
          round
          | guesses: Map.put(round.guesses, player, guess),
-           waiting_for: List.delete(round.waiting_for, player)
+           waiting_for: MapSet.delete(round.waiting_for, player)
        }}
     else
       {:error, :unauthorized_move}
@@ -83,7 +84,6 @@ defmodule Einwortspiel.Game.Round do
     {:error, :unknown_move}
   end
 
-  # TODO: implement skip with proper state machine!
   def update_phase(round) do
     if !Enum.empty?(round.waiting_for) do
       round
@@ -91,14 +91,19 @@ defmodule Einwortspiel.Game.Round do
       case round.phase do
         :clues ->
           %{round | phase: :guesses}
-          |> Map.put(:waiting_for, Map.keys(round.extrawords))
+          |> Map.put(:waiting_for, MapSet.new(Map.keys(round.extrawords)))
 
         :guesses ->
-          %{round | phase: :final}
-          |> Map.put(:waiting_for, [])
-          |> add_info({:result, round.guesses == round.extrawords})
+          result = if round.guesses == round.extrawords, do: :win, else: :loss
 
-        :final ->
+          %{round | phase: result}
+          |> Map.put(:waiting_for, MapSet.new())
+          |> add_info({:result, result})
+
+        :win ->
+          round
+
+        :loss ->
           round
       end
     end

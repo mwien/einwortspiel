@@ -3,25 +3,43 @@ defmodule EinwortspielWeb.GameLive do
 
   alias EinwortspielWeb.GameLive.{Greet, Pregame, Ingame}
 
-  # TUDU: have functions in app for player in table players etc (prob. in table module)
-
-  attr :player_id, :string 
-  attr :table, Einwortspiel.Game.Table
+  attr :player_id, :string
+  attr :has_joined, :boolean
+  attr :table_phase, :atom
+  attr :can_start_round, :boolean
+  attr :wins, :integer
+  attr :losses, :integer
+  attr :players, :map
+  attr :clues, :map, default: nil
+  attr :guesses, :map, default: nil
+  attr :allwords, :map, default: nil
+  attr :extrawords, :map, default: nil
+  attr :waiting_for, :map, default: nil
+  attr :round_phase, :atom, default: nil
 
   def render(assigns) do
     ~H"""
-    <Greet.render :if={!Map.has_key?(@table.players, @player_id)} />
+    <Greet.render :if={!@has_joined} />
     <Pregame.render
-      :if={Map.has_key?(@table.players, @player_id) and @table.state.phase == :init}
+      :if={@has_joined and @table_phase == :init}
+      can_start_round={@can_start_round}
       player_id={@player_id}
-      players={@table.players}
+      players={@players}
     />
     <Ingame.render
-      :if={Map.has_key?(@table.players, @player_id) and @table.state.phase != :init}
+      :if={@has_joined and @table_phase != :init}
       player_id={@player_id}
-      players={@table.players}
-      round={@table.round}
-      state={@table.state}
+      clues={@clues}
+      guesses={@guesses}
+      allwords={@allwords}
+      extrawords={@extrawords}
+      waiting_for={@waiting_for}
+      table_phase={@table_phase}
+      round_phase={@round_phase}
+      players={@players}
+      can_start_round={@can_start_round}
+      wins={@wins}
+      losses={@losses}
     />
     """
   end
@@ -31,18 +49,6 @@ defmodule EinwortspielWeb.GameLive do
         _value,
         %{assigns: %{table_id: table_id, player_id: player_id}} = socket
       ) do
-    topic = "table_pres:#{table_id}"
-    # TUDU: do we use this currently?
-    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
-    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
-
-    Einwortspiel.Presence.track(
-      self(),
-      topic,
-      player_id,
-      %{}
-    )
-
     Einwortspiel.Game.join(table_id, player_id)
     {:noreply, socket}
   end
@@ -89,23 +95,24 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  # TUDU: make this more fine_grained at some point -> round, state, players, chat, ...
+  # TUDU: make updates more fine_grained at some point
   def handle_info({:update, table}, socket) do
-    {:noreply, assign(socket, :table, table)}
+    {:noreply, process_table(socket, table, socket.assigns.player_id)}
   end
 
   def handle_info({:error, error}, socket) do
     {:noreply, put_flash(socket, :error, error)}
   end
 
-  def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do
-    {:noreply,
-     assign(
-       socket,
-       :table,
-       Einwortspiel.Game.Table.update_connected_players(socket.assigns.table, joins, leaves)
-     )}
-  end
+  # TODO: fix presence stuff
+  # def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do
+  #  {:noreply,
+  #   assign(
+  #     socket,
+  #     :table,
+  #     Einwortspiel.Game.Table.update_connected_players(socket.assigns.table, joins, leaves)
+  #   )}
+  # end
 
   def mount(%{"table_id" => table_id}, %{"user_id" => player_id}, socket) do
     case Einwortspiel.Game.get_table(table_id) do
@@ -114,12 +121,48 @@ defmodule EinwortspielWeb.GameLive do
 
       table ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table:#{table_id}")
+        # TUDU: do we use this currently?
+        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
+        # topic = "table_pres:#{table_id}"
+        # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
+
+        # Einwortspiel.Presence.track(
+        #    self(),
+        #    topic,
+        #    player_id,
+        #  %{}
+        # )
 
         {:ok,
          socket
          |> assign(:table_id, table_id)
          |> assign(:player_id, player_id)
-         |> assign(:table, table)}
+         |> process_table(table, player_id)}
     end
+  end
+
+  defp process_table(socket, table, player_id) do
+    socket
+    |> assign(:has_joined, Einwortspiel.Game.has_joined?(table, player_id))
+    |> assign(:players, table.players)
+    |> assign(:can_start_round, Einwortspiel.Game.can_start_round?(table))
+    |> assign(:table_phase, table.state.phase)
+    |> assign(:wins, table.state.wins)
+    |> assign(:losses, table.state.losses)
+    |> process_round(table.round)
+  end
+
+  defp process_round(socket, nil) do
+    socket
+  end
+
+  defp process_round(socket, round) do
+    socket
+    |> assign(:clues, round.clues)
+    |> assign(:guesses, round.guesses)
+    |> assign(:allwords, round.allwords)
+    |> assign(:extrawords, round.extrawords)
+    |> assign(:waiting_for, round.waiting_for)
+    |> assign(:round_phase, round.phase)
   end
 end
