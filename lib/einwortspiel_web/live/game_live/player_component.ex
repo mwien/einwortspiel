@@ -43,11 +43,11 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
           class="w-6/12"
         />
         <.icon
-          :if={@waiting == true}
+          :if={@waiting == true and @table_phase != :end_of_round}
           name="hero-ellipsis-horizontal"
           class="mx-1 w-4 h-4 md:w-5 md:h-5 duration-2000 animate-bounce"
         />
-        <.icon :if={@waiting == false} name="hero-check-circle" class="mx-1 w-4 h-4 md:w-5 md:h-5" />
+        <.icon :if={@waiting == false and @table_phase != :end_of_round} name="hero-check-circle" class="mx-1 w-4 h-4 md:w-5 md:h-5" />
         <.icon
           :if={@round_phase == :win or @round_phase == :loss}
           name="hero-check-circle"
