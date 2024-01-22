@@ -13,7 +13,7 @@ defmodule Einwortspiel.Game.Table do
     :state
   ]
 
-  def open_table(options) do
+  def create_table(options) do
     %Table{
       table_id: generate_table_id(),
       round: nil,
@@ -23,7 +23,7 @@ defmodule Einwortspiel.Game.Table do
     }
   end
 
-  def join(table, player_id) do
+  def create_player(table, player_id) do
     if !Map.has_key?(table.players, player_id) do
       {:ok,
        %Table{table | players: Map.put(table.players, player_id, Player.create_player(player_id))}}
@@ -33,32 +33,7 @@ defmodule Einwortspiel.Game.Table do
     end
   end
 
-  def manage_round(table, :start) do
-    case can_start_round?(table) do
-      {false, error} ->
-        {:error, error}
-
-      true ->
-        newround =
-          Round.start(
-            Map.keys(Map.filter(table.players, fn {_, value} -> value.active end)),
-            table.settings
-          )
-
-        {:ok,
-         %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
-    end
-  end
-
-  def can_start_round?(table) do
-    cond do
-      table.state.phase == :in_round -> {false, :ongoing_round}
-      Enum.count(Map.values(table.players), & &1.active) < 2 -> {false, :too_few_players}
-      true -> true
-    end
-  end
-
-  def set_attribute(table, player_id, attribute, value) do
+  def update_player(table, player_id, attribute, value) do
     if Map.has_key?(table.players, player_id) do
       {:ok,
        %Table{
@@ -75,10 +50,35 @@ defmodule Einwortspiel.Game.Table do
     end
   end
 
+  def manage_game(table, :start) do
+    case ready_to_start?(table) do
+      {false, error} ->
+        {:error, error}
+
+      true ->
+        newround =
+          Round.start(
+            Map.keys(Map.filter(table.players, fn {_, value} -> value.active end)),
+            table.settings
+          )
+
+        {:ok,
+         %Table{table | round: newround, state: TableState.update_phase(table.state, :in_round)}}
+    end
+  end
+  
+  def ready_to_start?(table) do
+    cond do
+      table.state.phase == :in_round -> {false, :ongoing_round}
+      Enum.count(Map.values(table.players), & &1.active) < 2 -> {false, :too_few_players}
+      true -> true
+    end
+  end
+
   # TODO: check inround!!!
-  def move(table, player_id, move) do
+  def make_move(table, player_id, move) do
     if Map.has_key?(table.players, player_id) do
-      case Round.move(table.round, player_id, move) do
+      case Round.make_move(table.round, player_id, move) do
         {:ok, {info, round}} -> {:ok, handle_update({info, round}, table)}
         {:error, error} -> {:error, error}
       end

@@ -13,9 +13,6 @@ config :einwortspiel, EinwortspielWeb.Endpoint,
 	cache_static_manifest: "priv/static/cache_manifest.json",
 	check_origin: ["https://www.einwortspiel.com", "https://einwortspiel.com"]
 
-# Configures Swoosh API Client
-config :swoosh, :api_client, Einwortspiel.Finch
-
 # Do not print debug messages in production
 config :logger, level: :info
 

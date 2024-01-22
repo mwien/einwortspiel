@@ -18,7 +18,7 @@ defmodule EinwortspielWeb.CoreComponents do
     ~H"""
     <div class={["flex items-center my-2 mx-0.5", @class]}>
       <span class="mr-0.5"><%= @label %></span>
-      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip">
+      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip min-h-8">
         <%= @value %>
       </div>
       <.submit />

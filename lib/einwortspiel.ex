@@ -1,9 +1,5 @@
 defmodule Einwortspiel do
   @moduledoc """
-  Einwortspiel keeps the contexts that define your domain
-  and business logic.
-
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
+  Einwortspiel contains the business logic. In game.ex the API is exposed with all functions relevant to playing the game. In addition, generator.ex supplies functions for generating words and names, which can be used independently.
   """
 end

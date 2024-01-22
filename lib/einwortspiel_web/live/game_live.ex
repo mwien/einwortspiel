@@ -49,13 +49,13 @@ defmodule EinwortspielWeb.GameLive do
         _value,
         %{assigns: %{table_id: table_id, player_id: player_id}} = socket
       ) do
-    Einwortspiel.Game.join(table_id, player_id)
+    Einwortspiel.Game.create_player(table_id, player_id)
     {:noreply, socket}
   end
 
   # TUDU -> "text" vs "value" (form vs button) -> unify?
   def handle_event("set_name", %{"text" => name}, socket) do
-    Einwortspiel.Game.set_attribute(
+    Einwortspiel.Game.update_player(
       socket.assigns.table_id,
       socket.assigns.player_id,
       :name,
@@ -66,7 +66,7 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_event("start_round", _value, socket) do
-    Einwortspiel.Game.manage_round(
+    Einwortspiel.Game.manage_game(
       socket.assigns.table_id,
       :start,
       socket.assigns.player_id
@@ -76,7 +76,7 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_event("submit_clue", %{"text" => clue}, socket) do
-    Einwortspiel.Game.move(
+    Einwortspiel.Game.make_move(
       socket.assigns.table_id,
       socket.assigns.player_id,
       {:submit_clue, clue}
@@ -86,7 +86,7 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_event("submit_guess", %{"value" => guess}, socket) do
-    Einwortspiel.Game.move(
+    Einwortspiel.Game.make_move(
       socket.assigns.table_id,
       socket.assigns.player_id,
       {:submit_guess, guess}
@@ -143,9 +143,9 @@ defmodule EinwortspielWeb.GameLive do
 
   defp process_table(socket, table, player_id) do
     socket
-    |> assign(:has_joined, Einwortspiel.Game.has_joined?(table, player_id))
+    |> assign(:has_joined, Einwortspiel.Game.has_player?(table, player_id))
     |> assign(:players, table.players)
-    |> assign(:can_start_round, Einwortspiel.Game.can_start_round?(table))
+    |> assign(:can_start_round, Einwortspiel.Game.ready_to_start?(table))
     |> assign(:table_phase, table.state.phase)
     |> assign(:wins, table.state.wins)
     |> assign(:losses, table.state.losses)

@@ -51,13 +51,13 @@ defmodule EinwortspielWeb.Router do
   #
   # Note that preview only shows emails that were sent by the same
   # node running the Phoenix server.
-  if Mix.env() == :dev do
-    scope "/dev" do
-      pipe_through :browser
-
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
-  end
+  # if Mix.env() == :dev do
+  #   scope "/dev" do
+  #     pipe_through :browser
+  #
+  #     forward "/mailbox", Plug.Swoosh.MailboxPreview
+  #   end
+  # end
 
   defp fetch_current_user(conn, _) do
     case get_session(conn, :user_id) do

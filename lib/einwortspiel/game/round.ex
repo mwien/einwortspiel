@@ -41,7 +41,7 @@ defmodule Einwortspiel.Game.Round do
     }
   end
 
-  def move(round, player, move) do
+  def make_move(round, player, move) do
     case handle_move(round, player, move) do
       {:ok, round} ->
         {:ok,

@@ -1,9 +1,11 @@
 defmodule Einwortspiel.Game do
-  alias Einwortspiel.Game.{Table, TableSupervisor}
+  alias Einwortspiel.Game.{Table, Supervisor}
+  
+  # TODO: always check that table_id exists as service name and handle error?
 
   # Client-facing API for the game
-  def open_table(options) do
-    TableSupervisor.open_table(options)
+  def create_table(options) do
+    Supervisor.create_table(options)
   end
 
   def get_table(table_id) do
@@ -13,50 +15,44 @@ defmodule Einwortspiel.Game do
     end
   end
 
-  # TODO: also check that table_id exists as service name and handle error?
-
-  # TODO: -> name create_player()
-  def join(table_id, player_id) do
+  def create_player(table_id, player_id) do
     service_name(table_id)
-    |> GenServer.call({:join, player_id})
+    |> GenServer.call({:create_player, player_id})
   end
 
-  # TODO: name update_player!
   # possible attributes: 
   # :name -> name of player
-  def set_attribute(table_id, player_id, attribute, value) do
+  def update_player(table_id, player_id, attribute, value) do
     service_name(table_id)
-    |> GenServer.call({:set_attribute, player_id, attribute, value})
+    |> GenServer.call({:update_player, player_id, attribute, value})
   end
-
-  # better name -> manage_game -> :start
-  # possible commands: 
-  # :start -> for starting the (next) round
-  def manage_round(table_id, command, player_id) do
-    service_name(table_id)
-    |> GenServer.call({:manage_round, command, player_id})
-  end
-
-  # TODO: maybe rename make_move
-  # possible moves: 
-  # {:submit_clue, clue} 
-  # {:submit_guess, guess}
-  def move(table_id, player_id, move) do
-    service_name(table_id)
-    |> GenServer.call({:move, player_id, move})
-  end
-
+  
   # rename to has_player?
-  def has_joined?(table, player_id) do
+  def has_player?(table, player_id) do
     Map.has_key?(table.players, player_id)
   end
 
-  # rename to "can_start?" ??? -> "ready_to_start?"
-  # check whether new round can be started
-  def can_start_round?(table) do
-    Table.can_start_round?(table)
+  # possible commands: 
+  # :start -> for starting the (next) round
+  def manage_game(table_id, command, player_id) do
+    service_name(table_id)
+    |> GenServer.call({:manage_game, command, player_id})
   end
 
+  # check whether new round can be started
+  def ready_to_start?(table) do
+    Table.ready_to_start?(table)
+  end
+
+
+  # possible moves: 
+  # {:submit_clue, clue} 
+  # {:submit_guess, guess}
+  def make_move(table_id, player_id, move) do
+    service_name(table_id)
+    |> GenServer.call({:make_move, player_id, move})
+  end
+ 
   defp service_name(table_id) do
     GenServer.whereis(Einwortspiel.Application.via_tuple(table_id))
   end

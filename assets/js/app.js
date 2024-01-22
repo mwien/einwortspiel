@@ -32,14 +32,14 @@ function checkdiff(el) {
   var text = el.querySelector('input[type=text]');
   var submit = el.querySelector('.submit');
   if(text.value === hidden.textContent) {
-	  submit.style.visibility = 'hidden';
+    submit.style.visibility = 'hidden';
   } else {
-	  submit.style.visibility = 'visible';
+    submit.style.visibility = 'visible';
   }
 }
 
 let Hooks = {}
-// think about disabling submit when equal, but I don't want to touch this right now (phx-submit magic etc)
+// thinking about disabling submit when equal, but I don't want to touch this right now
 Hooks.Diff = { // is this possible without hidden span?
   mounted() {
     this.el.addEventListener("input", e => {
