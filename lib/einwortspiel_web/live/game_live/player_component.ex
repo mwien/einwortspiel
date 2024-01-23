@@ -3,18 +3,17 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
 
   alias EinwortspielWeb.GameLive.Words
 
-  # TODO: split this up a bit 
-  # e.g. -> for each item have phases where its shown and how 
-  # then just use a map or something
+  # TUDU: make render nicer
+  # TUDU: maybe win/loss icon
 
   attr :thisplayer, :boolean
   attr :player, Einwortspiel.Game.Player
   attr :table_phase, :atom
   attr :round_phase, :atom, default: nil
-  attr :commonwords, :list, default: nil
+  attr :allwords, :list, default: nil
   attr :extraword, :string, default: nil
-  attr :shuffle, :list, default: nil
-  attr :clue, :string, default: ""
+  attr :waiting, :boolean, default: nil
+  attr :clue, :string, default: nil
   attr :guess, :list, default: nil
 
   def render(assigns) do
@@ -30,7 +29,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
         />
         <.textform_placeholder :if={!@thisplayer} value={@player.name} class="w-4/12" />
         <.textform
-          :if={@thisplayer and @round_phase == :clues}
+          :if={@thisplayer and @round_phase == :clues and @clue == nil}
           id="clueform"
           label="Clue"
           form={to_form(%{"text" => @clue})}
@@ -38,30 +37,26 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
           class="w-6/12"
         />
         <.textform_placeholder
-          :if={@table_phase != :init and @round_phase != :clues}
+          :if={(@table_phase != :init and @round_phase != :clues) or (@round_phase == :clues and @clue != nil and @thisplayer)}
           label="Clue"
           value={@clue}
           class="w-6/12"
         />
         <.icon
-          :if={(@round_phase == :clues and @clue == nil) or (@round_phase == :guesses and @guess == nil)}
+          :if={@waiting == true and @table_phase != :end_of_round}
           name="hero-ellipsis-horizontal"
           class="mx-1 w-4 h-4 md:w-5 md:h-5 duration-2000 animate-bounce"
         />
+        <.icon :if={@waiting == false and @table_phase != :end_of_round} name="hero-check-circle" class="mx-1 w-4 h-4 md:w-5 md:h-5" />
         <.icon
-          :if={(@round_phase == :clues and @clue != nil) or (@round_phase == :guesses and @guess != nil)}
-          name="hero-check-circle"
-          class="mx-1 w-4 h-4 md:w-5 md:h-5"
-        />
-        <.icon
-          :if={@round_phase == :final}
+          :if={@round_phase == :win or @round_phase == :loss}
           name="hero-check-circle"
           class="mx-1 w-4 h-4 md:w-5 md:h-5 invisible"
         />
       </div>
       <Words.render
         :if={@table_phase != :init and (@thisplayer or @round_phase == :final)}
-        words={prepare_words(@commonwords, @extraword, @shuffle)}
+        words={@allwords}
         active={@round_phase == :guesses and @thisplayer}
         correctword={@extraword}
         guess={@guess}
@@ -69,13 +64,5 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
       />
     </.box>
     """
-  end
-
-  defp prepare_words(commonwords, extraword, shuffle) do
-    [extraword | commonwords]
-    |> Enum.zip(shuffle)
-    |> List.keysort(1)
-    |> Enum.unzip()
-    |> elem(0)
   end
 end

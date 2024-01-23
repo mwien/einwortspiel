@@ -1,4 +1,4 @@
-defmodule Einwortspiel.Game.TableSupervisor do
+defmodule Einwortspiel.Game.Supervisor do
   use DynamicSupervisor
 
   alias Einwortspiel.Game.Table
@@ -12,9 +12,9 @@ defmodule Einwortspiel.Game.TableSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def open_table(options) do
-    table = Table.open_table(options)
-    DynamicSupervisor.start_child(__MODULE__, {Einwortspiel.Game.TableServer, table})
+  def create_table(options) do
+    table = Table.create_table(options)
+    DynamicSupervisor.start_child(__MODULE__, {Einwortspiel.Game.Server, table})
     table.table_id
   end
 

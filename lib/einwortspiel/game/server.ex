@@ -1,4 +1,4 @@
-defmodule Einwortspiel.Game.TableServer do
+defmodule Einwortspiel.Game.Server do
   use GenServer
   alias Einwortspiel.Game.Table
 
@@ -25,29 +25,29 @@ defmodule Einwortspiel.Game.TableServer do
     {:reply, state, state}
   end
 
-  def handle_call({:join, player_id}, _from, state) do
-    case Table.join(state, player_id) do
+  def handle_call({:create_player, player_id}, _from, state) do
+    case Table.create_player(state, player_id) do
       {:ok, table} -> {:reply, :ok, handle_update(table)}
       {:error, error} -> {:reply, handle_error(error, player_id), state}
     end
   end
 
-  def handle_call({:manage_round, command, player_id}, _from, state) do
-    case Table.manage_round(state, command) do
+  def handle_call({:update_player, player_id, attribute, value}, _from, state) do
+    case Table.update_player(state, player_id, attribute, value) do
       {:ok, table} -> {:reply, :ok, handle_update(table)}
       {:error, error} -> {:reply, handle_error(error, player_id), state}
     end
   end
 
-  def handle_call({:set_attribute, player_id, attribute, value}, _from, state) do
-    case Table.set_attribute(state, player_id, attribute, value) do
+  def handle_call({:manage_game, command, player_id}, _from, state) do
+    case Table.manage_game(state, command) do
       {:ok, table} -> {:reply, :ok, handle_update(table)}
       {:error, error} -> {:reply, handle_error(error, player_id), state}
     end
   end
 
-  def handle_call({:move, player_id, move}, _from, state) do
-    case Table.move(state, player_id, move) do
+  def handle_call({:make_move, player_id, move}, _from, state) do
+    case Table.make_move(state, player_id, move) do
       {:ok, table} -> {:reply, :ok, handle_update(table)}
       {:error, error} -> {:reply, handle_error(error, player_id), state}
     end

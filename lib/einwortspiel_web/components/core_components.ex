@@ -17,8 +17,8 @@ defmodule EinwortspielWeb.CoreComponents do
   def textform_placeholder(assigns) do
     ~H"""
     <div class={["flex items-center my-2 mx-0.5", @class]}>
-      <span class="mr-0.5"><%= @label %></span>
-      <div class="text-start rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip">
+      <span class="block mr-0.5"><%= @label %></span>
+      <div class="text-start text-base md:text-lg rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip border border-opacity-0 border-violet-500">
         <%= @value %>
       </div>
       <.submit />
@@ -51,7 +51,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def submit(assigns) do
     ~H"""
-    <button class="submit flex flex-col items-center" style="visibility:hidden">
+    <button class="submit flex flex-col items-center" style="visibility:hidden" disabled>
       <.icon name="hero-paper-airplane" class="w-4 h-4 md:w-5 md:h-5" />
     </button>
     """
@@ -60,6 +60,7 @@ defmodule EinwortspielWeb.CoreComponents do
   # maybe add option for class
   attr :id, :any, default: nil
   attr :label, :string, default: nil
+
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -68,11 +69,11 @@ defmodule EinwortspielWeb.CoreComponents do
     <div phx-feedback-for={@field.name} class="contents">
       <.label for={@id}><%= @label %></.label>
       <input
-        type={"text"}
+        type="text"
         name={@field.name}
         value={Phoenix.HTML.Form.normalize_value("text", @field.value)}
         class={[
-          "text-base md:text-lg bg-white focus:outline-none focus:ring-1 rounded-sm focus:ring-violet-500 mx-0.5 py-0.5 px-1 flex-grow min-w-0",
+          "text-base md:text-lg bg-white rounded-sm mx-0.5 py-0.5 px-1 flex-grow min-w-0",
           "phx-no-feedback:border-violet-300 phx-no-feedback:focus:border-violet-500"
         ]}
         autocomplete="off"
@@ -112,7 +113,7 @@ defmodule EinwortspielWeb.CoreComponents do
   def inner_box(assigns) do
     ~H"""
     <div class={[
-      "bg-white shadow-sm rounded-sm p-0.5",
+      "bg-white shadow-sm rounded-sm p-1",
       @class
     ]}>
       <%= render_slot(@inner_block) %>
