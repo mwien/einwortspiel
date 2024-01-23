@@ -6,7 +6,7 @@ defmodule EinwortspielWeb.GameLive do
   attr :player_id, :string
   attr :has_joined, :boolean
   attr :table_phase, :atom
-  attr :can_start_round, :boolean
+  attr :ready_to_start, :boolean
   attr :wins, :integer
   attr :losses, :integer
   attr :players, :map
@@ -22,7 +22,7 @@ defmodule EinwortspielWeb.GameLive do
     <Greet.render :if={!@has_joined} />
     <Pregame.render
       :if={@has_joined and @table_phase == :init}
-      can_start_round={@can_start_round}
+      ready_to_start={@ready_to_start}
       player_id={@player_id}
       players={@players}
     />
@@ -37,7 +37,7 @@ defmodule EinwortspielWeb.GameLive do
       table_phase={@table_phase}
       round_phase={@round_phase}
       players={@players}
-      can_start_round={@can_start_round}
+      ready_to_start={@ready_to_start}
       wins={@wins}
       losses={@losses}
     />
@@ -145,7 +145,13 @@ defmodule EinwortspielWeb.GameLive do
     socket
     |> assign(:has_joined, Einwortspiel.Game.has_player?(table, player_id))
     |> assign(:players, table.players)
-    |> assign(:can_start_round, Einwortspiel.Game.ready_to_start?(table))
+    |> assign(
+      :ready_to_start,
+      case Einwortspiel.Game.ready_to_start?(table) do
+        {false, _} -> false
+        true -> true
+      end
+    )
     |> assign(:table_phase, table.state.phase)
     |> assign(:wins, table.state.wins)
     |> assign(:losses, table.state.losses)

@@ -5,22 +5,22 @@ defmodule EinwortspielWeb.GameLive.Pregame do
 
   attr :player_id, :string
   attr :players, :map
-  attr :can_start_round, :boolean
+  attr :ready_to_start, :boolean
 
   def render(assigns) do
     ~H"""
     <.header>
-      <.button :if={@can_start_round} phx-click="start_round" class="px-1 py-0.5 m-1">
+      <.button :if={@ready_to_start} phx-click="start_round" class="px-1 py-0.5 m-1">
         Start
       </.button>
     </.header>
     <.main>
       <.box class="text-center my-1">
-        <p :if={!@can_start_round} class="m-1">
+        <p :if={!@ready_to_start} class="m-1">
           Waiting for second player
           <.icon name="hero-ellipsis-horizontal" class="ml-1.5 w-5 h-5 duration-2000 animate-bounce" />
         </p>
-        <p :if={@can_start_round} class="m-1">
+        <p :if={@ready_to_start} class="m-1">
           Ready to start <.icon name="hero-check-circle" class="ml-1.5 w-5 h-5" />
         </p>
         <p class="m-1">

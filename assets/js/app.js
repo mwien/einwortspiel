@@ -33,8 +33,10 @@ function checkdiff(el) {
   var submit = el.querySelector('.submit');
   if(text.value === hidden.textContent) {
     submit.style.visibility = 'hidden';
+    submit.setAttribute('disabled', '');
   } else {
     submit.style.visibility = 'visible';
+    submit.removeAttribute('disabled');
   }
 }
 

@@ -13,7 +13,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
   attr :allwords, :list, default: nil
   attr :extraword, :string, default: nil
   attr :waiting, :boolean, default: nil
-  attr :clue, :string, default: ""
+  attr :clue, :string, default: nil
   attr :guess, :list, default: nil
 
   def render(assigns) do
@@ -29,7 +29,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
         />
         <.textform_placeholder :if={!@thisplayer} value={@player.name} class="w-4/12" />
         <.textform
-          :if={@thisplayer and @round_phase == :clues}
+          :if={@thisplayer and @round_phase == :clues and @clue == nil}
           id="clueform"
           label="Clue"
           form={to_form(%{"text" => @clue})}
@@ -37,7 +37,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
           class="w-6/12"
         />
         <.textform_placeholder
-          :if={@table_phase != :init and @round_phase != :clues}
+          :if={(@table_phase != :init and @round_phase != :clues) or (@round_phase == :clues and @clue != nil and @thisplayer)}
           label="Clue"
           value={@clue}
           class="w-6/12"

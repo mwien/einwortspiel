@@ -14,7 +14,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
   attr :table_phase, :atom
   attr :round_phase, :atom
   attr :players, :map
-  attr :can_start_round, :boolean
+  attr :ready_to_start, :boolean
   attr :wins, :integer
   attr :losses, :integer
 
@@ -22,7 +22,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
     ~H"""
     <.header>
       <div class="flex items-center">
-        <.button :if={@can_start_round} phx-click="start_round" class="px-1 py-0.5 m-1">
+        <.button :if={@ready_to_start} phx-click="start_round" class="px-1 py-0.5 m-1">
           Next
         </.button>
         <div class="flex items-center mx-1">
