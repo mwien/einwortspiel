@@ -7,7 +7,7 @@ defmodule Einwortspiel.Game do
 
   # TODO: specify the content of get_game(game_id) which initially fetches game info 
   # TODO: specify the continuous updates to this data structure via pubsup
-  # TODO: implement functions in table.ex which for these tasks
+  # TODO: implement functions in table.ex which for these tasks -> start with first one and naive updates (full resend) and do second one later
 
   # Client-facing API for the game
   def create_table(options) do
