@@ -3,6 +3,12 @@ defmodule Einwortspiel.Game do
   
   # TODO: always check that table_id exists as service name and handle error?
 
+  # TODO: rename table to game -> table should not be seen from outside (is implementation detail)!
+
+  # TODO: specify the content of get_game(game_id) which initially fetches game info 
+  # TODO: specify the continuous updates to this data structure via pubsup
+  # TODO: implement functions in table.ex which for these tasks
+
   # Client-facing API for the game
   def create_table(options) do
     Supervisor.create_table(options)
