@@ -1,4 +1,4 @@
-defmodule Einwortspiel.Game.Supervisor do
+defmodule Einwortspiel.GameSupervisor do
   use DynamicSupervisor
 
   alias Einwortspiel.Game.Table

@@ -1,6 +1,7 @@
-defmodule Einwortspiel.Game.Server do
+defmodule Einwortspiel.GameServer do
   use GenServer
   alias Einwortspiel.Game.Table
+  
 
   def child_spec(table) do
     %{
@@ -19,6 +20,46 @@ defmodule Einwortspiel.Game.Server do
   def init(table) do
     Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table_pres:#{table.table_id}")
     {:ok, table}
+  end
+  
+  def get_game(game_id) do
+    
+  end
+
+  # TODO: pass player_id? -> yes can only add player for yourself?!
+  def add_player(game_id, player_id, player) do
+    
+  end
+
+  # player_id? 
+  def start_round(game_id) do
+    
+  end
+
+  def submit_clue(game_id, player_id, clue) do
+    
+  end
+
+  def submit_guess(game_id, player_id, guess) do
+    
+  end
+
+  def handle_call({:submit_clue, player_id, clue}, _from, {game_state, players} = state) do
+    case GameState.check(game_state, :submit_clue) do
+      {:ok, game_state} -> {:reply, :ok, 
+          {game_state, Players.update_clue(players, player_id, clue)} # TODO: handle update
+        }
+      {:error, error} -> {:reply, {:error, error}, state}
+    end 
+  end
+
+  def handle_call({:submit_guess, player_id, guess}, _from, {game_state, players} = state) do
+    case GameState.check(game_state, :submit_guess) do
+      {:ok, game_state} -> {:reply, :ok, 
+          {game_state, Players.update_guess(players, player_id, guess)} # TODO: handle update
+        }
+      {:error, error} -> {:reply, {:error, error}, state}
+    end
   end
 
   def handle_call({:get_table}, _from, state) do

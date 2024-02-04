@@ -1,22 +1,19 @@
 defmodule Einwortspiel.Game.Player do
   alias __MODULE__
-  alias Einwortspiel.Generator
 
   defstruct [
-    :active,
     :connected,
-    :id,
     :name,
+    :role,
     :score
   ]
-
-  def create_player(id) do
+  
+  def create_player(name) do
     %Player{
-      active: true,
       # should be fine?
       connected: true,
-      id: id,
-      name: Generator.gen_name(),
+      name: name,
+      role: :active, # other option passive
       score: 0
     }
   end
@@ -29,10 +26,11 @@ defmodule Einwortspiel.Game.Player do
     Map.put(player, :score, player.score + plus_score)
   end
 
-  def update_connected(player, set_to, update_list) do
-    cond do
-      Enum.member?(update_list, player.id) -> Map.put(player, :connected, set_to)
-      true -> player
-    end
-  end
+  # rewrite
+  #def update_connected(player, set_to, update_list) do
+    #cond do
+    #  Enum.member?(update_list, player.id) -> Map.put(player, :connected, set_to)
+    #  true -> player
+    #end
+  #end
 end
