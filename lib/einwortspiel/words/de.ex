@@ -1,4 +1,4 @@
-defmodule Einwortspiel.Generator.DE do
+defmodule Einwortspiel.Words.DE do
   def words() do
     [
       "Arm",

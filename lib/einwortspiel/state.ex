@@ -1,4 +1,4 @@
-defmodule Einwortspiel.Game.TableState do
+defmodule Einwortspiel.State do
   alias __MODULE__
 
   # could do more like best guesser
@@ -9,7 +9,7 @@ defmodule Einwortspiel.Game.TableState do
   ]
 
   def create_state() do
-    %TableState{
+    %State{
       phase: :init,
       wins: 0,
       losses: 0

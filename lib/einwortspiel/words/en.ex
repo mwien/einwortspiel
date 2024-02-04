@@ -1,4 +1,4 @@
-defmodule Einwortspiel.Generator.EN do
+defmodule Einwortspiel.Words.EN do
   def words() do
     [
       "Airplane",

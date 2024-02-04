@@ -3,13 +3,51 @@ defmodule Einwortspiel.Game do
   
   # TODO: always check that table_id exists as service name and handle error?
 
-  # TODO: rename table to game -> table should not be seen from outside (is implementation detail)!
-
   # TODO: specify the content of get_game(game_id) which initially fetches game info 
   # TODO: specify the continuous updates to this data structure via pubsup
   # TODO: implement functions in table.ex which for these tasks -> start with first one and naive updates (full resend) and do second one later
 
-  # Client-facing API for the game
+
+  # TODO: maybe specify game struct, which is transparent??? -> sounds like a decent idea?!
+
+  defstruct [
+    :words,
+    :players,
+    :clues,
+    :guesses,
+    :state
+  ]
+
+
+  # new game API 
+  def open_game(options) do
+    
+  end
+
+  def get_game(game_id) do
+    
+  end
+
+  # TODO: pass player_id? -> yes can only add player for yourself?!
+  def add_player(game_id, player_id, player) do
+    
+  end
+
+  # player_id? 
+  def start_round(game_id) do
+    
+  end
+
+  def submit_clue(game_id, player_id, clue) do
+    
+  end
+
+  def submit_guess(game_id, player_id, guess) do
+    
+  end
+  
+
+  # old game API
   def create_table(options) do
     Supervisor.create_table(options)
   end
