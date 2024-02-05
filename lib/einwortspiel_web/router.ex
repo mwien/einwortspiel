@@ -20,9 +20,9 @@ defmodule EinwortspielWeb.Router do
 
     get "/", LobbyController, :index
 
-    post "/table/create", TableController, :create
+    post "/game/create", GameController, :create
 
-    live "/:table_id", GameLive
+    live "/:game_id", GameLive
   end
 
   # Other scopes may use custom stacks.

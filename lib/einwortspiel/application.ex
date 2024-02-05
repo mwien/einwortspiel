@@ -20,8 +20,8 @@ defmodule Einwortspiel.Application do
       EinwortspielWeb.Endpoint,
       # Start a worker by calling: Einwortspiel.Worker.start_link(arg)
       # {Einwortspiel.Worker, arg}
-      {Registry, keys: :unique, name: Einwortspiel.Game.Registry},
-      Einwortspiel.Game.Supervisor
+      {Registry, keys: :unique, name: Einwortspiel.GameRegistry},
+      Einwortspiel.GameSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -39,6 +39,6 @@ defmodule Einwortspiel.Application do
   end
 
   def via_tuple(name) do
-    {:via, Registry, {Einwortspiel.Game.Registry, name}}
+    {:via, Registry, {Einwortspiel.GameRegistry, name}}
   end
 end

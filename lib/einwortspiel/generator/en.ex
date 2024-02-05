@@ -1,5 +1,5 @@
-defmodule Einwortspiel.Words.EN do
-  def words() do
+defmodule Einwortspiel.Generator.EN do
+  def nouns() do
     [
       "Airplane",
       "Apple",
