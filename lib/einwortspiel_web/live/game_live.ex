@@ -1,14 +1,33 @@
 defmodule EinwortspielWeb.GameLive do
+  alias Einwortspiel.Generator
   use EinwortspielWeb, :live_view
 
-  #alias EinwortspielWeb.GameLive.{Greet, Pregame, Ingame}
-  
+  alias EinwortspielWeb.GameLive.{Greet, Game}
+
   def render(assigns) do
     ~H"""
-    <div> 
+    <div>
       <%= @game_id %>
+      <Greet.render :if={!@has_joined?} />
+      <Game.render :if={@has_joined?} players={@players} />
     </div>
     """
+  end
+
+  def handle_event(
+        "join",
+        _value,
+        %{assigns: %{game_id: game_id, player_id: player_id}} = socket
+      ) do
+    Einwortspiel.GameServer.join(game_id, player_id, Generator.gen_name())
+    {:noreply, socket}
+  end
+
+  def handle_info({:add_player, player_id, new_player}, socket) do
+    {:noreply, socket 
+      |> assign(:players, Map.put(socket.assigns.players, player_id, new_player))
+      |> assign(:has_joined?, socket.assigns.has_joined? or player_id == socket.assigns.player_id)
+    }
   end
 
   def mount(%{"game_id" => game_id}, %{"user_id" => player_id}, socket) do
@@ -16,7 +35,7 @@ defmodule EinwortspielWeb.GameLive do
       {:error, :redirect} ->
         {:ok, redirect(socket, to: ~p"/")}
 
-      _game ->
+      {:ok, game} ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game:#{game_id}")
         # TUDU: do we use this currently?
         # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
@@ -34,10 +53,10 @@ defmodule EinwortspielWeb.GameLive do
          socket
          |> assign(:game_id, game_id)
          |> assign(:player_id, player_id)
-        }
+         |> assign(:players, game.players)
+         |> assign(:has_joined?, Map.has_key?(game.players, player_id))}
     end
   end
-
 
   #  attr :player_id, :string
   #  attr :has_joined, :boolean
@@ -78,15 +97,6 @@ defmodule EinwortspielWeb.GameLive do
   #      losses={@losses}
   #    />
   #    """
-  #  end
-
-  #  def handle_event(
-  #        "join",
-  #        _value,
-  #        %{assigns: %{table_id: table_id, player_id: player_id}} = socket
-  #      ) do
-  #    Einwortspiel.Game.create_player(table_id, player_id)
-  #    {:noreply, socket}
   #  end
 
   # TUDU -> "text" vs "value" (form vs button) -> unify?
@@ -134,11 +144,11 @@ defmodule EinwortspielWeb.GameLive do
   # TUDU: make updates more fine_grained at some point
   #  def handle_info({:update, table}, socket) do
   #  {:noreply, process_table(socket, table, socket.assigns.player_id)}
-  #end
+  # end
 
-  #def handle_info({:error, error}, socket) do
+  # def handle_info({:error, error}, socket) do
   #  {:noreply, put_flash(socket, :error, error)}
-  #end
+  # end
 
   # TODO: fix presence stuff
   # def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do

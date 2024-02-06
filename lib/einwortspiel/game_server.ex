@@ -1,6 +1,6 @@
 defmodule Einwortspiel.GameServer do
   use GenServer
-  alias Einwortspiel.Game
+  alias Einwortspiel.{Game, Notifier}
   
   def child_spec(game) do
     %{
@@ -12,7 +12,7 @@ defmodule Einwortspiel.GameServer do
 
   def start_link(game) do
     GenServer.start_link(__MODULE__, game,
-      name: Einwortspiel.Application.via_tuple(Game.get_game_id(game))
+      name: Einwortspiel.Application.via_tuple(game.id)
     )
   end
 
@@ -21,14 +21,34 @@ defmodule Einwortspiel.GameServer do
     # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table_pres:#{table.table_id}")
     {:ok, game}
   end
-  
+ 
   def get_game(game_id) do
     service_name(game_id)
     |> GenServer.call({:get_game})
   end
-  
+
+  def join(game_id, player_id, name) do
+    service_name(game_id)
+    |> GenServer.call({:join, player_id, name})
+  end
+ 
+  # TODO: add error handling (game does not exist)
   def handle_call({:get_game}, _from, state) do
-    {:reply, state, state}
+    {:reply, {:ok, state}, state}
+  end
+  
+  def handle_call({:join, player_id, name}, _from, state) do
+    if Game.has_player?(state, player_id) do
+      {:reply, {:error, :already_joined}, state}
+    else 
+      {notifications, new_state} = Game.add_player(state, player_id, name)
+      emit_notifications(state.id, notifications)
+      {:reply, :ok, new_state}
+    end
+  end
+  
+  defp emit_notifications(id, notifications) do
+    Enum.each(notifications, &Notifier.publish_game_info(id, &1))
   end
  
   defp service_name(table_id) do

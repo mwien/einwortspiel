@@ -1,7 +1,7 @@
-defmodule Einwortspiel.Game.Notifier do
+defmodule Einwortspiel.Notifier do
   alias Phoenix.PubSub
 
-  def publish_update(game_id, payload) do
+  def publish_game_info(game_id, payload) do
     PubSub.broadcast(Einwortspiel.PubSub, "game:" <> game_id, payload)
   end
 end

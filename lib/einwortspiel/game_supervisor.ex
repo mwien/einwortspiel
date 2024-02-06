@@ -14,7 +14,7 @@ defmodule Einwortspiel.GameSupervisor do
   def open_game(options) do
     game = Game.init_game(options)
     DynamicSupervisor.start_child(__MODULE__, {Einwortspiel.GameServer, game})
-    game.game_id
+    game.id
   end
 
   # def abandon_table(_table_id) do
