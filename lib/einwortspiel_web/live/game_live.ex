@@ -1,29 +1,29 @@
 defmodule EinwortspielWeb.GameLive do
-  alias Einwortspiel.Generator
   use EinwortspielWeb, :live_view
 
-  alias EinwortspielWeb.GameLive.{Greet, Game}
+  alias Einwortspiel.Generator
+  alias EinwortspielWeb.GameLive.{Greet, PlayerComponent}
 
+  #Game as get_state and get_players functions which are called by Liveview on mount. The notifications are {:new_player, player_id, player}, {:update_player, player_id, field, value}, {:update_state, field, value}. Player fields are words, clue, guesses, connected, role, name. State fields are can_start_round, wins, losses, phase. Backend has different structure, with current_round, players (non-round stuff), state.
+
+  # TODO: add header here? -> maybe cleaner
+  # add phase to livecomponent
   def render(assigns) do
     ~H"""
-    <div>
-      <%= @game_id %>
+    <.header></.header>
+    <.main>
       <Greet.render :if={!@has_joined?} />
-      <Game.render :if={@has_joined?} players={@players} />
-    </div>
+      <.live_component module={PlayerComponent} id={player_id} player={player} this_player={@player_id == player_id} :for={{player_id, player} <- @players} :if={@has_joined?} />
+    </.main>
     """
   end
 
-  def handle_event(
-        "join",
-        _value,
-        %{assigns: %{game_id: game_id, player_id: player_id}} = socket
-      ) do
-    Einwortspiel.GameServer.join(game_id, player_id, Generator.gen_name())
+  def handle_event("join", _value, socket) do
+    Einwortspiel.GameServer.join(socket.assigns.game_id, socket.assigns.player_id, Generator.gen_name())
     {:noreply, socket}
   end
 
-  def handle_info({:add_player, player_id, new_player}, socket) do
+  def handle_info({:new_player, player_id, new_player}, socket) do
     {:noreply, socket 
       |> assign(:players, Map.put(socket.assigns.players, player_id, new_player))
       |> assign(:has_joined?, socket.assigns.has_joined? or player_id == socket.assigns.player_id)
@@ -35,7 +35,7 @@ defmodule EinwortspielWeb.GameLive do
       {:error, :redirect} ->
         {:ok, redirect(socket, to: ~p"/")}
 
-      {:ok, game} ->
+      {:ok, {_info, players}} ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game:#{game_id}")
         # TUDU: do we use this currently?
         # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
@@ -53,8 +53,8 @@ defmodule EinwortspielWeb.GameLive do
          socket
          |> assign(:game_id, game_id)
          |> assign(:player_id, player_id)
-         |> assign(:players, game.players)
-         |> assign(:has_joined?, Map.has_key?(game.players, player_id))}
+         |> assign(:players, players)
+         |> assign(:has_joined?, Map.has_key?(players, player_id))}
     end
   end
 

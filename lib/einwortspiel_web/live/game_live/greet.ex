@@ -6,14 +6,11 @@ defmodule EinwortspielWeb.GameLive.Greet do
 
   def render(assigns) do
     ~H"""
-    <.header></.header>
-    <.main>
-      <.box class="flex flex-col items-center my-1">
-        <.button phx-click="join" class="my-2 py-1.5 px-2">
-          Join
-        </.button>
-      </.box>
-    </.main>
+    <.box class="flex flex-col items-center my-1">
+      <.button phx-click="join" class="my-2 py-1.5 px-2">
+        Join
+      </.button>
+    </.box>
     """
   end
 end

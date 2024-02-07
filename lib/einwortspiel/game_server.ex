@@ -34,7 +34,7 @@ defmodule Einwortspiel.GameServer do
  
   # TODO: add error handling (game does not exist)
   def handle_call({:get_game}, _from, state) do
-    {:reply, {:ok, state}, state}
+    {:reply, {:ok, {Game.get_info(state), Game.get_players(state)}}, state}
   end
   
   def handle_call({:join, player_id, name}, _from, state) do
