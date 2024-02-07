@@ -8,6 +8,7 @@ defmodule Einwortspiel.Game.Round do
     :words,
     :clues,
     :guesses,
+    :changed,
     :info
   ]
 
@@ -15,18 +16,19 @@ defmodule Einwortspiel.Game.Round do
     %Round{
       phase: :clues,
       waiting_for: MapSet.new(players),
-      words: Words.generate(players, settings)
+      words: Words.generate(players, settings), 
       clues: %{},
       guesses: %{},
+      changed: [],
       info: []
     } 
   end
 
   def start(players, settings) do
-    round
-    |> init(players, settings)
-    |> Map.put(:info, [:general | players])
-    |> emit_info()
+    init(players, settings)
+    |> add_changed(:general)
+    |> then(&Enum.reduce(players, &1, fn player, round -> add_changed(round, player) end))
+    |> emit_changed_and_info()
   end
 
   def make_move(round, player, move) do
@@ -35,7 +37,7 @@ defmodule Einwortspiel.Game.Round do
         {:ok,
          round
          |> update_phase()
-         |> emit_info()}
+         |> emit_changed_and_info()}
 
       {:error, error} ->
         {:error, error}
@@ -48,8 +50,10 @@ defmodule Einwortspiel.Game.Round do
        %Round{
          round
          | clues: Map.put(round.clues, player, clue),
-           waiting_for: MapSet.delete(round.waiting_for, player)
-       }}
+           waiting_for: MapSet.delete(round.waiting_for, player),
+       }
+       |> add_changed(player)
+      }
     else
       {:error, :unauthorized_move}
     end
@@ -61,8 +65,10 @@ defmodule Einwortspiel.Game.Round do
        %Round{
          round
          | guesses: Map.put(round.guesses, player, guess),
-           waiting_for: MapSet.delete(round.waiting_for, player)
-       }}
+           waiting_for: MapSet.delete(round.waiting_for, player),
+       }
+       |> add_changed(player)
+      }
     else
       {:error, :unauthorized_move}
     end
@@ -86,6 +92,7 @@ defmodule Einwortspiel.Game.Round do
 
           %{round | phase: result}
           |> Map.put(:waiting_for, MapSet.new())
+          |> add_changed(:general)
           |> add_info({:result, result})
 
         :win ->
@@ -97,12 +104,15 @@ defmodule Einwortspiel.Game.Round do
     end
   end
 
+  defp add_changed(round, object) do
+    %Round{round | changed: [object | round.changed]}
+  end
+  
   defp add_info(round, payload) do
     %Round{round | info: [payload | round.info]}
   end
 
-  defp emit_info(round) do
-    {round.info, %Round{round | info: []}}
+  defp emit_changed_and_info(round) do
+    {round.info, round.changed, %Round{round | info: [], changed: []}}
   end
-end
 end

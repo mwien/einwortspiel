@@ -50,7 +50,8 @@ defmodule Einwortspiel.Game do
     # or info? don't overuse state
     :info,
     :players,
-    :round
+    :round,
+    :changed
   ]
 
   def init(_options) do
@@ -58,7 +59,8 @@ defmodule Einwortspiel.Game do
       id: Generator.gen_id(),
       info: Info.init(),
       players: %{},
-      round: Round.init()
+      round: Round.init(),
+      changed: []
     }
   end
 
@@ -81,11 +83,10 @@ defmodule Einwortspiel.Game do
   end
 
   def add_player(game, player_id, name) do
-    # replace by Player.create_player(name)
-    new_player = name
-
-    {[{:update_player, player_id, new_player}],
-     %Game{game | players: Map.put(game.players, player_id, new_player)}}
+    # do Player.create_player(name)
+    %Game{game | players: Map.put(game.players, player_id, name)}
+    |> add_changed(player_id)
+    |> handle_update()
   end
 
   # also have {:ok, ...} and {:error, ...}
@@ -94,6 +95,8 @@ defmodule Einwortspiel.Game do
   # includes player_ids or atom :info 
   # then handle_update lists out the notifications by calling get_player/get_info
 
+  ################################## TODODODODOODTTODO #####################
+  # TODO: -> add changed into game.changed and update game and call handle_update(game)
   def start_round(game, _player_id) do
     Round.start(game.round)
     |> handle_update(game)
