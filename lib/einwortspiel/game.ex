@@ -31,6 +31,9 @@ defmodule Einwortspiel.Game do
   #   active
   # }
 
+  # words 
+  # [{word1, false}, {word2, true}, {word3, false}]
+
   # maybe add local state modules to make this clear???
 
   # after state change function return
@@ -39,13 +42,13 @@ defmodule Einwortspiel.Game do
 
   # notifications is a list 
   # notifications are of the following form: 
-  # {:new_player, player_id, player}
-  # {:update_player, player_id, field, value}
-  # {:update_info, field, value}
+  # {:update_player, player_id, player}
+  # {:update_info, info}
 
   defstruct [
     :id,
-    :info, # or info? don't overuse state
+    # or info? don't overuse state
+    :info,
     :players,
     :round
   ]
@@ -64,6 +67,10 @@ defmodule Einwortspiel.Game do
     game.id
   end
 
+  def get_player(_game) do
+    
+  end
+
   def get_players(game) do
     # later this will be more complex and also include round information
     game.players
@@ -76,33 +83,30 @@ defmodule Einwortspiel.Game do
   def add_player(game, player_id, name) do
     # replace by Player.create_player(name)
     new_player = name
-    {[{:new_player, player_id, new_player}] ,%Game{game | players: Map.put(game.players, player_id, new_player)}}
+
+    {[{:update_player, player_id, new_player}],
+     %Game{game | players: Map.put(game.players, player_id, new_player)}}
   end
 
   # also have {:ok, ...} and {:error, ...}
 
+  # round returns changed mapset!!!
+  # includes player_ids or atom :info 
+  # then handle_update lists out the notifications by calling get_player/get_info
+
   def start_round(game, _player_id) do
-    {round_notifications, round} = Round.start(game.round)
-    # TODO: this gives notifications for Info update thingy
-    {info_notifications, info} = Info.update(game.info, :phase, :in_game) # is that okay to push like this -> or put this as event
-    {info_notifications ++ round_notifications, %Game{game | round: round, info: info}}
+    Round.start(game.round)
+    |> handle_update(game)
   end
 
   # TODO: add submit_clue submit_guess etc 
   def submit_clue(game, player_id, clue) do
-    {notifications, round} = Round.make_move(game.round, player_id, {:submit_clue, clue})
-    # notifications are not relevant for game as e.g. in submit_guess
-    {notifications, %Game{game | round: round}}
+    Round.make_move(game.round, player_id, {:submit_clue, clue})
+    |> handle_update(game)
   end
 
   def submit_guess(game, player_id, guess) do
     Round.make_move(game.round, player_id, {:submit_guess, guess})
     |> handle_update(game)
-  end
-
-  # -> this also necessitates info change notifications
-  defp handle_update({round, notifications}, game) do
-    # TODO: go through notifications for end_of_round signal and win/loss
-    {notifications, %Game{game | round: round}}
   end
 end
