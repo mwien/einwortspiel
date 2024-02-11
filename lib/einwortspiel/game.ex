@@ -22,26 +22,34 @@ defmodule Einwortspiel.Game do
     }
   end
 
-  def get_gameview(game) do
+  # TODO: detailed documentation!
+  def game_view(game) do
     {get_general(game), get_players(game)}
   end
  
   def add_player(game, player_id, name) do
     if !has_player?(game, player_id) do
-      {:ok, %Game{game | players: Map.put(game.players, player_id, Player.create(name))}
-      |> update_general(game) 
-      |> update_player(game, player_id)
-      |> emit_update()}
+      {:ok, 
+        %Game{game | 
+          players: Map.put(game.players, player_id, Player.create(name))
+        }
+        |> update_new_player(player_id)
+        |> update_general(game) 
+        |> emit_update()
+      }
     else
-      {:error, :already_joined}
+      {:error, :player_id_exists}
     end
   end
 
   def start_round(game, _player_id) do
-    new_game = %Game{game | 
-      round: Round.init(Map.keys(game.players), game.settings)
-    } 
-    {get_gameview(new_game), new_game}
+    case can_start_round(game) do
+      :ok -> new_game = %Game{game | 
+          round: Round.init(Map.keys(game.players), game.settings)
+        } 
+        {:ok, {game_view(new_game), new_game}}
+      {:error, error} -> {:error, error}
+    end    
   end
 
   def submit_clue(game, player_id, clue) do
@@ -73,8 +81,13 @@ defmodule Einwortspiel.Game do
   end
 
   # TODO: take active into account
-  defp can_start_round?(game) do
-    map_size(game.players) >= 2
+  defp can_start_round(game) do
+    cond do
+      map_size(game.players) < 2 -> {:error, :too_few_players}
+      game.round == nil -> :ok
+      Enum.member?([:clues, :guesses], Round.get_phase(game.round)) -> {:error, :ongoing_round}
+      true -> :ok
+    end
   end
 
   defp has_player?(game, player_id) do
@@ -92,7 +105,7 @@ defmodule Einwortspiel.Game do
 
   defp get_general(game) do
     %{
-      can_start_round: can_start_round?(game), 
+      can_start_round: (if can_start_round(game) == :ok, do: true, else: false), 
       phase: Round.get_phase(game.round),
       wins: Info.get_wins(game.info),
       losses: Info.get_losses(game.info)
@@ -146,6 +159,14 @@ defmodule Einwortspiel.Game do
     %Game{new_game | update: new_update}
   end
   
+  defp update_new_player(game, player_id) do
+    {general, players} = game.update 
+    new_update = {
+      general, 
+      Map.put(players, player_id, get_player(game, player_id))
+    }
+    %Game{game | update: new_update}
+  end
   
   defp emit_update(game) do
     {game.update, %Game{game | update: {%{}, %{}}}}

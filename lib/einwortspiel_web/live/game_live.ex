@@ -4,10 +4,11 @@ defmodule EinwortspielWeb.GameLive do
   alias Einwortspiel.Generator
   alias EinwortspielWeb.GameLive.{Greet, PlayerComponent}
 
-  #Game as get_state and get_players functions which are called by Liveview on mount. The notifications are {:new_player, player_id, player}, {:update_player, player_id, field, value}, {:update_state, field, value}. Player fields are words, clue, guesses, connected, role, name. State fields are can_start_round, wins, losses, phase. Backend has different structure, with current_round, players (non-round stuff), state.
-
-  # TODO: add header here? -> maybe cleaner
   # add phase to livecomponent
+
+  # TODO: just have ingame and greet 
+  # completely separate -> also header
+
   def render(assigns) do
     ~H"""
     <.header></.header>

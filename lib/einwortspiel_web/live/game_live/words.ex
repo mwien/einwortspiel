@@ -1,6 +1,8 @@
 defmodule EinwortspielWeb.GameLive.Words do
   use Phoenix.Component
 
+  # TODO -> maybe just put in player_component?
+
   # TODO: class can be multiple strings in list!
 
   attr :words, :list

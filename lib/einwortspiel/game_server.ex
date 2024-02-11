@@ -23,18 +23,42 @@ defmodule Einwortspiel.GameServer do
   end
  
   def get_game(game_id) do
-    service_name(game_id)
-    |> GenServer.call({:get_game})
+    case service_name(game_id) do
+      nil -> {:error, :invalid_game_id}
+      pid -> GenServer.call(pid, {:get_game})
+    end
   end
 
   def join(game_id, player_id, name) do
-    service_name(game_id)
-    |> GenServer.call({:join, player_id, name})
+    case service_name(game_id) do
+      nil -> {:error, :invalid_game_id}
+      pid -> GenServer.call(pid, {:join, player_id, name})
+    end
+  end
+  
+  def start_round(game_id, player_id) do
+    case service_name(game_id) do
+      nil -> {:error, :invalid_game_id}
+      pid -> GenServer.call(pid, {:start_round, player_id})
+    end
   end
  
-  # TODO: add error handling (game does not exist)
+  def submit_clue(game_id, player_id, clue) do
+    case service_name(game_id) do
+      nil -> {:error, :invalid_game_id}
+      pid -> GenServer.call(pid, {:submit_clue, player_id, clue})
+    end
+  end
+  
+  def submit_guess(game_id, player_id, guess) do
+    case service_name(game_id) do
+      nil -> {:error, :invalid_game_id}
+      pid -> GenServer.call(pid, {:submit_guess, player_id, guess})
+    end
+  end
+
   def handle_call({:get_game}, _from, state) do
-    {:reply, {:ok, Game.get_gameview(state), state}}
+    {:reply, {:ok, Game.game_view(state), state}}
   end
   
   def handle_call({:join, player_id, name}, _from, game) do
@@ -44,6 +68,27 @@ defmodule Einwortspiel.GameServer do
     end
   end
   
+  def handle_call({:start_round, player_id}, _from, game) do
+    case Game.start_round(game, player_id) do
+      {:ok, {update, new_game}} -> {:reply, :ok, publish_update(new_game, update)}
+      {:error, error} -> {:reply, {:error, error}, game}
+    end
+  end
+
+  def handle_call({:submit_clue, player_id, clue}, _from, game) do
+    case Game.submit_clue(game, player_id, clue) do
+      {:ok, {update, new_game}} -> {:reply, :ok, publish_update(new_game, update)}
+      {:error, error} -> {:reply, {:error, error}, game}
+    end
+  end
+
+  def handle_call({:submit_guess, player_id, guess}, _from, game) do
+    case Game.submit_clue(game, player_id, guess) do
+      {:ok, {update, new_game}} -> {:reply, :ok, publish_update(new_game, update)}
+      {:error, error} -> {:reply, {:error, error}, game}
+    end
+  end
+
   defp publish_update(game, update) do
     Notifier.publish_game_info(game.id, {:update, update})
     game
@@ -53,14 +98,6 @@ defmodule Einwortspiel.GameServer do
     GenServer.whereis(Einwortspiel.Application.via_tuple(table_id))
   end
   
-  #def add_player(game_id, player_id, player) do
-  #  
-  #end
-  #
-  # player_id? 
-  #def start_round(game_id) do
-  #  
-  #end
   #
   #def submit_clue(game_id, player_id, clue) do
   #  
