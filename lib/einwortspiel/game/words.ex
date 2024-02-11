@@ -19,15 +19,14 @@ defmodule Einwortspiel.Game.Words do
     }
   end
 
-  # what if player does not exist?
   def get_extraword(words, player) do
-    words.extrawords[player]
+    Map.get(words.extrawords, player)
   end
   
   def get_words(words, player) do
     [get_extraword(words, player) | words.commonwords]
     |> Enum.zip(words.shuffle[player])
-    |> Enum.sort_by(&elem(1))
+    |> Enum.sort_by(&elem(&1, 1))
     |> Enum.unzip()
     |> elem(0)
   end

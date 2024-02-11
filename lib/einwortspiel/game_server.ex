@@ -2,24 +2,24 @@ defmodule Einwortspiel.GameServer do
   use GenServer
   alias Einwortspiel.{Game, Notifier}
   
-  def child_spec(game) do
+  def child_spec(init_args) do
     %{
       id: __MODULE__,
-      start: {__MODULE__, :start_link, [game]},
+      start: {__MODULE__, :start_link, init_args},
       restart: :transient
     }
   end
 
-  def start_link(game) do
-    GenServer.start_link(__MODULE__, game,
-      name: Einwortspiel.Application.via_tuple(game.id)
+  def start_link([game_id, options]) do
+    GenServer.start_link(__MODULE__, [game_id, options],
+      name: Einwortspiel.Application.via_tuple(game_id)
     )
   end
 
-  def init(game) do
+  def init([game_id, options]) do
     # later add presence back in
     # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table_pres:#{table.table_id}")
-    {:ok, game}
+    {:ok, Game.init(game_id, options)}
   end
  
   def get_game(game_id) do
@@ -34,21 +34,19 @@ defmodule Einwortspiel.GameServer do
  
   # TODO: add error handling (game does not exist)
   def handle_call({:get_game}, _from, state) do
-    {:reply, {:ok, {Game.get_info(state), Game.get_players(state)}}, state}
+    {:reply, {:ok, Game.get_gameview(state), state}}
   end
   
-  def handle_call({:join, player_id, name}, _from, state) do
-    if Game.has_player?(state, player_id) do
-      {:reply, {:error, :already_joined}, state}
-    else 
-      {notifications, new_state} = Game.add_player(state, player_id, name)
-      emit_notifications(state.id, notifications)
-      {:reply, :ok, new_state}
+  def handle_call({:join, player_id, name}, _from, game) do
+    case Game.add_player(game, player_id, name) do
+      {:ok, {update, new_game}} -> {:reply, :ok, publish_update(new_game, update)}
+      {:error, error} -> {:reply, {:error, error}, game}
     end
   end
   
-  defp emit_notifications(id, notifications) do
-    Enum.each(notifications, &Notifier.publish_game_info(id, &1))
+  defp publish_update(game, update) do
+    Notifier.publish_game_info(game.id, {:update, update})
+    game
   end
  
   defp service_name(table_id) do

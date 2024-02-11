@@ -1,115 +1,165 @@
 defmodule Einwortspiel.Game do
   alias __MODULE__
-  alias Einwortspiel.Generator
-  alias Einwortspiel.Game.{Round, Info}
-
-  # specify exactly how info and player are presented to the outside!
-  # each field and entry etc!
-
-  # info
-  # %{
-  #   can_start_round?,
-  #   phase,
-  #   last_result, :win or :loss
-  #   wins,
-  #   losses
-  # }
-  # phase is :pre_round, :clues, :guesses, :post_round
-
-  # players
-  # %{
-  #   player_id => player
-  # }
-
-  # player 
-  # %{
-  #   id,
-  #   words, 
-  #   clue, 
-  #   guess,
-  #   connected,
-  #   active
-  # }
-
-  # words 
-  # [{word1, false}, {word2, true}, {word3, false}]
-
-  # maybe add local state modules to make this clear???
-
-  # after state change function return
-  # {notifications, new_state}
-  # game_server can then emit notifications and replace the state 
-
-  # notifications is a list 
-  # notifications are of the following form: 
-  # {:update_player, player_id, player}
-  # {:update_info, info}
-
+  alias Einwortspiel.Game.{Round, Info, Player, Settings, Words}
+  
   defstruct [
     :id,
-    # or info? don't overuse state
     :info,
     :players,
     :round,
-    :changed
+    :settings,
+    :update
   ]
 
-  def init(_options) do
+  def init(game_id, options) do
     %Game{
-      id: Generator.gen_id(),
+      id: game_id,
       info: Info.init(),
       players: %{},
-      round: Round.init(),
-      changed: []
+      round: nil,
+      settings: Settings.init(options),
+      update: {%{}, %{}}
     }
   end
 
-  def get_info(game) do
-    # TODO: change
-    game.id
+  def get_gameview(game) do
+    {get_general(game), get_players(game)}
   end
-
-  def get_player(_game) do
-    
-  end
-
-  def get_players(game) do
-    # later this will be more complex and also include round information
-    game.players
-  end
-
-  def has_player?(game, player_id) do
-    Map.has_key?(game.players, player_id)
-  end
-
+ 
   def add_player(game, player_id, name) do
-    # do Player.create_player(name)
-    %Game{game | players: Map.put(game.players, player_id, name)}
-    |> add_changed(player_id)
-    |> handle_update()
+    if !has_player?(game, player_id) do
+      {:ok, %Game{game | players: Map.put(game.players, player_id, Player.create(name))}
+      |> update_general(game) 
+      |> update_player(game, player_id)
+      |> emit_update()}
+    else
+      {:error, :already_joined}
+    end
   end
 
-  # also have {:ok, ...} and {:error, ...}
-
-  # round returns changed mapset!!!
-  # includes player_ids or atom :info 
-  # then handle_update lists out the notifications by calling get_player/get_info
-
-  ################################## TODODODODOODTTODO #####################
-  # TODO: -> add changed into game.changed and update game and call handle_update(game)
   def start_round(game, _player_id) do
-    Round.start(game.round)
-    |> handle_update(game)
+    new_game = %Game{game | 
+      round: Round.init(Map.keys(game.players), game.settings)
+    } 
+    {get_gameview(new_game), new_game}
   end
 
-  # TODO: add submit_clue submit_guess etc 
   def submit_clue(game, player_id, clue) do
-    Round.make_move(game.round, player_id, {:submit_clue, clue})
-    |> handle_update(game)
+    case Round.make_move(game.round, player_id, {:submit_clue, clue}) do
+      {:ok, new_round} -> {:ok, 
+          %Game{game | round: new_round}
+          |> update_player(game, player_id)
+          |> update_general(game)
+          |> emit_update()
+        }
+
+      {:error, error} -> {:error, error}
+    end
   end
 
   def submit_guess(game, player_id, guess) do
-    Round.make_move(game.round, player_id, {:submit_guess, guess})
-    |> handle_update(game)
+    case Round.make_move(game.round, player_id, {:submit_guess, guess}) do
+      {:ok, new_round} -> {:ok, 
+          %Game{game | 
+            round: new_round, 
+            info: Info.evaluate_result(game.info, Round.get_phase(new_round))
+          }
+          |> update_player(game, player_id)
+          |> update_general(game)
+          |> emit_update()
+        }
+      {:error, error} -> {:error, error}
+    end
+  end
+
+  # TODO: take active into account
+  defp can_start_round?(game) do
+    map_size(game.players) >= 2
+  end
+
+  defp has_player?(game, player_id) do
+    Map.has_key?(game.players, player_id)
+  end
+
+  defp get_general(%Game{round: nil} = _game) do
+    %{
+      can_start_round: false, 
+      phase: :init, 
+      wins: 0, 
+      losses: 0
+    }
+  end
+
+  defp get_general(game) do
+    %{
+      can_start_round: can_start_round?(game), 
+      phase: Round.get_phase(game.round),
+      wins: Info.get_wins(game.info),
+      losses: Info.get_losses(game.info)
+    }
+  end
+
+  defp get_player(%Game{round: nil} = game, player_id) do
+    %{
+      id: player_id, 
+      words: nil,
+      clue: nil,
+      guess: nil,
+      connected: Player.get_connected(game.players[player_id]),
+      active: Player.get_active(game.players[player_id])
+    }
+  end
+
+  defp get_player(game, player_id) do
+    %{
+      id: player_id, 
+      words: word_view(game, player_id),
+      clue: Round.get_clue(game.round, player_id), 
+      guess: Round.get_guess(game.round, player_id),
+      active: Player.get_active(game.players[player_id]),
+      connected: Player.get_connected(game.players[player_id])
+    }
+  end
+
+  defp get_players(game) do
+    Enum.reduce(Map.keys(game.players), %{}, &Map.put(&2, &1, get_player(game, &1)))
+  end
+
+  defp update_general(new_game, old_game) do
+    {_general, players} = new_game.update
+    new_update = {filter_changed(get_general(new_game), get_general(old_game)), players}
+    %Game{new_game | update: new_update}
+  end
+
+  defp update_player(new_game, old_game, player_id) do
+    {general, players} = new_game.update
+
+    new_update = {
+      general,
+      Map.put(
+        players,
+        player_id,
+        filter_changed(get_player(new_game, player_id), get_player(old_game, player_id))
+      )
+    }
+
+    %Game{new_game | update: new_update}
+  end
+  
+  
+  defp emit_update(game) do
+    {game.update, %Game{game | update: {%{}, %{}}}}
+  end
+
+  defp filter_changed(map1, map2) do
+    # different keys error handling?
+    Map.filter(map1, fn {k, v} -> v == map2[k] end)
+  end
+  
+  defp word_view(game, player_id) do
+    words = Round.get_words(game.round)
+    extraword = Words.get_extraword(words, player_id)
+    Words.get_words(words, player_id)
+    |> Enum.map(fn word -> {word, word == extraword} end)
   end
 end
