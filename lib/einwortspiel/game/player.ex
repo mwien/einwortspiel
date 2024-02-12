@@ -17,6 +17,7 @@ defmodule Einwortspiel.Game.Player do
     }
   end
 
+  def get_name(player), do: player.name
   def get_active(player), do: player.active
   def get_connected(player), do: player.connected 
 end

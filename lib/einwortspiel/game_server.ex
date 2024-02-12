@@ -10,7 +10,8 @@ defmodule Einwortspiel.GameServer do
     }
   end
 
-  def start_link([game_id, options]) do
+  def start_link(game_id, options) do
+    IO.inspect("HIOIO")
     GenServer.start_link(__MODULE__, [game_id, options],
       name: Einwortspiel.Application.via_tuple(game_id)
     )
@@ -58,7 +59,7 @@ defmodule Einwortspiel.GameServer do
   end
 
   def handle_call({:get_game}, _from, state) do
-    {:reply, {:ok, Game.game_view(state), state}}
+    {:reply, {:ok, Game.game_view(state)}, state}
   end
   
   def handle_call({:join, player_id, name}, _from, game) do
@@ -83,7 +84,7 @@ defmodule Einwortspiel.GameServer do
   end
 
   def handle_call({:submit_guess, player_id, guess}, _from, game) do
-    case Game.submit_clue(game, player_id, guess) do
+    case Game.submit_guess(game, player_id, guess) do
       {:ok, {update, new_game}} -> {:reply, :ok, publish_update(new_game, update)}
       {:error, error} -> {:reply, {:error, error}, game}
     end

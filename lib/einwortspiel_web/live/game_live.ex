@@ -2,47 +2,74 @@ defmodule EinwortspielWeb.GameLive do
   use EinwortspielWeb, :live_view
 
   alias Einwortspiel.Generator
-  alias EinwortspielWeb.GameLive.{Greet, PlayerComponent}
-
-  # add phase to livecomponent
-
-  # TODO: just have ingame and greet 
-  # completely separate -> also header
+  alias EinwortspielWeb.GameLive.{Greet, Ingame}
 
   def render(assigns) do
     ~H"""
-    <.header></.header>
-    <.main>
-      <Greet.render :if={!@has_joined?} />
-      <.live_component module={PlayerComponent} id={player_id} player={player} this_player={@player_id == player_id} :for={{player_id, player} <- @players} :if={@has_joined?} />
-    </.main>
+    <Greet.render :if={!@has_joined} /> 
+    <Ingame.render player_id={@player_id} general={@general} players={@players} :if={@has_joined} />
     """
   end
 
   def handle_event("join", _value, socket) do
-    Einwortspiel.GameServer.join(socket.assigns.game_id, socket.assigns.player_id, Generator.gen_name())
+    Einwortspiel.GameServer.join(
+      socket.assigns.game_id, 
+      socket.assigns.player_id, 
+      Generator.gen_name()
+    )
     {:noreply, socket}
   end
 
-  def handle_info({:new_player, player_id, new_player}, socket) do
+  def handle_event("start_round", _value, socket) do
+    Einwortspiel.GameServer.start_round(
+      socket.assigns.game_id,
+      socket.assigns.player_id
+    )
+    {:noreply, socket}
+  end
+
+  def handle_event("submit_clue", %{"text" => clue}, socket) do
+    Einwortspiel.GameServer.submit_clue(
+      socket.assigns.game_id,
+      socket.assigns.player_id,
+      clue
+    )
+
+    {:noreply, socket}
+  end
+
+  def handle_event("submit_guess", %{"value" => guess}, socket) do
+    Einwortspiel.GameServer.submit_guess(
+      socket.assigns.game_id,
+      socket.assigns.player_id,
+      guess
+    )
+
+    {:noreply, socket}
+  end
+
+
+  def handle_info({:update, {general, players}}, socket) do
+    IO.inspect(general)
+    IO.inspect(players)
     {:noreply, socket 
-      |> assign(:players, Map.put(socket.assigns.players, player_id, new_player))
-      |> assign(:has_joined?, socket.assigns.has_joined? or player_id == socket.assigns.player_id)
+      |> assign(:general, Map.merge(socket.assigns.general, general))
+      |> assign(:players, merge_players(socket.assigns.players, players))
+      |> assign(:has_joined, socket.assigns.has_joined or Map.has_key?(players, socket.assigns.player_id))
     }
   end
 
   def mount(%{"game_id" => game_id}, %{"user_id" => player_id}, socket) do
     case Einwortspiel.GameServer.get_game(game_id) do
-      {:error, :redirect} ->
+      {:error, :invalid_game_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
-      {:ok, {_info, players}} ->
-        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game:#{game_id}")
-        # TUDU: do we use this currently?
-        # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "player:#{player_id}")
-        # topic = "table_pres:#{table_id}"
+      {:ok, {general, players}} ->
+        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game_info:#{game_id}")
+        
+        # topic = "game_pres:#{game_id}"
         # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
-
+        #
         # Einwortspiel.Presence.track(
         #    self(),
         #    topic,
@@ -54,9 +81,16 @@ defmodule EinwortspielWeb.GameLive do
          socket
          |> assign(:game_id, game_id)
          |> assign(:player_id, player_id)
+         |> assign(:general, general)
          |> assign(:players, players)
-         |> assign(:has_joined?, Map.has_key?(players, player_id))}
+         |> assign(:has_joined, Map.has_key?(players, player_id))}
     end
+  end
+
+  defp merge_players(old_players, new_players) do
+    Enum.reduce(new_players, old_players, fn {player_id, player}, players -> 
+      Map.put(players, player_id, Map.merge(Map.get(players, player_id, %{}), player))
+    end)
   end
 
   #  attr :player_id, :string
@@ -112,35 +146,6 @@ defmodule EinwortspielWeb.GameLive do
   #    {:noreply, socket}
   #  end
   #
-  #  def handle_event("start_round", _value, socket) do
-  #    Einwortspiel.Game.manage_game(
-  #      socket.assigns.table_id,
-  #      :start,
-  #      socket.assigns.player_id
-  #    )
-  #
-  #    {:noreply, socket}
-  #  end
-  #
-  #  def handle_event("submit_clue", %{"text" => clue}, socket) do
-  #    Einwortspiel.Game.make_move(
-  #      socket.assigns.table_id,
-  #      socket.assigns.player_id,
-  #      {:submit_clue, clue}
-  #    )
-  #
-  #    {:noreply, socket}
-  #  end
-  #
-  #  def handle_event("submit_guess", %{"value" => guess}, socket) do
-  #    Einwortspiel.Game.make_move(
-  #      socket.assigns.table_id,
-  #      socket.assigns.player_id,
-  #      {:submit_guess, guess}
-  #    )
-  #
-  #    {:noreply, socket}
-  #  end
 
   # TUDU: make updates more fine_grained at some point
   #  def handle_info({:update, table}, socket) do

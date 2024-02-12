@@ -94,9 +94,9 @@ defmodule Einwortspiel.Game do
     Map.has_key?(game.players, player_id)
   end
 
-  defp get_general(%Game{round: nil} = _game) do
+  defp get_general(%Game{round: nil} = game) do
     %{
-      can_start_round: false, 
+      can_start_round: (if can_start_round(game) == :ok, do: true, else: false), 
       phase: :init, 
       wins: 0, 
       losses: 0
@@ -115,22 +115,24 @@ defmodule Einwortspiel.Game do
   defp get_player(%Game{round: nil} = game, player_id) do
     %{
       id: player_id, 
+      name: Player.get_name(game.players[player_id]),
+      connected: Player.get_connected(game.players[player_id]),
+      active: Player.get_active(game.players[player_id]),
       words: nil,
       clue: nil,
-      guess: nil,
-      connected: Player.get_connected(game.players[player_id]),
-      active: Player.get_active(game.players[player_id])
+      guess: nil
     }
   end
 
   defp get_player(game, player_id) do
     %{
       id: player_id, 
+      name: Player.get_name(game.players[player_id]),
+      active: Player.get_active(game.players[player_id]),
+      connected: Player.get_connected(game.players[player_id]),
       words: word_view(game, player_id),
       clue: Round.get_clue(game.round, player_id), 
-      guess: Round.get_guess(game.round, player_id),
-      active: Player.get_active(game.players[player_id]),
-      connected: Player.get_connected(game.players[player_id])
+      guess: Round.get_guess(game.round, player_id)
     }
   end
 
@@ -174,7 +176,7 @@ defmodule Einwortspiel.Game do
 
   defp filter_changed(map1, map2) do
     # different keys error handling?
-    Map.filter(map1, fn {k, v} -> v == map2[k] end)
+    Map.filter(map1, fn {k, v} -> v != map2[k] end)
   end
   
   defp word_view(game, player_id) do
