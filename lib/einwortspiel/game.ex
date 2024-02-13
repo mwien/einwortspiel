@@ -80,7 +80,7 @@ defmodule Einwortspiel.Game do
     end
   end
 
-  # TODO: take active into account
+  # TODO: take only active players into account
   defp can_start_round(game) do
     cond do
       map_size(game.players) < 2 -> {:error, :too_few_players}
@@ -112,28 +112,29 @@ defmodule Einwortspiel.Game do
     }
   end
 
-  defp get_player(%Game{round: nil} = game, player_id) do
-    %{
-      id: player_id, 
-      name: Player.get_name(game.players[player_id]),
-      connected: Player.get_connected(game.players[player_id]),
-      active: Player.get_active(game.players[player_id]),
-      words: nil,
-      clue: nil,
-      guess: nil
-    }
-  end
-
   defp get_player(game, player_id) do
-    %{
-      id: player_id, 
-      name: Player.get_name(game.players[player_id]),
-      active: Player.get_active(game.players[player_id]),
-      connected: Player.get_connected(game.players[player_id]),
-      words: word_view(game, player_id),
-      clue: Round.get_clue(game.round, player_id), 
-      guess: Round.get_guess(game.round, player_id)
-    }
+    cond do
+      game.round == nil or !Round.has_player?(game.round, player_id) -> 
+        %{
+          id: player_id, 
+          name: Player.get_name(game.players[player_id]),
+          connected: Player.get_connected(game.players[player_id]),
+          active: Player.get_active(game.players[player_id]),
+          words: nil,
+          clue: nil,
+          guess: nil
+        }
+      true -> 
+        %{
+          id: player_id, 
+          name: Player.get_name(game.players[player_id]),
+          active: Player.get_active(game.players[player_id]),
+          connected: Player.get_connected(game.players[player_id]),
+          words: word_view(game, player_id),
+          clue: Round.get_clue(game.round, player_id), 
+          guess: Round.get_guess(game.round, player_id)
+        }
+    end
   end
 
   defp get_players(game) do
@@ -175,7 +176,6 @@ defmodule Einwortspiel.Game do
   end
 
   defp filter_changed(map1, map2) do
-    # different keys error handling?
     Map.filter(map1, fn {k, v} -> v != map2[k] end)
   end
   

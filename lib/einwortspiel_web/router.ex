@@ -49,14 +49,10 @@ defmodule EinwortspielWeb.Router do
   defp fetch_current_user(conn, _) do
     case get_session(conn, :user_id) do
       nil ->
-        put_session(conn, :user_id, generate_user_id())
+        put_session(conn, :user_id, Einwortspiel.Generator.gen_id())
 
       _user_id ->
         conn
     end
-  end
-
-  defp generate_user_id() do
-    :crypto.strong_rand_bytes(16) |> Base.encode16()
   end
 end

@@ -22,6 +22,7 @@ defmodule Einwortspiel.Game.Round do
     } 
   end
   
+  def has_player?(round, player), do: Enum.member?(round.players, player)
   def get_phase(round), do: round.phase 
   def get_words(round), do: round.words
   def get_clue(round, player), do: Map.get(round.clues, player)

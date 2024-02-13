@@ -11,14 +11,13 @@ defmodule Einwortspiel.GameServer do
   end
 
   def start_link(game_id, options) do
-    IO.inspect("HIOIO")
     GenServer.start_link(__MODULE__, [game_id, options],
       name: Einwortspiel.Application.via_tuple(game_id)
     )
   end
 
   def init([game_id, options]) do
-    # later add presence back in
+    # add presence back in
     # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table_pres:#{table.table_id}")
     {:ok, Game.init(game_id, options)}
   end
@@ -99,30 +98,10 @@ defmodule Einwortspiel.GameServer do
     GenServer.whereis(Einwortspiel.Application.via_tuple(table_id))
   end
   
-  #
-  #def submit_clue(game_id, player_id, clue) do
-  #  
-  #end
-  #
-  #def submit_guess(game_id, player_id, guess) do
-  #  
-  #end
-
   #def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, table) do
   #  {
   #    :noreply,
   #    Table.update_connected_players(table, joins, leaves)
   #  }
-  #end
-
-  #defp handle_update(table) do
-  #  Einwortspiel.Game.Notifier.publish_table(table.table_id, {:update, table})
-  #  table
-  #end
-
-  # return error (or :ok) to caller
-  #defp handle_error(error, player_id) do
-  #  Einwortspiel.Game.Notifier.publish_player(player_id, {:error, error})
-  #  :ok
   #end
 end

@@ -8,7 +8,7 @@ defmodule EinwortspielWeb.CoreComponents do
   alias Phoenix.LiveView.JS
   import EinwortspielWeb.Gettext
 
-  ### own components
+  ## added components
 
   attr :label, :string, default: ""
   attr :value, :string
@@ -17,8 +17,8 @@ defmodule EinwortspielWeb.CoreComponents do
   def textform_placeholder(assigns) do
     ~H"""
     <div class={["flex items-center my-2 mx-0.5", @class]}>
-      <span class="block mr-0.5"><%= @label %></span>
-      <div class="text-start text-base md:text-lg rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip border border-opacity-0 border-violet-500">
+      <span class="block mr-1"><%= @label %></span>
+      <div class="text-start text-base md:text-lg rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip border border-opacity-0 border-violet-500 min-h-7">
         <%= @value %>
       </div>
       <.submit />
@@ -547,7 +547,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block mr-0.5">
+    <label for={@for} class="block mr-1">
       <%= render_slot(@inner_block) %>
     </label>
     """

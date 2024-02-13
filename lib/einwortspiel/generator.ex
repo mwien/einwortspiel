@@ -6,12 +6,13 @@ defmodule Einwortspiel.Generator do
     |> Enum.take_random(k)
   end
 
+  # remove this at some point
   def gen_name() do
     module = Map.fetch!(@languages, "en")
     Enum.random(module.catchy_adjectives) <> Enum.random(module.catchy_nouns)
   end
 
   def gen_id() do 
-    :crypto.strong_rand_bytes(10) |> Base.url_encode64()
+    :crypto.strong_rand_bytes(9) |> Base.url_encode64()
   end
 end

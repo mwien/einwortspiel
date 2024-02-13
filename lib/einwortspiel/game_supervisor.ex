@@ -12,7 +12,6 @@ defmodule Einwortspiel.GameSupervisor do
 
   def open_game(options) do
     game_id = Einwortspiel.Generator.gen_id()
-    IO.inspect("TESTIAE")
     DynamicSupervisor.start_child(__MODULE__, {Einwortspiel.GameServer, [game_id, options]})
     game_id
   end
