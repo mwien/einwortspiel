@@ -32,7 +32,7 @@ defmodule EinwortspielWeb.GameLive.Greet do
             autocomplete="off"
           />
         </div>
-        <.button class="submit my-2 py-1.5 px-2">
+        <.button class="submit bg-gray-200 my-2 py-1.5 px-2" disabled>
           Join
         </.button>
       </div>

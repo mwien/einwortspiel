@@ -27,8 +27,6 @@ import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
-
-// TODO: document this
 function checkdiff(el) {
   var hidden = el.querySelector('.hidden');
   var text = el.querySelector('input[type=text]');
@@ -54,6 +52,11 @@ function checkempty(el) {
   }
 }
 
+// simple hooks for extremely basic textform validation on the client
+// Diff hides and disables submit element exactly if value of first text input is equal to hidden elements value (allows enabling submit only for different inputs) 
+//
+// Empty sets background to gray and disables submit element exactly if value of first text input is empty
+
 let Hooks = {}
 Hooks.Diff = { // is this possible without hidden span?
   mounted() {
@@ -67,7 +70,6 @@ Hooks.Diff = { // is this possible without hidden span?
 }
 Hooks.Empty = { 
   mounted() {
-    checkempty(this.el);
     this.el.addEventListener("input", e => {
       checkempty(this.el)
     });
