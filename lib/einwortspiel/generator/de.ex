@@ -1,5 +1,5 @@
 defmodule Einwortspiel.Generator.DE do
-  def words() do
+  def nouns() do
     [
       "Arm",
       "Apfel",

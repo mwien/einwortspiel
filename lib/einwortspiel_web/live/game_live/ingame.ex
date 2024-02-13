@@ -3,71 +3,88 @@ defmodule EinwortspielWeb.GameLive.Ingame do
 
   alias EinwortspielWeb.GameLive.PlayerComponent
 
-  # TODO: -> introduce spectator mode -> replace !Map.has_key?(...) below
-
   attr :player_id, :string
-  attr :clues, :map
-  attr :guesses, :map
-  attr :allwords, :map
-  attr :extrawords, :map
-  attr :waiting_for, :map
-  attr :table_phase, :atom
-  attr :round_phase, :atom
+  attr :general, :map
   attr :players, :map
-  attr :ready_to_start, :boolean
-  attr :wins, :integer
-  attr :losses, :integer
 
   def render(assigns) do
     ~H"""
     <.header>
       <div class="flex items-center">
-        <.button :if={@ready_to_start} phx-click="start_round" class="px-1 py-0.5 m-1">
+        <.button
+          :if={@general.can_start_round and @general.phase == :init}
+          phx-click="start_round"
+          class="px-1 py-0.5 m-1"
+        >
+          Start
+        </.button>
+        <.button
+          :if={@general.can_start_round and @general.phase != :init}
+          phx-click="start_round"
+          class="px-1 py-0.5 m-1"
+        >
           Next
         </.button>
         <div class="flex items-center mx-1">
           <div class="px-1 py-0.5 bg-green-300 rounded-sm ring ring-violet-700 m-1">
-            <%= @wins %>
+            <%= @general.wins %>
           </div>
           <div class="px-1 py-0.5 bg-red-400 rounded-sm ring ring-violet-700 m-1">
-            <%= @losses %>
+            <%= @general.losses %>
           </div>
         </div>
       </div>
     </.header>
     <.main>
-      <.box :if={!Map.has_key?(@extrawords, @player_id)} class="my-1 text-center">
-        <span class="my-1">
-          Spectating current round, you will join starting with the next one!
-        </span>
+      <.box class="mt-2 mb-4 text-center p-1">
+        <p :if={!@general.can_start_round and @general.phase == :init} class="m-1">
+          Waiting for second player
+          <.icon name="hero-ellipsis-horizontal" class="ml-1.5 w-5 h-5 duration-2000 animate-bounce" />
+        </p>
+        <p :if={@general.can_start_round and @general.phase == :init} class="m-1">
+          Ready to start <.icon name="hero-check-circle" class="ml-1.5 w-5 h-5" />
+        </p>
+        <p :if={@general.phase == :init} class="m-1">
+          Share the url to invite further players
+          <.button phx-click={JS.dispatch("urlcopy")} class="my-1 ml-1 px-1.5 pb-0.5 group">
+            <.icon name="hero-clipboard-document" class="w-5 h-5 group-focus:hidden" />
+            <.icon
+              name="hero-clipboard-document-check"
+              class="w-5 h-5 hidden group-focus:inline-block"
+            />
+          </.button>
+        </p>
+        <p :if={@general.phase != :init} class="m-1">
+          <%= render_info(@general.phase) %>
+        </p>
       </.box>
-      <.box class="my-1 text-center">
-        <span class="my-1"><%= render_info(@round_phase) %></span>
-      </.box>
-      <PlayerComponent.render
-        :if={Map.has_key?(@extrawords, @player_id)}
-        thisplayer={true}
+      <.live_component
+        module={PlayerComponent}
+        id={@player_id}
         player={@players[@player_id]}
-        table_phase={@table_phase}
-        round_phase={@round_phase}
-        allwords={@allwords[@player_id]}
-        extraword={@extrawords[@player_id]}
-        waiting={MapSet.member?(@waiting_for, @player_id)}
-        clue={@clues[@player_id]}
-        guess={@guesses[@player_id]}
+        this_player={true}
+        spectating={false}
+        phase={@general.phase}
       />
-      <PlayerComponent.render
-        :for={player <- Map.keys(@players)}
-        :if={player != @player_id and Map.has_key?(@extrawords, player)}
-        thisplayer={false}
-        player={@players[player]}
-        table_phase={@table_phase}
-        round_phase={@round_phase}
-        allwords={@allwords[player]}
-        extraword={@extrawords[player]}
-        waiting={MapSet.member?(@waiting_for, player)}
-        clue={@clues[player]}
-        guess={@guesses[player]}
+      <.live_component
+        :for={{player_id, player} <- @players}
+        :if={player_id != @player_id and @players[player_id].words != nil}
+        module={PlayerComponent}
+        id={player_id}
+        player={player}
+        this_player={false}
+        spectating={@players[@player_id].words == nil}
+        phase={@general.phase}
+      />
+      <.live_component
+        :for={{player_id, player} <- @players}
+        :if={player_id != @player_id and @players[player_id].words == nil}
+        module={PlayerComponent}
+        id={player_id}
+        player={player}
+        this_player={false}
+        spectating={false}
+        phase={@general.phase}
       />
     </.main>
     """

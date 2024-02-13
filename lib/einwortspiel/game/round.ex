@@ -1,104 +1,93 @@
 defmodule Einwortspiel.Game.Round do
   alias __MODULE__
-  alias Einwortspiel.Generator
-
-  # TUDU: maybe use state machine for game state (and maybe notifications)
+  alias Einwortspiel.Game.Words
 
   defstruct [
-    :allwords,
-    :extrawords,
     :phase,
+    :players,
     :waiting_for,
+    :words,
     :clues,
     :guesses,
-    :info
   ]
 
-  def start(players, settings) do
-    words = Generator.gen_words(settings.nr_commonwords + length(players), settings.language)
-
-    create_round(
-      Enum.take(words, settings.nr_commonwords),
-      Enum.take(words, -length(players)),
-      players
-    )
-  end
-
-  def create_round(commonwords, extrawords, players) do
-    extrawords = Map.new(Enum.zip(players, extrawords))
-
+  def init(players, settings) do
     %Round{
-      allwords:
-        Map.new(extrawords, fn {player, extraword} ->
-          {player, Enum.shuffle([extraword | commonwords])}
-        end),
-      extrawords: extrawords,
       phase: :clues,
+      players: players,
       waiting_for: MapSet.new(players),
+      words: Words.generate(players, settings), 
       clues: %{},
-      guesses: %{},
-      info: []
-    }
+      guesses: %{}
+    } 
   end
+  
+  def has_player?(round, player), do: Enum.member?(round.players, player)
+  def get_phase(round), do: round.phase 
+  def get_words(round), do: round.words
+  def get_clue(round, player), do: Map.get(round.clues, player)
+  def get_guess(round, player), do: Map.get(round.guesses, player)
 
   def make_move(round, player, move) do
     case handle_move(round, player, move) do
       {:ok, round} ->
         {:ok,
-         round
-         |> update_phase()
-         |> emit_info()}
+         update_phase(round)
+        }
 
       {:error, error} ->
         {:error, error}
     end
   end
 
-  def handle_move(round, player, {:submit_clue, clue}) do
+  defp handle_move(round, player, {:submit_clue, clue}) do
     if MapSet.member?(round.waiting_for, player) and round.phase == :clues do
       {:ok,
        %Round{
          round
          | clues: Map.put(round.clues, player, clue),
-           waiting_for: MapSet.delete(round.waiting_for, player)
-       }}
+           waiting_for: MapSet.delete(round.waiting_for, player),
+       }
+      }
     else
       {:error, :unauthorized_move}
     end
   end
 
-  def handle_move(round, player, {:submit_guess, guess}) do
+  defp handle_move(round, player, {:submit_guess, guess}) do
     if MapSet.member?(round.waiting_for, player) and round.phase == :guesses do
       {:ok,
        %Round{
          round
          | guesses: Map.put(round.guesses, player, guess),
-           waiting_for: MapSet.delete(round.waiting_for, player)
-       }}
+           waiting_for: MapSet.delete(round.waiting_for, player),
+       }
+      }
     else
       {:error, :unauthorized_move}
     end
   end
 
-  def handle_move(_round, _player, _) do
+  defp handle_move(_round, _player, _) do
     {:error, :unknown_move}
   end
 
-  def update_phase(round) do
+  defp update_phase(round) do
     if !Enum.empty?(round.waiting_for) do
       round
     else
       case round.phase do
         :clues ->
-          %{round | phase: :guesses}
-          |> Map.put(:waiting_for, MapSet.new(Map.keys(round.extrawords)))
+          %Round{round | 
+            phase: :guesses, 
+            waiting_for: MapSet.new(round.players)
+          }
 
         :guesses ->
-          result = if round.guesses == round.extrawords, do: :win, else: :loss
-
-          %{round | phase: result}
-          |> Map.put(:waiting_for, MapSet.new())
-          |> add_info({:result, result})
+          %Round{round | 
+            phase: (if guesses_correct?(round), do: :win, else: :loss), 
+            waiting_for: MapSet.new()
+          }
 
         :win ->
           round
@@ -109,11 +98,9 @@ defmodule Einwortspiel.Game.Round do
     end
   end
 
-  defp add_info(round, payload) do
-    %Round{round | info: [payload | round.info]}
-  end
-
-  defp emit_info(round) do
-    {round.info, %Round{round | info: []}}
+  defp guesses_correct?(round) do
+    Enum.all?(round.players, fn player -> 
+      get_guess(round, player) == Words.get_extraword(round.words, player)
+    end)
   end
 end

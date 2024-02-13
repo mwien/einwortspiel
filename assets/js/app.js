@@ -27,6 +27,8 @@ import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
+
+// TODO: document this
 function checkdiff(el) {
   var hidden = el.querySelector('.hidden');
   var text = el.querySelector('input[type=text]');
@@ -40,8 +42,19 @@ function checkdiff(el) {
   }
 }
 
+function checkempty(el) {
+  var text = el.querySelector('input[type=text]');
+  var submit = el.querySelector('.submit');
+  if(text.value.trim() === '') {
+    submit.setAttribute('disabled', '');
+    submit.style.backgroundColor="#e5e7eb";
+  } else {
+    submit.removeAttribute('disabled');
+    submit.style.backgroundColor="white";
+  }
+}
+
 let Hooks = {}
-// thinking about disabling submit when equal, but I don't want to touch this right now
 Hooks.Diff = { // is this possible without hidden span?
   mounted() {
     this.el.addEventListener("input", e => {
@@ -50,6 +63,17 @@ Hooks.Diff = { // is this possible without hidden span?
   },
   updated() {
     checkdiff(this.el)
+  }
+}
+Hooks.Empty = { 
+  mounted() {
+    checkempty(this.el);
+    this.el.addEventListener("input", e => {
+      checkempty(this.el)
+    });
+  },
+  updated() {
+    checkempty(this.el)
   }
 }
 
