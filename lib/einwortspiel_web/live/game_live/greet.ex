@@ -8,7 +8,7 @@ defmodule EinwortspielWeb.GameLive.Greet do
       <.box class="mt-2 mb-4 text-center p-1">
         <p class="m-1">Enter your name and join the game!</p>
       </.box>
-      <.box class="flex flex-col items-center my-1 pt-2">
+      <.box class="flex flex-col items-center my-1 pt-3">
         <.join_form id="join_form" form={to_form(%{"text" => ""})} submit_handler="join" />
       </.box>
     </.main>

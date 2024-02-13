@@ -16,7 +16,7 @@ defmodule EinwortspielWeb.CoreComponents do
 
   def textform_placeholder(assigns) do
     ~H"""
-    <div class={["flex items-center my-2 mx-0.5", @class]}>
+    <div class={["flex items-center", @class]}>
       <span class="block mr-1"><%= @label %></span>
       <div class="text-start text-base md:text-lg rounded-sm mx-0.5 py-0.5 px-1 bg-white inline-block flex-grow truncate text-clip border border-opacity-0 border-violet-500 min-h-7">
         <%= @value %>
@@ -38,7 +38,7 @@ defmodule EinwortspielWeb.CoreComponents do
     <.form
       for={@form}
       id={@id}
-      class={["flex items-center my-2 mx-0.5", @class]}
+      class={["flex items-center", @class]}
       phx-submit={@submit_handler}
       phx-hook="Diff"
     >
