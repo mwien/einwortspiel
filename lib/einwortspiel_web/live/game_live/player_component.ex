@@ -11,14 +11,16 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     ~H"""
     <div>
       <.box class="mt-2 mb-4">
-        <div class="flex justify-between items-center min-h-12">
-          <span class="self-start p-0.5"> <%= @player.name %> </span>
-          <span :if={@phase != :init}> Joining next round </span>
+        <div class="flex justify-between items-center">
+          <div class="self-start p-0.5 text-sm md:text-base">
+            <%= @player.name %>
+          </div>
            <.icon
              name="hero-check-circle"
              class="m-1 w-4 h-4 md:w-5 md:h-5 invisible self-start"
            />
         </div>
+        <div class="text-center mb-1" :if={@phase != :init}> Joining next round! </div>
       </.box>
     </div>
     """
@@ -28,22 +30,10 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     ~H"""
     <div> 
       <.box class="mt-2 mb-4">
-        <div class="flex justify-between items-center min-h-12">
-          <span class="self-start p-0.5"> <%= @player.name %> </span>
-          <.textform
-            :if={@phase == :clues and @player.clue == nil}
-            id="clueform"
-            label="Clue"
-            form={to_form(%{"text" => @player.clue})}
-            submit_handler="submit_clue"
-            class="w-7/12"
-          />
-          <.textform_placeholder
-            :if={@phase != :init and (@phase != :clues or @player.clue != nil)}
-            label="Clue"
-            value={@player.clue}
-            class="w-7/12"
-          />
+        <div class="flex justify-between items-center">
+          <div class="self-start p-0.5 text-sm md:text-base">
+            <%= @player.name %>
+          </div>
          <.icon
            :if={(@phase == :clues and @player.clue == nil) or (@phase == :guesses and @player.guess == nil)}
            name="hero-ellipsis-horizontal"
@@ -56,6 +46,22 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
            class="m-1 w-4 h-4 md:w-5 md:h-5 invisible self-start"
          />
         </div>
+        <div class="flex flex-row justify-center mb-2">
+          <.textform
+            :if={@phase == :clues and @player.clue == nil}
+            id="clueform"
+            label="Clue"
+            form={to_form(%{"text" => @player.clue})}
+            submit_handler="submit_clue"
+            class="w-8/12 md:w-7/12 lg:w-6/12"
+          />
+          <.textform_placeholder
+            :if={@phase != :init and (@phase != :clues or @player.clue != nil)}
+            label="Clue"
+            value={@player.clue}
+            class="w-8/12 md:w-7/12 lg:w-6/12"
+          />
+        </div>
         <.words words={@player.words} guess={@player.guess} phase={@phase} spectating={@spectating} :if={@player.words != nil} />
       </.box>
     </div>
@@ -66,14 +72,10 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     ~H"""
     <div> 
       <.box class="my-2">
-        <div class="flex justify-between items-center min-h-12">
-          <span class="self-start p-0.5"> <%= @player.name %> </span>
-          <.textform_placeholder
-            :if={(@phase != :init and @phase != :clues) or @spectating}
-            label="Clue"
-            value={@player.clue}
-            class="w-7/12"
-          />
+        <div class="flex justify-between items-center">
+          <div class="self-start p-0.5 text-sm md:text-base truncate">
+            <%= @player.name %>
+          </div>
           <.icon
             :if={(@phase == :clues and @player.clue == nil) or (@phase == :guesses and @player.guess == nil)}
             name="hero-ellipsis-horizontal"
@@ -85,6 +87,14 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
             name="hero-check-circle"
             class="m-1 w-4 h-4 md:w-5 md:h-5 self-start invisible"
            />
+        </div>
+        <div class="flex flex-row justify-center mb-2"> 
+          <.textform_placeholder
+            :if={(@phase != :init and @phase != :clues) or @spectating}
+            label="Clue"
+            value={@player.clue}
+            class="w-8/12 md:w-7/12 lg:w-6/12"
+          />
         </div>
         <.words words={@player.words} guess={@player.guess} phase={@phase} spectating={@spectating} :if={@phase == :win or @phase == :loss or @spectating} />
       </.box>
@@ -98,7 +108,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
   attr :spectating, :boolean
   defp words(assigns) do
     ~H"""
-    <div class="flex justify-center my-2 mx-1">
+    <div class="flex justify-center mb-2 mt-4 mx-1">
       <.word 
         :for={word <- @words}
         word={elem(word, 0)}
