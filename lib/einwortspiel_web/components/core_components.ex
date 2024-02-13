@@ -14,6 +14,7 @@ defmodule EinwortspielWeb.CoreComponents do
   attr :value, :string
   attr :class, :string
 
+  # TODO min-h: actual height with text appears to be 7.5
   def textform_placeholder(assigns) do
     ~H"""
     <div class={["flex items-center my-2 mx-0.5", @class]}>
