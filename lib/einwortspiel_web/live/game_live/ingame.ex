@@ -93,7 +93,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
   defp render_info(round_phase) do
     case round_phase do
       :clues -> "Describe your words with one clue!"
-      :guesses -> "Guess the word that only you have!"
+      :guesses -> "Guess the word that is unique to you!"
       :win -> "You win the round!"
       :loss -> "You lose the round!"
     end

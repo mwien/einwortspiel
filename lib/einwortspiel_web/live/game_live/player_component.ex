@@ -11,8 +11,8 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     ~H"""
     <div>
       <.box class="mt-2 mb-4">
-        <div class="flex justify-between items-center">
-          <div class="self-start p-0.5 text-sm md:text-base">
+        <div class="flex justify-between items-center mb-1">
+          <div class="self-start p-0.5">
             <%= @player.name %>
           </div>
            <.icon
@@ -30,8 +30,8 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     ~H"""
     <div> 
       <.box class="mt-2 mb-4">
-        <div class="flex justify-between items-center">
-          <div class="self-start p-0.5 text-sm md:text-base">
+        <div class="flex justify-between items-center mb-1">
+          <div class="self-start p-0.5">
             <%= @player.name %>
           </div>
          <.icon
@@ -72,8 +72,8 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     ~H"""
     <div> 
       <.box class="my-2">
-        <div class="flex justify-between items-center">
-          <div class="self-start p-0.5 text-sm md:text-base truncate">
+        <div class="flex justify-between items-center mb-1">
+          <div class="self-start p-0.5">
             <%= @player.name %>
           </div>
           <.icon
