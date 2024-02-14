@@ -12,7 +12,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     <div>
       <.box class="mt-2 mb-4">
         <div class="flex justify-between items-center mb-1">
-          <div class="self-start p-0.5">
+          <div class="self-start px-0.5">
             <%= @player.name %>
           </div>
            <.icon
@@ -31,7 +31,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     <div> 
       <.box class="mt-2 mb-4">
         <div class="flex justify-between items-center mb-1">
-          <div class="self-start p-0.5">
+          <div class="self-start px-0.5">
             <%= @player.name %>
           </div>
          <.icon
@@ -73,7 +73,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     <div> 
       <.box class="my-2">
         <div class="flex justify-between items-center mb-1">
-          <div class="self-start p-0.5">
+          <div class="self-start px-0.5">
             <%= @player.name %>
           </div>
           <.icon
