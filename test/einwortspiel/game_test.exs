@@ -1,8 +1,8 @@
 defmodule Einwortspiel.GameTest do
-  use ExUnit.Case 
+  use ExUnit.Case
 
   alias Einwortspiel.Game
- 
+
   # TODO: improve test case
   test "simulate_game" do
     game_id = "top_class_game"

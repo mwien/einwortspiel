@@ -12,7 +12,7 @@ defmodule Einwortspiel.Generator do
     Enum.random(module.catchy_adjectives) <> Enum.random(module.catchy_nouns)
   end
 
-  def gen_id() do 
+  def gen_id() do
     :crypto.strong_rand_bytes(9) |> Base.url_encode64()
   end
 end

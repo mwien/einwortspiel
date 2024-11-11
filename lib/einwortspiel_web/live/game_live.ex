@@ -48,7 +48,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:update, {general, players}}, socket) do
+  def handle_info({:update, %Einwortspiel.GameView{general: general, players: players}}, socket) do
     {:noreply,
      socket
      |> assign(:general, Map.merge(socket.assigns.general, general))
@@ -60,11 +60,11 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def mount(%{"game_id" => game_id}, %{"user_id" => player_id}, socket) do
-    case Einwortspiel.GameServer.get_game(game_id) do
+    case Einwortspiel.GameServer.get_game_view(game_id) do
       {:error, :invalid_game_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
-      {:ok, {general, players}} ->
+      {:ok, %Einwortspiel.GameView{general: general, players: players}} ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game_info:#{game_id}")
 
         # topic = "game_pres:#{game_id}"

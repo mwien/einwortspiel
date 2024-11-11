@@ -13,6 +13,9 @@ defmodule Einwortspiel.Game.WordsTest do
       assert MapSet.intersection(w1, w2) |> MapSet.size() == 2
     end
 
-    assert Enum.map(players, &Words.get_words(words, &1)) |> List.flatten() |> Enum.uniq() |> length() == 5
+    assert Enum.map(players, &Words.get_words(words, &1))
+           |> List.flatten()
+           |> Enum.uniq()
+           |> length() == 5
   end
 end
