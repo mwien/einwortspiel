@@ -20,7 +20,7 @@ defmodule Einwortspiel.Application do
       EinwortspielWeb.Endpoint,
       # Start a worker by calling: Einwortspiel.Worker.start_link(arg)
       # {Einwortspiel.Worker, arg}
-      {Registry, keys: :unique, name: Einwortspiel.GameRegistry},
+      {Registry, keys: :unique, name: Einwortspiel.RoomRegistry},
       Einwortspiel.GameSupervisor
     ]
 
@@ -38,7 +38,7 @@ defmodule Einwortspiel.Application do
     :ok
   end
 
-  def via_tuple(name) do
-    {:via, Registry, {Einwortspiel.GameRegistry, name}}
+  def room_via_tuple(name) do
+    {:via, Registry, {Einwortspiel.RoomRegistry, name}}
   end
 end

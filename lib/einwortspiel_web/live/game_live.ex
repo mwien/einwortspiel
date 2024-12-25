@@ -10,7 +10,7 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_event("join", %{"text" => name}, socket) do
-    Einwortspiel.GameServer.join(
+    Einwortspiel.Game.join(
       socket.assigns.game_id,
       socket.assigns.player_id,
       name
@@ -20,7 +20,7 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_event("start_round", _value, socket) do
-    Einwortspiel.GameServer.start_round(
+    Einwortspiel.Game.start_round(
       socket.assigns.game_id,
       socket.assigns.player_id
     )
@@ -29,7 +29,7 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_event("submit_clue", %{"text" => clue}, socket) do
-    Einwortspiel.GameServer.submit_clue(
+    Einwortspiel.Game.submit_clue(
       socket.assigns.game_id,
       socket.assigns.player_id,
       clue
@@ -39,7 +39,7 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def handle_event("submit_guess", %{"value" => guess}, socket) do
-    Einwortspiel.GameServer.submit_guess(
+    Einwortspiel.Game.submit_guess(
       socket.assigns.game_id,
       socket.assigns.player_id,
       guess
@@ -48,7 +48,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:update, %Einwortspiel.GameView{general: general, players: players}}, socket) do
+  def handle_info({:update, %Einwortspiel.Game.View{general: general, players: players}}, socket) do
     {:noreply,
      socket
      |> assign(:general, Map.merge(socket.assigns.general, general))
@@ -60,11 +60,11 @@ defmodule EinwortspielWeb.GameLive do
   end
 
   def mount(%{"game_id" => game_id}, %{"user_id" => player_id}, socket) do
-    case Einwortspiel.GameServer.get_game_view(game_id) do
+    case Einwortspiel.Game.get_game_view(game_id) do
       {:error, :invalid_game_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
-      {:ok, %Einwortspiel.GameView{general: general, players: players}} ->
+      {:ok, %Einwortspiel.Game.View{general: general, players: players}} ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game_info:#{game_id}")
 
         # topic = "game_pres:#{game_id}"
