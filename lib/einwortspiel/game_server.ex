@@ -1,7 +1,7 @@
 defmodule Einwortspiel.GameServer do
   use GenServer
-  alias Einwortspiel.{Game, Notifier}
-  
+  alias Einwortspiel.{Game, GameView, Notifier}
+
   def child_spec(init_args) do
     %{
       id: __MODULE__,
@@ -21,11 +21,11 @@ defmodule Einwortspiel.GameServer do
     # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "table_pres:#{table.table_id}")
     {:ok, Game.init(game_id, options)}
   end
- 
-  def get_game(game_id) do
+
+  def get_game_view(game_id) do
     case service_name(game_id) do
       nil -> {:error, :invalid_game_id}
-      pid -> GenServer.call(pid, {:get_game})
+      pid -> GenServer.call(pid, {:get_game_view})
     end
   end
 
@@ -35,21 +35,21 @@ defmodule Einwortspiel.GameServer do
       pid -> GenServer.call(pid, {:join, player_id, name})
     end
   end
-  
+
   def start_round(game_id, player_id) do
     case service_name(game_id) do
       nil -> {:error, :invalid_game_id}
       pid -> GenServer.call(pid, {:start_round, player_id})
     end
   end
- 
+
   def submit_clue(game_id, player_id, clue) do
     case service_name(game_id) do
       nil -> {:error, :invalid_game_id}
       pid -> GenServer.call(pid, {:submit_clue, player_id, clue})
     end
   end
-  
+
   def submit_guess(game_id, player_id, guess) do
     case service_name(game_id) do
       nil -> {:error, :invalid_game_id}
@@ -57,17 +57,17 @@ defmodule Einwortspiel.GameServer do
     end
   end
 
-  def handle_call({:get_game}, _from, state) do
-    {:reply, {:ok, Game.game_view(state)}, state}
+  def handle_call({:get_game_view}, _from, state) do
+    {:reply, {:ok, GameView.get_game_view(state)}, state}
   end
-  
+
   def handle_call({:join, player_id, name}, _from, game) do
     case Game.add_player(game, player_id, name) do
       {:ok, {update, new_game}} -> {:reply, :ok, publish_update(new_game, update)}
       {:error, error} -> {:reply, {:error, error}, game}
     end
   end
-  
+
   def handle_call({:start_round, player_id}, _from, game) do
     case Game.start_round(game, player_id) do
       {:ok, {update, new_game}} -> {:reply, :ok, publish_update(new_game, update)}
@@ -93,15 +93,15 @@ defmodule Einwortspiel.GameServer do
     Notifier.publish_game_info(game.id, {:update, update})
     game
   end
- 
+
   defp service_name(table_id) do
     GenServer.whereis(Einwortspiel.Application.via_tuple(table_id))
   end
-  
-  #def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, table) do
+
+  # def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, table) do
   #  {
   #    :noreply,
   #    Table.update_connected_players(table, joins, leaves)
   #  }
-  #end
+  # end
 end

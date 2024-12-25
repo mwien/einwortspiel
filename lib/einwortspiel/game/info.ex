@@ -13,7 +13,7 @@ defmodule Einwortspiel.Game.Info do
     }
   end
 
-  def get_wins(info), do: info.wins 
+  def get_wins(info), do: info.wins
   def get_losses(info), do: info.losses
 
   def evaluate_result(info, result) do
@@ -21,6 +21,6 @@ defmodule Einwortspiel.Game.Info do
       :win -> %Info{info | wins: info.wins + 1}
       :loss -> %Info{info | losses: info.losses + 1}
       _ -> info
-    end 
+    end
   end
 end

@@ -8,7 +8,7 @@ defmodule Einwortspiel.Game.Round do
     :waiting_for,
     :words,
     :clues,
-    :guesses,
+    :guesses
   ]
 
   def init(players, settings) do
@@ -16,14 +16,14 @@ defmodule Einwortspiel.Game.Round do
       phase: :clues,
       players: players,
       waiting_for: MapSet.new(players),
-      words: Words.generate(players, settings), 
+      words: Words.generate(players, settings),
       clues: %{},
       guesses: %{}
-    } 
+    }
   end
-  
+
   def has_player?(round, player), do: Enum.member?(round.players, player)
-  def get_phase(round), do: round.phase 
+  def get_phase(round), do: round.phase
   def get_words(round), do: round.words
   def get_clue(round, player), do: Map.get(round.clues, player)
   def get_guess(round, player), do: Map.get(round.guesses, player)
@@ -31,9 +31,7 @@ defmodule Einwortspiel.Game.Round do
   def make_move(round, player, move) do
     case handle_move(round, player, move) do
       {:ok, round} ->
-        {:ok,
-         update_phase(round)
-        }
+        {:ok, update_phase(round)}
 
       {:error, error} ->
         {:error, error}
@@ -46,9 +44,8 @@ defmodule Einwortspiel.Game.Round do
        %Round{
          round
          | clues: Map.put(round.clues, player, clue),
-           waiting_for: MapSet.delete(round.waiting_for, player),
-       }
-      }
+           waiting_for: MapSet.delete(round.waiting_for, player)
+       }}
     else
       {:error, :unauthorized_move}
     end
@@ -60,9 +57,8 @@ defmodule Einwortspiel.Game.Round do
        %Round{
          round
          | guesses: Map.put(round.guesses, player, guess),
-           waiting_for: MapSet.delete(round.waiting_for, player),
-       }
-      }
+           waiting_for: MapSet.delete(round.waiting_for, player)
+       }}
     else
       {:error, :unauthorized_move}
     end
@@ -78,15 +74,13 @@ defmodule Einwortspiel.Game.Round do
     else
       case round.phase do
         :clues ->
-          %Round{round | 
-            phase: :guesses, 
-            waiting_for: MapSet.new(round.players)
-          }
+          %Round{round | phase: :guesses, waiting_for: MapSet.new(round.players)}
 
         :guesses ->
-          %Round{round | 
-            phase: (if guesses_correct?(round), do: :win, else: :loss), 
-            waiting_for: MapSet.new()
+          %Round{
+            round
+            | phase: if(guesses_correct?(round), do: :win, else: :loss),
+              waiting_for: MapSet.new()
           }
 
         :win ->
@@ -99,7 +93,7 @@ defmodule Einwortspiel.Game.Round do
   end
 
   defp guesses_correct?(round) do
-    Enum.all?(round.players, fn player -> 
+    Enum.all?(round.players, fn player ->
       get_guess(round, player) == Words.get_extraword(round.words, player)
     end)
   end
