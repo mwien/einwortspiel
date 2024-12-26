@@ -1,8 +1,8 @@
-defmodule Einwortspiel.Room.Supervisor do
+defmodule Einwortspiel.Rooms.Supervisor do
   use Supervisor
 
   def start_link(room_id) do
-    Supervisor.start_link(__MODULE__, :ok, name: Einwortspiel.room_via_tuple(room_id))
+    Supervisor.start_link(__MODULE__, :ok, name: Einwortspiel.Application.room_via_tuple(room_id))
   end
 
   @impl true

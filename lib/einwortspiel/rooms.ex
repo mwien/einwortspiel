@@ -1,4 +1,4 @@
-defmodule Einwortspiel.Room do
+defmodule Einwortspiel.Rooms do
   use DynamicSupervisor
 
   def start_link(_opts) do
@@ -15,7 +15,7 @@ defmodule Einwortspiel.Room do
 
     DynamicSupervisor.start_child(
       __MODULE__,
-      {Einwortspiel.Room.Supervisor, [room_id, options]}
+      {Einwortspiel.Rooms.Supervisor, [room_id, options]}
     )
 
     room_id

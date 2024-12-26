@@ -35,7 +35,7 @@ defmodule Einwortspiel.Game.View do
   end
 
   defp get_player(game, player_id) do
-    if game.round == nil or !State.Round.has_player?(game.round, player_id) do
+    if game.round == nil or !Round.has_player?(game.round, player_id) do
       %{
         id: player_id,
         name: Player.get_name(game.players[player_id]),

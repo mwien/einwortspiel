@@ -21,7 +21,7 @@ defmodule Einwortspiel.Application do
       # Start a worker by calling: Einwortspiel.Worker.start_link(arg)
       # {Einwortspiel.Worker, arg}
       {Registry, keys: :unique, name: Einwortspiel.RoomRegistry},
-      Einwortspiel.GameSupervisor
+      Einwortspiel.Rooms
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -40,7 +40,7 @@ defmodule Einwortspiel.Game.State do
     case can_start_round(game) do
       :ok ->
         new_game = %State{game | round: Round.init(Map.keys(game.players), game.settings)}
-        {:ok, {View.get_game_view(new_game), new_game}}
+        {:ok, {View.get_view(new_game), new_game}}
 
       {:error, error} ->
         {:error, error}

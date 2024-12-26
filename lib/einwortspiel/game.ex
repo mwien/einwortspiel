@@ -18,7 +18,7 @@ defmodule Einwortspiel.Game do
   end
 
   def init([room_id, options]) do
-    {:ok, Game.init(room_id, options)}
+    {:ok, State.init(room_id, options)}
   end
 
   def get_game_view(room_id) do
@@ -58,7 +58,7 @@ defmodule Einwortspiel.Game do
   end
 
   def handle_call({:get_game_view}, _from, state) do
-    {:reply, {:ok, View.get_game_view(state)}, state}
+    {:reply, {:ok, View.get_view(state)}, state}
   end
 
   def handle_call({:join, player_id, name}, _from, state) do
@@ -95,6 +95,6 @@ defmodule Einwortspiel.Game do
   end
 
   defp service_name(table_id) do
-    GenServer.whereis(Einwortspiel.Application.via_tuple(table_id))
+    GenServer.whereis(Einwortspiel.Application.room_via_tuple(table_id))
   end
 end

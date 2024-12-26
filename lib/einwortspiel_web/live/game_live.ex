@@ -61,21 +61,11 @@ defmodule EinwortspielWeb.GameLive do
 
   def mount(%{"game_id" => game_id}, %{"user_id" => player_id}, socket) do
     case Einwortspiel.Game.get_game_view(game_id) do
-      {:error, :invalid_game_id} ->
+      {:error, :invalid_room_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
       {:ok, %Einwortspiel.Game.View{general: general, players: players}} ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game_info:#{game_id}")
-
-        # topic = "game_pres:#{game_id}"
-        # Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
-        #
-        # Einwortspiel.Presence.track(
-        #    self(),
-        #    topic,
-        #    player_id,
-        #  %{}
-        # )
 
         {:ok,
          socket
