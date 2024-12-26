@@ -1,14 +1,25 @@
 defmodule Einwortspiel.Rooms.Supervisor do
   use Supervisor
 
-  def start_link(room_id) do
-    Supervisor.start_link(__MODULE__, :ok, name: Einwortspiel.Application.room_via_tuple(room_id))
+  def child_spec(init_args) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, init_args},
+      # TODO: correct option?
+      restart: :transient
+    }
+  end
+
+  def start_link(room_id, options) do
+    Supervisor.start_link(__MODULE__, [room_id, options],
+      name: Einwortspiel.Application.via_tuple({:room, room_id})
+    )
   end
 
   @impl true
-  def init(room_id) do
+  def init([room_id, options]) do
     children = [
-      {Einwortspiel.Game, room_id}
+      {Einwortspiel.Game, [room_id, options]}
     ]
 
     Supervisor.init(children, strategy: :one_for_all)

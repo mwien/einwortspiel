@@ -13,7 +13,7 @@ defmodule Einwortspiel.Game do
 
   def start_link(room_id, options) do
     GenServer.start_link(__MODULE__, [room_id, options],
-      name: Einwortspiel.Application.room_via_tuple(room_id)
+      name: Einwortspiel.Application.via_tuple({:game, room_id})
     )
   end
 
@@ -94,7 +94,7 @@ defmodule Einwortspiel.Game do
     state
   end
 
-  defp service_name(table_id) do
-    GenServer.whereis(Einwortspiel.Application.room_via_tuple(table_id))
+  defp service_name(room_id) do
+    GenServer.whereis(Einwortspiel.Application.via_tuple({:game, room_id}))
   end
 end
