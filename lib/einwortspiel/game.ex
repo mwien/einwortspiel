@@ -23,6 +23,7 @@ defmodule Einwortspiel.Game do
   end
 
   def init({room_id, options}) do
+    Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "room_presence:#{room_id}")
     {:ok, State.init(room_id, options)}
   end
 
@@ -91,6 +92,18 @@ defmodule Einwortspiel.Game do
       {:ok, {update, new_state}} -> {:reply, :ok, publish_update(new_state, update)}
       {:error, error} -> {:reply, {:error, error}, state}
     end
+  end
+
+  def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, state) do
+    player_updates =
+      (Map.keys(joins) |> Enum.map(fn player_id -> {player_id, true} end)) ++
+        (Map.keys(leaves) |> Enum.map(fn player_id -> {player_id, false} end))
+
+    IO.inspect(player_updates)
+
+    {update, new_state} = State.update_connected_players(state, player_updates)
+
+    {:noreply, publish_update(new_state, update)}
   end
 
   defp publish_update(state, update) do

@@ -60,13 +60,28 @@ defmodule EinwortspielWeb.GameLive do
      )}
   end
 
+  # presence info is handled by the game server and propagated via :game_update
+  def handle_info(%{event: "presence_diff", payload: _}, socket) do
+    {:noreply, socket}
+  end
+
   def mount(%{"room_id" => room_id}, %{"user_id" => player_id}, socket) do
     case Einwortspiel.Game.get_game_view(room_id) do
       {:error, :invalid_room_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
       {:ok, %Einwortspiel.Game.View{general: general, players: players}} ->
-        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "room:#{room_id}")
+        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "room_notification:#{room_id}")
+
+        topic = "room_presence:#{room_id}"
+        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, topic)
+
+        Einwortspiel.Presence.track(
+          self(),
+          topic,
+          player_id,
+          %{}
+        )
 
         {:ok,
          socket

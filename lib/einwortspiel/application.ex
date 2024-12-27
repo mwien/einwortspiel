@@ -6,7 +6,7 @@ defmodule Einwortspiel.Application do
     children = [
       EinwortspielWeb.Telemetry,
       {Phoenix.PubSub, name: Einwortspiel.PubSub},
-      Einwortspiel.Rooms.Presence,
+      Einwortspiel.Presence,
       {Finch, name: Einwortspiel.Finch},
       EinwortspielWeb.Endpoint,
       {Registry, keys: :unique, name: Einwortspiel.Registry},

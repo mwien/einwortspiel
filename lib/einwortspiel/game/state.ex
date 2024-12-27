@@ -2,6 +2,8 @@ defmodule Einwortspiel.Game.State do
   alias __MODULE__
   alias Einwortspiel.Game.{Info, Player, Round, Settings, View}
 
+  # - have option for player to leave as well (set to inactive) in game.ex
+
   defstruct [
     :room_id,
     :info,
@@ -32,6 +34,15 @@ defmodule Einwortspiel.Game.State do
        |> View.update_general(state)
        |> emit_update()}
     end
+  end
+
+  def update_connected_players(state, player_updates) do
+    Enum.filter(player_updates, fn {player_id, _} -> Map.has_key?(state.players, player_id) end)
+    |> Enum.reduce(state, fn {player_id, val}, state ->
+      update_in(state.players[player_id], &Player.set_connected(&1, val))
+      |> View.update_player(state, player_id)
+    end)
+    |> emit_update()
   end
 
   def start_round(state, _player_id) do
