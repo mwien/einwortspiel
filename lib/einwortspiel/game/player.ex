@@ -4,23 +4,22 @@ defmodule Einwortspiel.Game.Player do
   defstruct [
     :name,
     :connected,
-    # different from local active! which indicates whether spectator in cur. round. this gives whether player wants to be active, e.g. in next round (maybe better name)
+    # active indicates whether player wants to play next round (irrespective whether she is currently playing)
     :active
   ]
-
-  # TODO: add update functions
 
   def create(name) do
     %Player{
       name: name,
-      # is this fine?
       connected: true,
-      # ?
       active: true
     }
   end
 
   def get_name(player), do: player.name
-  def get_active(player), do: player.active
   def get_connected(player), do: player.connected
+  def get_active(player), do: player.active
+
+  def set_active(player, val), do: %Player{player | active: val}
+  def set_connected(player, val), do: %Player{player | connected: val}
 end

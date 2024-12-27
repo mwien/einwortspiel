@@ -12,9 +12,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     <div>
       <.box class="mt-2 mb-4">
         <div class="flex justify-between items-center mb-1">
-          <div class="self-start px-0.5">
-            <%= @player.name %>
-          </div>
+          <.name name={@player.name} gray_out={!@player.connected} />
           <.icon name="hero-check-circle" class="m-1 w-4 h-4 md:w-5 md:h-5 invisible self-start" />
         </div>
         <div :if={@phase != :init} class="text-center mb-1">Joining next round!</div>
@@ -28,9 +26,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     <div>
       <.box class="mt-2 mb-4">
         <div class="flex justify-between items-center mb-1">
-          <div class="self-start px-0.5">
-            <%= @player.name %>
-          </div>
+          <.name name={@player.name} gray_out={!@player.connected} />
           <.icon
             :if={
               (@phase == :clues and @player.clue == nil) or
@@ -86,9 +82,7 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     <div>
       <.box class="my-2">
         <div class="flex justify-between items-center mb-1">
-          <div class="self-start px-0.5">
-            <%= @player.name %>
-          </div>
+          <.name name={@player.name} gray_out={!@player.connected} />
           <.icon
             :if={
               (@phase == :clues and @player.clue == nil) or
@@ -131,6 +125,20 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
     """
   end
 
+  attr :name, :string
+  attr :gray_out, :boolean
+
+  defp name(assigns) do
+    ~H"""
+    <div class={
+      ["self-start", "px-0.5"] ++
+        [if(@gray_out, do: "text-slate-500")]
+    }>
+      <%= @name %>
+    </div>
+    """
+  end
+
   attr :words, :list
   attr :guess, :string
   attr :phase, :atom
@@ -162,10 +170,10 @@ defmodule EinwortspielWeb.GameLive.PlayerComponent do
       value={@word}
       class={[
         "rounded-sm h-24 w-48 shadow-md flex flex-col justify-center items-center font-bebasneue text-xl md:text-2xl",
-        @guess != @word and (@guess == nil or !@extraword) && "bg-white",
+        (@guess != @word and (@guess == nil or !@extraword)) && "bg-white",
         @guess == @word && "ring ring-inset ring-violet-500",
-        @guess != nil and @extraword && "bg-green-300",
-        @guess == @word and !@extraword && "bg-red-400"
+        (@guess != nil and @extraword) && "bg-green-300",
+        (@guess == @word and !@extraword) && "bg-red-400"
       ]}
       disabled={!@active}
     >
