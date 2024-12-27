@@ -13,10 +13,10 @@ defmodule Einwortspiel.State.StateTest do
     assert {:error, :too_few_players} = State.start_round(state, "id1234")
     assert {:ok, {_update, state}} = State.add_player(state, "id5678", "Clara")
     assert {:ok, {_update, state}} = State.start_round(state, "id1234")
-    assert {:ok, {_update, state}} = State.submit_clue(state, "id1234", "Fuchs")
-    assert {:ok, {_update, state}} = State.submit_clue(state, "id5678", "Lachs")
-    assert {:ok, {_update, state}} = State.submit_guess(state, "id1234", "Xyz")
-    assert {:ok, {_update, state}} = State.submit_guess(state, "id5678", "Xyz")
+    assert {:ok, {_update, state}} = State.process_clue(state, "id1234", "Fuchs")
+    assert {:ok, {_update, state}} = State.process_clue(state, "id5678", "Lachs")
+    assert {:ok, {_update, state}} = State.process_guess(state, "id1234", "Xyz")
+    assert {:ok, {_update, state}} = State.process_guess(state, "id5678", "Xyz")
     assert {:ok, {_update, _state}} = State.start_round(state, "id5678")
   end
 end
