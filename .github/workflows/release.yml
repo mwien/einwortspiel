@@ -35,7 +35,7 @@ jobs:
       run: |
         mix local.hex --force
         mix local.rebar --force
-        mix deps.get --only prod
+        mix deps.get
     - name: Build assets
       run: MIX_ENV=prod mix assets.deploy
     - name: Build release
