@@ -1,7 +1,12 @@
 defmodule Einwortspiel.Game do
   use GenServer
   alias Einwortspiel.Game.{State, View}
-  alias Einwortspiel.Notifier
+  alias Einwortspiel.Rooms
+
+  # manages the complete game state
+  # if the game/ folder gets to big could separate out 
+  # - round for game logic
+  # - players for player handling
 
   def child_spec(init_args) do
     %{
@@ -12,12 +17,12 @@ defmodule Einwortspiel.Game do
   end
 
   def start_link(room_id, options) do
-    GenServer.start_link(__MODULE__, [room_id, options],
+    GenServer.start_link(__MODULE__, {room_id, options},
       name: Einwortspiel.Application.via_tuple({:game, room_id})
     )
   end
 
-  def init([room_id, options]) do
+  def init({room_id, options}) do
     {:ok, State.init(room_id, options)}
   end
 
@@ -28,7 +33,6 @@ defmodule Einwortspiel.Game do
     end
   end
 
-  # have join room in future -> and then enter game or something
   def join(room_id, player_id, name) do
     case service_name(room_id) do
       nil -> {:error, :invalid_room_id}
@@ -76,21 +80,21 @@ defmodule Einwortspiel.Game do
   end
 
   def handle_call({:submit_clue, player_id, clue}, _from, state) do
-    case State.submit_clue(state, player_id, clue) do
+    case State.process_clue(state, player_id, clue) do
       {:ok, {update, new_state}} -> {:reply, :ok, publish_update(new_state, update)}
       {:error, error} -> {:reply, {:error, error}, state}
     end
   end
 
   def handle_call({:submit_guess, player_id, guess}, _from, state) do
-    case State.submit_guess(state, player_id, guess) do
+    case State.process_guess(state, player_id, guess) do
       {:ok, {update, new_state}} -> {:reply, :ok, publish_update(new_state, update)}
       {:error, error} -> {:reply, {:error, error}, state}
     end
   end
 
   defp publish_update(state, update) do
-    Notifier.publish_game_info(state.id, {:update, update})
+    Rooms.publish_for_room(state.room_id, {:game_update, update})
     state
   end
 

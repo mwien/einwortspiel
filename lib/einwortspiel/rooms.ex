@@ -1,6 +1,8 @@
 defmodule Einwortspiel.Rooms do
   use DynamicSupervisor
 
+  alias Einwortspiel.Rooms.Notifier
+
   def start_link(_opts) do
     DynamicSupervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
@@ -24,12 +26,13 @@ defmodule Einwortspiel.Rooms do
   # TODO: add close room call
   # and worker which cleans up abandoned rooms?
 
-  # def add_ai_player
-  # -> go through room.supervisor
+  def publish_for_room(room_id, message) do
+    Notifier.notify_room(room_id, message)
+  end
 
-  # TODO: could further add here:
-  # - chat
-  # - user names
-  # - presence
-  # - etc
+  # def message_room (chat message)
+
+  # TODO: later add this
+  # def add_ai_player_to_room(room_id)
+  # -> go through room.supervisor
 end

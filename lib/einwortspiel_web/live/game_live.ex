@@ -1,6 +1,7 @@
 defmodule EinwortspielWeb.GameLive do
   use EinwortspielWeb, :live_view
   alias EinwortspielWeb.GameLive.{Greet, Ingame}
+  alias Einwortspiel.Game.View
 
   def render(assigns) do
     ~H"""
@@ -11,7 +12,7 @@ defmodule EinwortspielWeb.GameLive do
 
   def handle_event("join", %{"text" => name}, socket) do
     Einwortspiel.Game.join(
-      socket.assigns.game_id,
+      socket.assigns.room_id,
       socket.assigns.player_id,
       name
     )
@@ -21,7 +22,7 @@ defmodule EinwortspielWeb.GameLive do
 
   def handle_event("start_round", _value, socket) do
     Einwortspiel.Game.start_round(
-      socket.assigns.game_id,
+      socket.assigns.room_id,
       socket.assigns.player_id
     )
 
@@ -30,7 +31,7 @@ defmodule EinwortspielWeb.GameLive do
 
   def handle_event("submit_clue", %{"text" => clue}, socket) do
     Einwortspiel.Game.submit_clue(
-      socket.assigns.game_id,
+      socket.assigns.room_id,
       socket.assigns.player_id,
       clue
     )
@@ -40,7 +41,7 @@ defmodule EinwortspielWeb.GameLive do
 
   def handle_event("submit_guess", %{"value" => guess}, socket) do
     Einwortspiel.Game.submit_guess(
-      socket.assigns.game_id,
+      socket.assigns.room_id,
       socket.assigns.player_id,
       guess
     )
@@ -48,7 +49,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:update, %Einwortspiel.Game.View{general: general, players: players}}, socket) do
+  def handle_info({:game_update, %View{general: general, players: players}}, socket) do
     {:noreply,
      socket
      |> assign(:general, Map.merge(socket.assigns.general, general))
@@ -59,17 +60,17 @@ defmodule EinwortspielWeb.GameLive do
      )}
   end
 
-  def mount(%{"game_id" => game_id}, %{"user_id" => player_id}, socket) do
-    case Einwortspiel.Game.get_game_view(game_id) do
+  def mount(%{"room_id" => room_id}, %{"user_id" => player_id}, socket) do
+    case Einwortspiel.Game.get_game_view(room_id) do
       {:error, :invalid_room_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
       {:ok, %Einwortspiel.Game.View{general: general, players: players}} ->
-        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "game_info:#{game_id}")
+        Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "room:#{room_id}")
 
         {:ok,
          socket
-         |> assign(:game_id, game_id)
+         |> assign(:room_id, room_id)
          |> assign(:player_id, player_id)
          |> assign(:general, general)
          |> assign(:players, players)

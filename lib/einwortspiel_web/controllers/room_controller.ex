@@ -1,4 +1,4 @@
-defmodule EinwortspielWeb.GameController do
+defmodule EinwortspielWeb.RoomController do
   use EinwortspielWeb, :controller
 
   def create(conn, params) do

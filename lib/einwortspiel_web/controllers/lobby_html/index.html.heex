@@ -1,35 +1,30 @@
-<.header>
-</.header>
+<.header></.header>
 <.main>
   <.box class="mt-2 mb-1">
-    <.form :let={f} for={%{"language" => "de"}} action={~p"/game/create"} class="text-center"> 
+    <.form :let={f} for={%{"language" => "de"}} action={~p"/room/create"} class="text-center">
       <.button class="text-xl font-bebasneue pt-3 pb-2 px-3 my-1.5">
         Play
       </.button>
 
       <fieldset class="w-fit mx-auto my-1.5">
         <.inner_box>
-          <h4 class="text-xl mb-1.5 font-bebasneue"> 
-            Game Language 
+          <h4 class="text-xl mb-1.5 font-bebasneue">
+            Game Language
           </h4>
           <ul class="mb-0.5">
-          <li class="inline-block m-0.5">
-          <.input field={f[:language]}
-            id="lang_de"
-            type="radio"
-            label="German"
-            value="de"
-            {%{"checked" => true}}
-          />
-          </li>
-          <li class="inline-block m-0.5">
-          <.input field={f[:language]}
-            id="lang_en"
-            type="radio"
-            label="English"
-            value="en"
-          />
-          </li>
+            <li class="inline-block m-0.5">
+              <.input
+                field={f[:language]}
+                id="lang_de"
+                type="radio"
+                label="German"
+                value="de"
+                {%{"checked" => true}}
+              />
+            </li>
+            <li class="inline-block m-0.5">
+              <.input field={f[:language]} id="lang_en" type="radio" label="English" value="en" />
+            </li>
           </ul>
         </.inner_box>
       </fieldset>
@@ -38,21 +33,21 @@
 
   <.box class="my-1">
     <.inner_box class="m-1.5 mb-2.5">
-      <h4 class="font-bebasneue text-xl mb-1"> 
+      <h4 class="font-bebasneue text-xl mb-1">
         The Game
       </h4>
-      <p> 
-        Each player receives three words, with two of them being the same for everyone, and describes them by a single clue. Afterwards, they must deduce which word is unique to them based on the clues of the other players.  
+      <p>
+        Each player receives three words, with two of them being the same for everyone, and describes them by a single clue. Afterwards, they must deduce which word is unique to them based on the clues of the other players.
       </p>
     </.inner_box>
-    <.inner_box class="m-1.5 mt-2.5" >
-      <h4 class="font-bebasneue text-xl mb-1"> 
-        How To Play 
+    <.inner_box class="m-1.5 mt-2.5">
+      <h4 class="font-bebasneue text-xl mb-1">
+        How To Play
       </h4>
       <ol class="list-decimal list-inside">
-        <li> Set the language for the game and press play. </li>
-        <li> Invite other players by sharing the URL. </li>
-        <li> Start playing. </li>
+        <li>Set the language for the game and press play.</li>
+        <li>Invite other players by sharing the URL.</li>
+        <li>Start playing.</li>
       </ol>
     </.inner_box>
   </.box>
