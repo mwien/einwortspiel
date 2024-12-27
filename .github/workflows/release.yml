@@ -2,7 +2,8 @@ name: Elixir Phoenix Release
 
 on:
   push:
-    - 'v*' # trigger on version tags
+    tags:
+      - 'v*' # trigger on version tags
   workflow_dispatch:
 
 jobs:
@@ -38,12 +39,13 @@ jobs:
     - name: Build assets
       run: MIX_ENV=prod mix assets.deploy
     - name: Build release
-        env: SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-        run: |
-          mix phx.gen.release 
-          MIX_ENV=prod mix release
+      env: 
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+      run: |
+        mix phx.gen.release 
+        MIX_ENV=prod mix release
     - name: Upload release artifact
-          uses: actions/upload-artifact@v3
-        with:
-          name: einwortspiel_release
-          path: _build/prod/rel/einwortspiel
+      uses: actions/upload-artifact@v3
+      with:
+        name: einwortspiel_release
+        path: _build/prod/rel/einwortspiel

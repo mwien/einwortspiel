@@ -17,16 +17,18 @@
       <%= @inner_content %>
       <footer class="mt-2 text-xs md:text-sm w-full md:w-4/5 lg:w-3/5 2xl:w-1/2 mx-auto">
         <.box>
-        <dl class="grid grid-flow-col auto-cols-max justify-center items-start" >
-          <dt class="col-start-1 justify-self-center self-start" >
-            <.icon name="hero-envelope" class="w-3 md:w-3.5 h-3 md:h-3.5" />
-          </dt>
-          <dd class="col-start-2 justify-self-start ml-1.5"> marcel.wienoebst (AT) gmx.de </dd>
-          <dt class="col-start-1 justify-self-center">
-            &copy;
-          </dt> 
-          <dd class="col-start-2 justify-self-start ml-1.5"> <%= Map.fetch!(DateTime.utc_now, :year)  %> Marcel Wienöbst. All rights reserved. </dd>
-        </dl>
+          <dl class="grid grid-flow-col auto-cols-max justify-center items-start">
+            <dt class="col-start-1 justify-self-center self-start">
+              <.icon name="hero-envelope" class="w-3 md:w-3.5 h-3 md:h-3.5" />
+            </dt>
+            <dd class="col-start-2 justify-self-start ml-1.5">marcel.wienoebst (AT) gmx.de</dd>
+            <dt class="col-start-1 justify-self-center">
+              &copy;
+            </dt>
+            <dd class="col-start-2 justify-self-start ml-1.5">
+              <%= Map.fetch!(DateTime.utc_now(), :year) %> Marcel Wienöbst. All rights reserved.
+            </dd>
+          </dl>
         </.box>
       </footer>
     </div>
