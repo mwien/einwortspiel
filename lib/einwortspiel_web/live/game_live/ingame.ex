@@ -37,26 +37,37 @@ defmodule EinwortspielWeb.GameLive.Ingame do
     </.header>
     <.main>
       <.box class="mt-2 mb-4 text-center p-1">
-        <p :if={!@general.can_start_round and @general.phase == :init} class="m-1">
-          Waiting for second player
-          <.icon name="hero-ellipsis-horizontal" class="ml-1.5 w-5 h-5 duration-2000 animate-bounce" />
-        </p>
-        <p :if={@general.can_start_round and @general.phase == :init} class="m-1">
-          Ready to start <.icon name="hero-check-circle" class="ml-1.5 w-5 h-5" />
-        </p>
-        <p :if={@general.phase == :init} class="m-1">
-          Share the url to invite further players
-          <.button phx-click={JS.dispatch("urlcopy")} class="my-1 ml-1 px-1.5 pb-0.5 group">
-            <.icon name="hero-clipboard-document" class="w-5 h-5 group-focus:hidden" />
-            <.icon
-              name="hero-clipboard-document-check"
-              class="w-5 h-5 hidden group-focus:inline-block"
-            />
-          </.button>
-        </p>
-        <p :if={@general.phase != :init} class="m-1">
-          <%= render_info(@general.phase) %>
-        </p>
+        <div :if={@general.phase == :init} class="flex flex-row justify-between items-center">
+          <div class="w-24" />
+          <div class="w-1/2">
+            <p :if={!@general.can_start_round and @general.phase == :init} class="m-1">
+              Waiting for second player
+              <.icon
+                name="hero-ellipsis-horizontal"
+                class="ml-1.5 w-5 h-5 duration-2000 animate-bounce"
+              />
+            </p>
+            <p :if={@general.can_start_round and @general.phase == :init} class="m-1">
+              Ready to start <.icon name="hero-check-circle" class="ml-1.5 w-5 h-5" />
+            </p>
+            <p :if={@general.phase == :init} class="m-1">
+              Share the url to invite further players
+              <.button phx-click={JS.dispatch("urlcopy")} class="my-1 ml-1 px-1.5 pb-0.5 group">
+                <.icon name="hero-clipboard-document" class="w-5 h-5 group-focus:hidden" />
+                <.icon
+                  name="hero-clipboard-document-check"
+                  class="w-5 h-5 hidden group-focus:inline-block"
+                />
+              </.button>
+            </p>
+          </div>
+          <div id="qrcode" phx-hook="GenQR" class="w-32 m-1"></div>
+        </div>
+        <div :if={@general.phase != :init}>
+          <p class="m-1">
+            <%= render_info(@general.phase) %>
+          </p>
+        </div>
       </.box>
       <.live_component
         module={PlayerComponent}

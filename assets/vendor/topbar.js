@@ -77,7 +77,7 @@
       ctx.moveTo(0, options.barThickness / 2);
       ctx.lineTo(
         Math.ceil(currentProgress * canvas.width),
-        options.barThickness / 2
+        options.barThickness / 2,
       );
       ctx.strokeStyle = lineGradient;
       ctx.stroke();
@@ -98,7 +98,7 @@
         for (var key in opts)
           if (options.hasOwnProperty(key)) options[key] = opts[key];
       },
-      delayedShow: function(time) {
+      delayedShow: function (time) {
         if (showing) return;
         if (delayTimerId) return;
         delayTimerId = setTimeout(() => topbar.show(), time);
@@ -115,7 +115,7 @@
           (function loop() {
             progressTimerId = window.requestAnimationFrame(loop);
             topbar.progress(
-              "+" + 0.05 * Math.pow(1 - Math.sqrt(currentProgress), 2)
+              "+" + 0.05 * Math.pow(1 - Math.sqrt(currentProgress), 2),
             );
           })();
         }
@@ -164,4 +164,4 @@
   } else {
     this.topbar = topbar;
   }
-}.call(this, window, document));
+}).call(this, window, document);
