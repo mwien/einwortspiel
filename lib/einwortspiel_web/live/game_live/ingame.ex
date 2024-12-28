@@ -61,7 +61,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
               </.button>
             </p>
           </div>
-          <div id="qrcode" phx-hook="GenQR" class="w-24 m-1"></div>
+          <div id="qrcode" phx-update="ignore" phx-hook="GenQR" class="w-24 m-1"></div>
         </div>
         <div :if={@general.phase != :init}>
           <p class="m-1">
