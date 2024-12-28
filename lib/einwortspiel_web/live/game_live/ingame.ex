@@ -38,8 +38,8 @@ defmodule EinwortspielWeb.GameLive.Ingame do
     <.main>
       <.box class="mt-2 mb-4 text-center p-1">
         <div :if={@general.phase == :init} class="flex flex-row justify-between items-center">
-          <div class="w-24" />
-          <div class="w-1/2">
+          <div class="sm:w-24" />
+          <div class="mx-2">
             <p :if={!@general.can_start_round and @general.phase == :init} class="m-1">
               Waiting for second player
               <.icon
@@ -61,7 +61,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
               </.button>
             </p>
           </div>
-          <div id="qrcode" phx-hook="GenQR" class="w-32 m-1"></div>
+          <div id="qrcode" phx-hook="GenQR" class="w-24 m-1"></div>
         </div>
         <div :if={@general.phase != :init}>
           <p class="m-1">
