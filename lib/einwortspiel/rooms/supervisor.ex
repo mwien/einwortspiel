@@ -5,15 +5,12 @@ defmodule Einwortspiel.Rooms.Supervisor do
     %{
       id: __MODULE__,
       start: {__MODULE__, :start_link, init_args},
-      # TODO: correct option?
       restart: :transient
     }
   end
 
   def start_link(room_id, options) do
-    Supervisor.start_link(__MODULE__, [room_id, options],
-      name: Einwortspiel.Application.via_tuple({:room, room_id})
-    )
+    Supervisor.start_link(__MODULE__, [room_id, options])
   end
 
   @impl true
