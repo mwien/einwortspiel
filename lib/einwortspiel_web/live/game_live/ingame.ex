@@ -51,7 +51,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
               Ready to start <.icon name="hero-check-circle" class="ml-1.5 w-5 h-5" />
             </p>
             <p :if={@general.phase == :init} class="m-1">
-              Share the url to invite further players
+              Share URL to invite more players
               <.button phx-click={JS.dispatch("urlcopy")} class="my-1 ml-1 px-1.5 pb-0.5 group">
                 <.icon name="hero-clipboard-document" class="w-5 h-5 group-focus:hidden" />
                 <.icon
