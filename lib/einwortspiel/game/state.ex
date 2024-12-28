@@ -1,12 +1,12 @@
 defmodule Einwortspiel.Game.State do
   alias __MODULE__
-  alias Einwortspiel.Game.{Info, Player, Round, Settings, View}
+  alias Einwortspiel.Game.{Info, Player, Round, Settings, Stats}
 
   # - have option for player to leave as well (set to inactive) in game.ex
 
   defstruct [
     :room_id,
-    :info,
+    :stats,
     :players,
     :round,
     :settings,
@@ -16,11 +16,11 @@ defmodule Einwortspiel.Game.State do
   def init(room_id, options) do
     %State{
       room_id: room_id,
-      info: Info.init(),
+      stats: Stats.init(),
       players: %{},
       round: nil,
       settings: Settings.init(options),
-      update: %View{general: %{}, players: %{}}
+      update: %Info{general: %{}, players: %{}}
     }
   end
 
@@ -30,8 +30,8 @@ defmodule Einwortspiel.Game.State do
     else
       {:ok,
        %State{state | players: Map.put(state.players, player_id, Player.create(name))}
-       |> View.update_new_player(player_id)
-       |> View.update_general(state)
+       |> Info.update_new_player(player_id)
+       |> Info.update_general(state)
        |> emit_update()}
     end
   end
@@ -40,7 +40,7 @@ defmodule Einwortspiel.Game.State do
     Enum.filter(player_updates, fn {player_id, _} -> Map.has_key?(state.players, player_id) end)
     |> Enum.reduce(state, fn {player_id, val}, state ->
       update_in(state.players[player_id], &Player.set_connected(&1, val))
-      |> View.update_player(state, player_id)
+      |> Info.update_player(state, player_id)
     end)
     |> emit_update()
   end
@@ -49,7 +49,7 @@ defmodule Einwortspiel.Game.State do
     case can_start_round(state) do
       :ok ->
         new_state = %State{state | round: Round.init(Map.keys(state.players), state.settings)}
-        {:ok, {View.get_view(new_state), new_state}}
+        {:ok, {Info.get_info(new_state), new_state}}
 
       {:error, error} ->
         {:error, error}
@@ -61,8 +61,8 @@ defmodule Einwortspiel.Game.State do
       {:ok, new_round} ->
         {:ok,
          %State{state | round: new_round}
-         |> View.update_player(state, player_id)
-         |> View.update_general(state)
+         |> Info.update_player(state, player_id)
+         |> Info.update_general(state)
          |> emit_update()}
 
       {:error, error} ->
@@ -77,10 +77,10 @@ defmodule Einwortspiel.Game.State do
          %State{
            state
            | round: new_round,
-             info: Info.evaluate_result(state.info, Round.get_phase(new_round))
+             stats: Stats.evaluate_result(state.stats, Round.get_phase(new_round))
          }
-         |> View.update_player(state, player_id)
-         |> View.update_general(state)
+         |> Info.update_player(state, player_id)
+         |> Info.update_general(state)
          |> emit_update()}
 
       {:error, error} ->
@@ -103,6 +103,6 @@ defmodule Einwortspiel.Game.State do
   end
 
   defp emit_update(state) do
-    {state.update, %State{state | update: %View{general: %{}, players: %{}}}}
+    {state.update, %State{state | update: %Info{general: %{}, players: %{}}}}
   end
 end

@@ -1,6 +1,6 @@
 defmodule Einwortspiel.Game do
   use GenServer
-  alias Einwortspiel.Game.{State, View}
+  alias Einwortspiel.Game.{State, Info}
   alias Einwortspiel.Rooms
 
   # manages the complete game state
@@ -63,7 +63,7 @@ defmodule Einwortspiel.Game do
   end
 
   def handle_call({:get_game_view}, _from, state) do
-    {:reply, {:ok, View.get_view(state)}, state}
+    {:reply, {:ok, Info.get_info(state)}, state}
   end
 
   def handle_call({:join, player_id, name}, _from, state) do

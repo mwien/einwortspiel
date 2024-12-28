@@ -1,7 +1,7 @@
 defmodule EinwortspielWeb.GameLive do
   use EinwortspielWeb, :live_view
   alias EinwortspielWeb.GameLive.{Greet, Ingame}
-  alias Einwortspiel.Game.View
+  alias Einwortspiel.Game.Info
 
   def render(assigns) do
     ~H"""
@@ -49,7 +49,7 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:game_update, %View{general: general, players: players}}, socket) do
+  def handle_info({:game_update, %Info{general: general, players: players}}, socket) do
     {:noreply,
      socket
      |> assign(:general, Map.merge(socket.assigns.general, general))
@@ -70,7 +70,7 @@ defmodule EinwortspielWeb.GameLive do
       {:error, :invalid_room_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
-      {:ok, %Einwortspiel.Game.View{general: general, players: players}} ->
+      {:ok, %Einwortspiel.Game.Info{general: general, players: players}} ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "room_notification:#{room_id}")
 
         topic = "room_presence:#{room_id}"

@@ -1,26 +1,88 @@
 defmodule Einwortspiel.Game.Info do
   alias __MODULE__
+  alias Einwortspiel.Game.{Stats, Player, Round, State, Words}
 
+  # add further typespecs for general and player -> maybe in submodules?
   defstruct [
-    :wins,
-    :losses
+    :general,
+    :players
   ]
 
-  def init() do
-    %Info{
+  def get_info(state) do
+    %Info{general: get_general(state), players: get_players(state)}
+  end
+
+  defp get_general(%State{round: nil} = state) do
+    %{
+      can_start_round: if(State.can_start_round(state) == :ok, do: true, else: false),
+      phase: :init,
       wins: 0,
       losses: 0
     }
   end
 
-  def get_wins(info), do: info.wins
-  def get_losses(info), do: info.losses
+  defp get_general(state) do
+    %{
+      can_start_round: if(State.can_start_round(state) == :ok, do: true, else: false),
+      phase: Round.get_phase(state.round),
+      wins: Stats.get_wins(state.stats),
+      losses: Stats.get_losses(state.stats)
+    }
+  end
 
-  def evaluate_result(info, result) do
-    case result do
-      :win -> %Info{info | wins: info.wins + 1}
-      :loss -> %Info{info | losses: info.losses + 1}
-      _ -> info
+  defp get_player(state, player_id) do
+    name = Player.get_name(state.players[player_id])
+    connected = Player.get_connected(state.players[player_id])
+    active = Player.get_active(state.players[player_id])
+
+    if state.round == nil or !Round.has_player?(state.round, player_id) do
+      %{name: name, connected: connected, active: active, words: nil, clue: nil, guess: nil}
+    else
+      %{
+        name: name,
+        connected: connected,
+        active: active,
+        words: word_info(state, player_id),
+        clue: Round.get_clue(state.round, player_id),
+        guess: Round.get_guess(state.round, player_id)
+      }
     end
+  end
+
+  defp get_players(state) do
+    Enum.reduce(Map.keys(state.players), %{}, &Map.put(&2, &1, get_player(state, &1)))
+  end
+
+  def update_general(new_state, old_state) do
+    put_in(
+      new_state.update.general,
+      filter_changed(get_general(new_state), get_general(old_state))
+    )
+  end
+
+  def update_player(new_state, old_state, player_id) do
+    put_in(
+      new_state.update.players[player_id],
+      filter_changed(get_player(new_state, player_id), get_player(old_state, player_id))
+    )
+  end
+
+  def update_new_player(state, player_id) do
+    put_in(
+      state.update.players[player_id],
+      get_player(state, player_id)
+    )
+  end
+
+  defp filter_changed(map1, map2) do
+    Map.filter(map1, fn {k, v} -> v != map2[k] end)
+  end
+
+  defp word_info(state, player_id) do
+    words = Round.get_words(state.round)
+    extraword = Words.get_extraword(words, player_id)
+
+    Words.get_words(words, player_id)
+    |> Enum.map(fn word -> {word, word == extraword} end)
   end
 end
