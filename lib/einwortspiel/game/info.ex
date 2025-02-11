@@ -5,11 +5,12 @@ defmodule Einwortspiel.Game.Info do
   # add further typespecs for general and player -> maybe in submodules?
   defstruct [
     :general,
-    :players
+    :players,
+    :chat
   ]
 
   def get_info(state) do
-    %Info{general: get_general(state), players: get_players(state)}
+    %Info{general: get_general(state), players: get_players(state), chat: get_chat(state)}
   end
 
   defp get_general(%State{round: nil} = state) do
@@ -53,6 +54,10 @@ defmodule Einwortspiel.Game.Info do
     Enum.reduce(Map.keys(state.players), %{}, &Map.put(&2, &1, get_player(state, &1)))
   end
 
+  defp get_chat(state) do
+    state.chat
+  end
+
   def update_general(new_state, old_state) do
     put_in(
       new_state.update.general,
@@ -72,6 +77,10 @@ defmodule Einwortspiel.Game.Info do
       state.update.players[player_id],
       get_player(state, player_id)
     )
+  end
+
+  def update_chat(state) do
+    put_in(state.update.chat, List.first(state.chat))
   end
 
   defp filter_changed(map1, map2) do

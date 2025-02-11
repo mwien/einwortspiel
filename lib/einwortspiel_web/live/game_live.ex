@@ -6,7 +6,13 @@ defmodule EinwortspielWeb.GameLive do
   def render(assigns) do
     ~H"""
     <Greet.render :if={!@has_joined} />
-    <Ingame.render :if={@has_joined} player_id={@player_id} general={@general} players={@players} />
+    <Ingame.render
+      :if={@has_joined}
+      player_id={@player_id}
+      general={@general}
+      players={@players}
+      chat={@chat}
+    />
     """
   end
 
@@ -49,11 +55,25 @@ defmodule EinwortspielWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:game_update, %Info{general: general, players: players}}, socket) do
+  def handle_event("submit_chat_message", %{"text" => message}, socket) do
+    Einwortspiel.Game.submit_chat_message(
+      socket.assigns.room_id,
+      socket.assigns.player_id,
+      message
+    )
+
+    {:noreply, socket}
+  end
+
+  def handle_info(
+        {:game_update, %Info{general: general, players: players, chat: message}},
+        socket
+      ) do
     {:noreply,
      socket
      |> assign(:general, Map.merge(socket.assigns.general, general))
      |> assign(:players, merge_players(socket.assigns.players, players))
+     |> assign(:chat, [message | socket.assigns.chat])
      |> assign(
        :has_joined,
        socket.assigns.has_joined or Map.has_key?(players, socket.assigns.player_id)
@@ -70,7 +90,7 @@ defmodule EinwortspielWeb.GameLive do
       {:error, :invalid_room_id} ->
         {:ok, redirect(socket, to: ~p"/")}
 
-      {:ok, %Einwortspiel.Game.Info{general: general, players: players}} ->
+      {:ok, %Einwortspiel.Game.Info{general: general, players: players, chat: chat}} ->
         Phoenix.PubSub.subscribe(Einwortspiel.PubSub, "room_notification:#{room_id}")
 
         topic = "room_presence:#{room_id}"
@@ -89,6 +109,7 @@ defmodule EinwortspielWeb.GameLive do
          |> assign(:player_id, player_id)
          |> assign(:general, general)
          |> assign(:players, players)
+         |> assign(:chat, chat)
          |> assign(:has_joined, Map.has_key?(players, player_id))}
     end
   end

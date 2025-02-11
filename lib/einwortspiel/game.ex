@@ -62,6 +62,13 @@ defmodule Einwortspiel.Game do
     end
   end
 
+  def submit_chat_message(room_id, player_id, message) do
+    case service_name(room_id) do
+      nil -> {:error, :invalid_room_id}
+      pid -> GenServer.call(pid, {:submit_chat_message, player_id, message})
+    end
+  end
+
   def handle_call({:get_game_view}, _from, state) do
     {:reply, {:ok, Info.get_info(state)}, state}
   end
@@ -92,6 +99,11 @@ defmodule Einwortspiel.Game do
       {:ok, {update, new_state}} -> {:reply, :ok, publish_update(new_state, update)}
       {:error, error} -> {:reply, {:error, error}, state}
     end
+  end
+
+  def handle_call({:submit_chat_message, player_id, message}, _from, state) do
+    {update, new_state} = State.process_chat_message(state, player_id, message)
+    {:reply, :ok, publish_update(new_state, update)}
   end
 
   def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, state) do

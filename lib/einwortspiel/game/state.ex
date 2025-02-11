@@ -1,11 +1,12 @@
 defmodule Einwortspiel.Game.State do
   alias __MODULE__
-  alias Einwortspiel.Game.{Info, Player, Round, Settings, Stats}
+  alias Einwortspiel.Game.{Chat, Info, Player, Round, Settings, Stats}
 
   # - have option for player to leave as well (set to inactive) in game.ex
 
   defstruct [
     :room_id,
+    :chat,
     :stats,
     :players,
     :round,
@@ -16,6 +17,7 @@ defmodule Einwortspiel.Game.State do
   def init(room_id, options) do
     %State{
       room_id: room_id,
+      chat: Chat.init(),
       stats: Stats.init(),
       players: %{},
       round: nil,
@@ -88,6 +90,15 @@ defmodule Einwortspiel.Game.State do
     end
   end
 
+  def process_chat_message(state, player_id, message) do
+    %State{
+      state
+      | chat: Chat.add_message(state.chat, player_id, message)
+    }
+    |> Info.update_chat()
+    |> emit_update()
+  end
+
   # TODO: take only active players into account
   def can_start_round(state) do
     cond do
@@ -103,6 +114,6 @@ defmodule Einwortspiel.Game.State do
   end
 
   defp emit_update(state) do
-    {state.update, %State{state | update: %Info{general: %{}, players: %{}}}}
+    {state.update, %State{state | update: %Info{general: %{}, players: %{}, chat: []}}}
   end
 end

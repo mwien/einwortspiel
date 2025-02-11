@@ -2,10 +2,12 @@ defmodule EinwortspielWeb.GameLive.Ingame do
   use EinwortspielWeb, :html
 
   alias EinwortspielWeb.GameLive.PlayerComponent
+  alias EinwortspielWeb.GameLive.Chat
 
   attr :player_id, :string
   attr :general, :map
   attr :players, :map
+  attr :chat, :list
 
   def render(assigns) do
     ~H"""
@@ -97,6 +99,7 @@ defmodule EinwortspielWeb.GameLive.Ingame do
         spectating={false}
         phase={@general.phase}
       />
+      <Chat.render messages={@chat} players={@players} />
     </.main>
     """
   end
