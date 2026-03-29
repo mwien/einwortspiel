@@ -1,6 +1,6 @@
 # Einwortspiel
 
-Multiplayer word game using Elixir, Phoenix and Liveview. 
+Multiplayer word game using Elixir, Phoenix and Liveview. Can be played at [`einwortspiel.com`](https://einwortspiel.com).
 
 ## Game Idea
 Each player receives three words, with two of them being the same for everyone, and describes them by a single clue. Afterwards, they must deduce which word is unique to them based on the clues of the other players. 
